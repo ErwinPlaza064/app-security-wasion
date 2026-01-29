@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Color Variables */
+:root {
+    --color-primary: #0c1869;
+    --color-primary-light: #3e459a;
+    --color-primary-dark: #080f45;
+    --color-background: #fff7f2;
+    --color-background-light: #ffffff;
+    --color-text-primary: #0c1869;
+    --color-text-secondary: #4b5563;
+}
+
+/* Base layer customizations */
+@layer base {
+    body {
+        @apply bg-cream text-gray-900;
+    }
+
+    /* Primary button styles */
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primary-800 focus:ring-primary-500;
+    }
+
+    /* Links */
+    a {
+        @apply text-primary hover:text-primary-700;
+    }
+}
+
+/* Component layer */
+@layer components {
+    .card {
+        @apply bg-white rounded-lg shadow-md p-6;
+    }
+
+    .input-field {
+        @apply border-gray-300 focus:border-primary focus:ring-primary rounded-md;
+    }
+}
