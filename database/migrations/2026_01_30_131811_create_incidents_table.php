@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('location');
             $table->dateTime('happened_at');
             $table->string('involved_person')->nullable();
-            $table->enum('status', ['open', 'in_investigation', 'closed'])->default('open');
+            $table->string('status')->default('open');
             $table->text('resolution_notes')->nullable();
             $table->timestamps();
         });

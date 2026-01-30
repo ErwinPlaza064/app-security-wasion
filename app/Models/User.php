@@ -23,16 +23,17 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'email_verified_at',
     ];
 
     public function isAdmin(): bool
     {
-        return $this->role === 'Admin' || $this->role === 'SuperAdmin';
+        return strtolower($this->role) === 'admin' || strtolower($this->role) === 'superadmin';
     }
 
     public function isSuperAdmin(): bool
     {
-        return $this->role === 'SuperAdmin';
+        return strtolower($this->role) === 'superadmin';
     }
 
     public function canAccessPanel(Panel $panel): bool

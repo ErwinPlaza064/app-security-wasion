@@ -36,9 +36,8 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Redirect Admin and SuperAdmin to Filament dashboard
-        if ($user->role === 'Admin' || $user->role === 'SuperAdmin') {
-            $request->session()->put('filament_redirect', true);
-            return Inertia::location('/admin');
+        if ($user->isAdmin()) {
+            return Inertia::location(url('/admin'));
         }
 
         // Redirect regular users to Breeze dashboard
