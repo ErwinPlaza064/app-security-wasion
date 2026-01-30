@@ -1,6 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    @keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
 
 /* Global Color Variables */
 :root {
@@ -16,7 +39,7 @@
 /* Base layer customizations */
 @layer base {
     body {
-        @apply bg-cream text-gray-900;
+        @apply bg-cream text-gray-900 font-sans;
     }
 
     /* Primary button styles */

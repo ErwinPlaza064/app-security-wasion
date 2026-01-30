@@ -5,7 +5,7 @@ export default function GuestLayout({ children }) {
         <div className="relative min-h-screen flex flex-col items-center justify-center bg-[#FFF7F2] overflow-hidden selection:bg-[#0C1869] selection:text-white pb-12">
             {/* Decorative background elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#0C1869] opacity-[0.03] blur-3xl animate-pulse"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#0C1869] opacity-[0.03] blur-3xl"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#0C1869] opacity-[0.02] blur-3xl"></div>
             </div>
 
