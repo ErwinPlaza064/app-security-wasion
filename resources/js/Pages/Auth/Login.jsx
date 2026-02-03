@@ -27,12 +27,12 @@ export default function Login({ status, canResetPassword }) {
             <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl"></div>
 
             <Head title="Acceso de Seguridad" />
-
-            <div className="w-full max-w-[420px] z-10">
+            
+            <div className="w-full max-w-[420px] z-10 lighthouse-wrapper">
                
 
                 {/* Tarjeta de Login - Menos redondeada, más sofisticada */}
-                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+                <div className="rounded-2xl lighthouse-card border border-gray-100 overflow-hidden relative">
                     <div className="p-8 md:p-10">
                         <div className="mb-8">
                             <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">Iniciar Sesión</h1>
@@ -57,7 +57,7 @@ export default function Login({ status, canResetPassword }) {
                         </div>
 
                         <form onSubmit={submit} className="space-y-6">
-                            <div className="space-y-2">
+                            <div className="space-y-2 searchlight-field">
                                 <InputLabel htmlFor="email" value="Correo electrónico" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em] ms-0.5" />
                                 <div className="relative group">
                                     <TextInput
@@ -65,7 +65,7 @@ export default function Login({ status, canResetPassword }) {
                                         type="email"
                                         name="email"
                                         value={data.email}
-                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                         autoComplete="username"
                                         isFocused={true}
                                         placeholder="ejemplo@wasion.com"
@@ -75,7 +75,7 @@ export default function Login({ status, canResetPassword }) {
                                 <InputError message={errors.email} className="text-[10px] font-bold" />
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 searchlight-field">
                                 <div className="flex justify-between items-center ms-0.5">
                                     <InputLabel htmlFor="password" value="Contraseña" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em]" />
                                     {canResetPassword && (
@@ -89,7 +89,7 @@ export default function Login({ status, canResetPassword }) {
                                     type="password"
                                     name="password"
                                     value={data.password}
-                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                     autoComplete="current-password"
                                     placeholder="••••••••"
                                     onChange={(e) => setData('password', e.target.value)}

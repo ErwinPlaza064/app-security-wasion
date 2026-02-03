@@ -54,8 +54,8 @@ class GoogleAuthController extends Controller
             // Iniciar sesión del usuario
             Auth::login($user, true);
 
-            // Redirigir al dashboard
-            return redirect()->intended(route('dashboard'));
+            // Redirigir según rol
+            return redirect()->intended($user->getRedirectRoute());
         } catch (\Exception $e) {
             // Loguear el error para debug
             Log::error('Error en Google Auth: ' . $e->getMessage());

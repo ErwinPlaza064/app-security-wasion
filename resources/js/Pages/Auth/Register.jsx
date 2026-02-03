@@ -46,10 +46,10 @@ export default function Register() {
 
             <Head title="Registro de Personal" />
 
-            <div className="w-full max-w-[460px] z-10">
+            <div className="w-full max-w-[460px] z-10 lighthouse-wrapper">
 
                 {/* Tarjeta de Registro - Nítida y Profesional */}
-                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+                <div className="rounded-2xl lighthouse-card border border-gray-100 overflow-hidden relative">
                     <div className="p-8 md:p-10">
                         <div className="mb-8">
                             <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">Crear Cuenta</h1>
@@ -65,13 +65,13 @@ export default function Register() {
                         )}
 
                         <form onSubmit={submit} className="space-y-5">
-                            <div className="space-y-2">
+                            <div className="space-y-2 searchlight-field">
                                 <InputLabel htmlFor="name" value="Nombre completo" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em] ms-0.5" />
                                 <TextInput
                                     id="name"
                                     name="name"
                                     value={data.name}
-                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                     autoComplete="name"
                                     isFocused={true}
                                     placeholder="Nombre y apellido"
@@ -81,14 +81,14 @@ export default function Register() {
                                 <InputError message={errors.name} className="text-[10px] font-bold" />
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 searchlight-field">
                                 <InputLabel htmlFor="email" value="Correo institucional" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em] ms-0.5" />
                                 <TextInput
                                     id="email"
                                     type="email"
                                     name="email"
                                     value={data.email}
-                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                    className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                     autoComplete="username"
                                     placeholder="email@wasion.com"
                                     onChange={(e) => setData('email', e.target.value)}
@@ -98,14 +98,14 @@ export default function Register() {
                             </div>
 
                             <div className="grid grid-cols-1 gap-5">
-                                <div className="space-y-2">
+                                <div className="space-y-2 searchlight-field">
                                     <InputLabel htmlFor="password" value="Contraseña segura" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em] ms-0.5" />
                                     <TextInput
                                         id="password"
                                         type="password"
                                         name="password"
                                         value={data.password}
-                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                         autoComplete="new-password"
                                         placeholder="Mínimo 8 caracteres"
                                         onChange={(e) => setData('password', e.target.value)}
@@ -134,14 +134,14 @@ export default function Register() {
                                     <InputError message={errors.password} className="text-[10px] font-bold" />
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-2 searchlight-field">
                                     <InputLabel htmlFor="password_confirmation" value="Verificar Contraseña" className="text-gray-500 font-black text-[10px] uppercase tracking-[0.1em] ms-0.5" />
                                     <TextInput
                                         id="password_confirmation"
                                         type="password"
                                         name="password_confirmation"
                                         value={data.password_confirmation}
-                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none"
+                                        className="block w-full bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/10 focus:border-primary rounded-xl py-3.5 px-4 shadow-sm transition-all text-sm outline-none searchlight-input"
                                         autoComplete="new-password"
                                         placeholder="Repite la contraseña"
                                         onChange={(e) => setData('password_confirmation', e.target.value)}

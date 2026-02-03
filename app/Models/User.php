@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'plant',
         'email_verified_at',
         'google_id',
         'avatar',
@@ -38,9 +39,33 @@ class User extends Authenticatable implements FilamentUser
         return strtolower($this->role) === 'superadmin';
     }
 
+    /**
+     * Get the redirect route for the user based on their role
+     */
+    public function getRedirectRoute(): string
+    {
+        if ($this->isSuperAdmin()) {
+            return url('/superadmin');
+        }
+
+        if ($this->isAdmin()) {
+            return url('/admin');
+        }
+
+        return route('dashboard');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->isAdmin();
+        if ($panel->getId() === 'superadmin') {
+            return $this->isSuperAdmin();
+        }
+
+        if ($panel->getId() === 'admin') {
+            return $this->isAdmin();
+        }
+
+        return false;
     }
 
     /**

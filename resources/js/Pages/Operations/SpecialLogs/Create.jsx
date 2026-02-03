@@ -1,0 +1,153 @@
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, useForm, Link } from '@inertiajs/react';
+import InputLabel from '@/Components/InputLabel';
+import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/InputError';
+import PrimaryButton from '@/Components/PrimaryButton';
+
+export default function Create({ type }) {
+    const { data, setData, post, processing, errors } = useForm({
+        type: type || 'no_badge',
+        employee_name: '',
+        employee_id: '',
+        department: '',
+        position: '',
+        notes: '',
+        happened_at: new Date().toISOString().slice(0, 16),
+    });
+
+    const titles = {
+        resignation: 'Registro de Renuncia / Finiquito',
+        no_badge: 'Acceso de Colaborador Sin Gafete',
+        clearance: 'Pase de Salida / Liquidación',
+    };
+
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('special-logs.store'));
+    };
+
+    return (
+        <AuthenticatedLayout>
+            <Head title={titles[data.type] || 'Registros Especiales'} />
+
+            <div className="py-12 bg-[#fdfcf9] min-h-[calc(100vh-64px)]">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header */}
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <div className="flex items-center space-x-2 mb-2">
+                                <Link href={route('dashboard')} className="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Dashboard</Link>
+                                <span className="text-[10px] text-gray-300">/</span>
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Especiales</span>
+                            </div>
+                            <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">{titles[data.type]}</h1>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-amber-500">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <form onSubmit={submit} className="space-y-6">
+                        {/* Sección: Información del Empleado */}
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
+                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
+                                <div className="w-1.5 h-6 bg-amber-500 rounded-full"></div>
+                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Datos del Colaborador</h2>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <InputLabel htmlFor="employee_name" value="Nombre del Empleado" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                <TextInput
+                                    id="employee_name"
+                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
+                                    value={data.employee_name}
+                                    onChange={(e) => setData('employee_name', e.target.value)}
+                                    required
+                                    placeholder="Nombre completo..."
+                                />
+                                <InputError message={errors.employee_name} />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="employee_id" value="Nº de Nómina / ID" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <TextInput
+                                        id="employee_id"
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all font-mono"
+                                        value={data.employee_id}
+                                        onChange={(e) => setData('employee_id', e.target.value)}
+                                        placeholder="000XXX"
+                                    />
+                                    <InputError message={errors.employee_id} />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="department" value="Departamento" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <TextInput
+                                        id="department"
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
+                                        value={data.department}
+                                        onChange={(e) => setData('department', e.target.value)}
+                                        placeholder="Ej. Producción, Logística..."
+                                    />
+                                    <InputError message={errors.department} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sección: Detalles */}
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
+                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
+                                <div className="w-1.5 h-6 bg-gray-900 rounded-full"></div>
+                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Información del Registro</h2>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <InputLabel htmlFor="happened_at" value="Fecha y Hora" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                <input
+                                    id="happened_at"
+                                    type="datetime-local"
+                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm"
+                                    value={data.happened_at}
+                                    onChange={(e) => setData('happened_at', e.target.value)}
+                                    required
+                                />
+                                <InputError message={errors.happened_at} />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <InputLabel htmlFor="notes" value="Observaciones Adicionales" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                <textarea
+                                    id="notes"
+                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm min-h-[120px]"
+                                    value={data.notes}
+                                    onChange={(e) => setData('notes', e.target.value)}
+                                    placeholder="Motivo del ingreso sin gafete, detalles de la baja, etc..."
+                                />
+                                <InputError message={errors.notes} />
+                            </div>
+                        </div>
+
+                        <div className="pt-4 flex space-x-4">
+                            <Link 
+                                href={route('dashboard')}
+                                className="flex-1 flex justify-center py-4 rounded-xl border border-gray-100 text-gray-400 font-black uppercase text-xs tracking-widest hover:bg-gray-50 transition-all"
+                            >
+                                Cancelar
+                            </Link>
+                            <PrimaryButton 
+                                className="flex-[2] justify-center py-4 rounded-xl shadow-xl shadow-amber-500/20 bg-amber-600 hover:bg-amber-700 text-white text-xs font-black uppercase tracking-[0.2em] transition-all"
+                                disabled={processing}
+                            >
+                                Guardar Registro Especial
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}
