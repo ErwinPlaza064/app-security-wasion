@@ -1,18 +1,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, Link } from '@inertiajs/react';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { useState, useRef } from 'react';
 import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { useState, useRef, useEffect } from 'react';
+import TextInput from '@/Components/TextInput';
 
 export default function Create({ type, companies }) {
     const { data, setData, post, processing, errors } = useForm({
         type: type || 'visitor',
-        full_name: '',
+        people_count: 1,
+        visitors: [{ full_name: '', id_number: '' }],
         company_id: '',
         new_company: '',
-        id_number: '',
         phone: '',
         item_brand: '',
         item_color: '',
@@ -25,7 +25,32 @@ export default function Create({ type, companies }) {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
 
-    // Mapeo de títulos según el tipo
+    // Actualizar lista de visitantes cuando cambia el conteo
+    const handlePeopleCountChange = (count) => {
+        const newCount = Math.max(1, parseInt(count) || 1);
+        setData(prev => {
+            const newVisitors = [...prev.visitors];
+            if (newCount > newVisitors.length) {
+                for (let i = newVisitors.length; i < newCount; i++) {
+                    newVisitors.push({ full_name: '', id_number: '' });
+                }
+            } else {
+                newVisitors.splice(newCount);
+            }
+            return {
+                ...prev,
+                people_count: newCount,
+                visitors: newVisitors
+            };
+        });
+    };
+
+    const handleVisitorChange = (index, field, value) => {
+        const newVisitors = [...data.visitors];
+        newVisitors[index][field] = value;
+        setData('visitors', newVisitors);
+    };
+
     const titles = {
         visitor: 'Registro de Visitante',
         supplier: 'Registro de Proveedor',
@@ -35,7 +60,6 @@ export default function Create({ type, companies }) {
     const submit = (e) => {
         e.preventDefault();
         
-        // Capturar firma si existe
         if (canvasRef.current) {
             const signatureData = canvasRef.current.toDataURL();
             setData('signature', signatureData);
@@ -44,13 +68,15 @@ export default function Create({ type, companies }) {
         post(route('access-logs.store'));
     };
 
-    // Lógica básica para el Canvas de firma
+    // Lógica del Canvas
     const startDrawing = (e) => {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         const ctx = canvas.getContext('2d');
         ctx.beginPath();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        const clientX = (e.clientX || e.touches?.[0]?.clientX);
+        const clientY = (e.clientY || e.touches?.[0]?.clientY);
+        ctx.moveTo(clientX - rect.left, clientY - rect.top);
         setIsDrawing(true);
     };
 
@@ -59,14 +85,14 @@ export default function Create({ type, companies }) {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         const ctx = canvas.getContext('2d');
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        const clientX = (e.clientX || e.touches?.[0]?.clientX);
+        const clientY = (e.clientY || e.touches?.[0]?.clientY);
+        ctx.lineTo(clientX - rect.left, clientY - rect.top);
         ctx.stroke();
     };
 
     const stopDrawing = () => {
         setIsDrawing(false);
-        const signatureData = canvasRef.current.toDataURL();
-        setData('signature', signatureData);
     };
 
     const clearSignature = () => {
@@ -92,175 +118,163 @@ export default function Create({ type, companies }) {
                             </div>
                             <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">{titles[type]}</h1>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-primary">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </div>
+                        <Link href={route('dashboard')} className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </Link>
                     </div>
 
-                    <form onSubmit={submit} className="space-y-6">
-                        {/* Sección: Información Personal */}
-                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
-                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
-                                <div className="w-1.5 h-6 bg-primary rounded-full"></div>
-                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Información del Visitante</h2>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-1.5">
-                                    <InputLabel htmlFor="full_name" value="Nombre Completo" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
-                                        id="full_name"
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all"
-                                        value={data.full_name}
-                                        onChange={(e) => setData('full_name', e.target.value)}
-                                        required
-                                        placeholder="Ej. Juan Pérez"
-                                    />
-                                    <InputError message={errors.full_name} />
+                    <form onSubmit={submit} className="space-y-8">
+                        {/* Selector de Cantidad */}
+                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                                 </div>
-
-                                <div className="space-y-1.5">
-                                    <InputLabel htmlFor="id_number" value="Identificación / Gafete" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
-                                        id="id_number"
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all"
-                                        value={data.id_number}
-                                        onChange={(e) => setData('id_number', e.target.value)}
-                                        placeholder="Nº INE, Licencia, etc."
-                                    />
-                                    <InputError message={errors.id_number} />
+                                <div>
+                                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">Cantidad de personas</h3>
+                                    <p className="text-xs text-gray-400 font-medium tracking-tight">Añade integrantes al registro actual</p>
                                 </div>
                             </div>
-
-                            <div className="space-y-1.5">
-                                <div className="flex justify-between items-center px-1">
-                                    <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setIsNewCompany(!isNewCompany)}
-                                        className="text-[10px] font-black text-primary uppercase tracking-tighter hover:underline"
+                            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-2xl">
+                                {[1, 2, 3, 4, 5].map((num) => (
+                                    <button
+                                        key={num}
+                                        type="button"
+                                        onClick={() => handlePeopleCountChange(num)}
+                                        className={`w-12 h-12 rounded-xl text-xs font-black transition-all ${
+                                            data.people_count === num 
+                                                ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' 
+                                                : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'
+                                        }`}
                                     >
-                                        {isNewCompany ? 'Seleccionar existente' : '+ Registrar nueva empresa'}
+                                        {num}
                                     </button>
-                                </div>
-                                
-                                {!isNewCompany ? (
-                                    <select
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all text-sm"
-                                        value={data.company_id}
-                                        onChange={(e) => setData('company_id', e.target.value)}
-                                        required={!isNewCompany}
-                                    >
-                                        <option value="">Seleccione una empresa...</option>
-                                        {companies.map(c => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    <TextInput
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all"
-                                        value={data.new_company}
-                                        onChange={(e) => setData('new_company', e.target.value)}
-                                        placeholder="Nombre de la nueva empresa"
-                                        required={isNewCompany}
-                                    />
-                                )}
-                                <InputError message={errors.company_id || errors.new_company} />
-                            </div>
-                        </div>
-
-                        {/* Sección: Equipos / Laptops (Opcional) */}
-                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
-                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
-                                <div className="w-1.5 h-6 bg-amber-500 rounded-full"></div>
-                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Registro de Equipos (Opcional)</h2>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="space-y-1.5">
-                                    <InputLabel value="Marca" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
-                                        className="block w-full bg-gray-50 border-none rounded-xl py-3 px-4 transition-all text-sm"
-                                        value={data.item_brand}
-                                        onChange={(e) => setData('item_brand', e.target.value)}
-                                        placeholder="Ej. Dell, HP"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <InputLabel value="Color/Modelo" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
-                                        className="block w-full bg-gray-50 border-none rounded-xl py-3 px-4 transition-all text-sm"
-                                        value={data.item_color}
-                                        onChange={(e) => setData('item_color', e.target.value)}
-                                        placeholder="Ej. Gris"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <InputLabel value="Nº Serial" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
-                                        className="block w-full bg-gray-50 border-none rounded-xl py-3 px-4 transition-all text-sm"
-                                        value={data.item_serial}
-                                        onChange={(e) => setData('item_serial', e.target.value)}
-                                        placeholder="S/N"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Sección: Firma y Notas */}
-                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
-                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
-                                <div className="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
-                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Validación y Notas</h2>
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <InputLabel value="Observaciones" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                <textarea
-                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all text-sm min-h-[100px]"
-                                    value={data.notes}
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder="Detalles adicionales del acceso..."
+                                ))}
+                                <TextInput 
+                                    type="number" 
+                                    min="1" 
+                                    max="20"
+                                    value={data.people_count}
+                                    onChange={(e) => handlePeopleCountChange(e.target.value)}
+                                    className="w-16 h-12 bg-white border-none text-xs font-black text-center focus:ring-primary/20 rounded-xl"
+                                    placeholder="+"
                                 />
                             </div>
+                        </div>
 
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center px-1">
-                                    <InputLabel value="Firma Digital" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
-                                    <button type="button" onClick={clearSignature} className="text-[9px] font-black text-red-500 uppercase tracking-tighter hover:underline">Borrar firma</button>
+                        {/* Listado de Visitantes */}
+                        <div className="space-y-6">
+                            {data.visitors.map((visitor, index) => (
+                                <div key={index} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-6">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-8 h-8 bg-primary/5 text-primary rounded-xl flex items-center justify-center text-xs font-bold">{index + 1}</div>
+                                        <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Datos del Integrante</h2>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <InputLabel value="Nombre Completo" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
+                                            <TextInput
+                                                className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20"
+                                                value={visitor.full_name}
+                                                onChange={(e) => handleVisitorChange(index, 'full_name', e.target.value)}
+                                                required
+                                                placeholder="Nombre completo..."
+                                            />
+                                            <InputError message={errors[`visitors.${index}.full_name`]} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <InputLabel value="Identificación" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
+                                            <TextInput
+                                                className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20"
+                                                value={visitor.id_number}
+                                                onChange={(e) => handleVisitorChange(index, 'id_number', e.target.value)}
+                                                placeholder="Nº de Gafete o ID..."
+                                            />
+                                            <InputError message={errors[`visitors.${index}.id_number`]} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="border-2 border-dashed border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
+                            ))}
+                        </div>
+
+                        {/* Empresa y Contacto */}
+                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-6">
+                            <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Empresa y Contacto</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center px-1">
+                                        <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase" />
+                                        <button type="button" onClick={() => setIsNewCompany(!isNewCompany)} className="text-[10px] font-black text-primary uppercase underline">{isNewCompany ? 'Seleccionar' : '+ Nueva'}</button>
+                                    </div>
+                                    {!isNewCompany ? (
+                                        <select className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20" value={data.company_id} onChange={(e) => setData('company_id', e.target.value)} required={!isNewCompany}>
+                                            <option value="">Seleccione empresa...</option>
+                                            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                        </select>
+                                    ) : (
+                                        <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold" value={data.new_company} onChange={(e) => setData('new_company', e.target.value)} placeholder="Nombre de la empresa..." required={isNewCompany} />
+                                    )}
+                                    <InputError message={errors.company_id || errors.new_company} />
+                                </div>
+                                <div className="space-y-2">
+                                    <InputLabel value="Teléfono" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
+                                    <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20" value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="10 dígitos..." />
+                                    <InputError message={errors.phone} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Equipos y Firma */}
+                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-8">
+                            <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Información Adicional</h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_brand} onChange={(e) => setData('item_brand', e.target.value)} placeholder="Marca de equipo" />
+                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_color} onChange={(e) => setData('item_color', e.target.value)} placeholder="Color" />
+                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_serial} onChange={(e) => setData('item_serial', e.target.value)} placeholder="Nº Serial" />
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center px-1">
+                                    <InputLabel value="Firma Digital" className="text-[10px] font-black text-gray-400 uppercase" />
+                                    <button type="button" onClick={clearSignature} className="text-[10px] font-black text-red-500 uppercase underline">Borrar</button>
+                                </div>
+                                <div className="border-2 border-dashed border-gray-100 rounded-[2rem] bg-gray-50/30 overflow-hidden h-[200px]">
                                     <canvas
                                         ref={canvasRef}
-                                        width={600}
+                                        width={800}
                                         height={200}
-                                        className="w-full cursor-crosshair"
+                                        className="w-full h-full cursor-crosshair touch-none"
                                         onMouseDown={startDrawing}
                                         onMouseMove={draw}
                                         onMouseUp={stopDrawing}
                                         onMouseOut={stopDrawing}
+                                        onTouchStart={startDrawing}
+                                        onTouchMove={draw}
+                                        onTouchEnd={stopDrawing}
                                     />
                                 </div>
-                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest text-center">Firme dentro del recuadro punteado</p>
+                                <InputError message={errors.signature} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <InputLabel value="Observaciones" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
+                                <textarea
+                                    className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold min-h-[100px] focus:ring-primary/20"
+                                    value={data.notes}
+                                    onChange={(e) => setData('notes', e.target.value)}
+                                    placeholder="Notas adicionales sobre el acceso..."
+                                />
+                                <InputError message={errors.notes} />
                             </div>
                         </div>
 
-                        <div className="pt-4 flex space-x-4">
-                            <Link 
-                                href={route('dashboard')}
-                                className="flex-1 flex justify-center py-4 rounded-xl border border-gray-100 text-gray-400 font-black uppercase text-xs tracking-widest hover:bg-gray-50 transition-all"
-                            >
-                                Cancelar
-                            </Link>
-                            <PrimaryButton 
-                                className="flex-[2] justify-center py-4 rounded-xl shadow-xl shadow-primary/20 bg-primary hover:bg-[#07104d] text-white text-xs font-black uppercase tracking-[0.2em] transition-all"
-                                disabled={processing}
-                            >
-                                Registrar Entrada
-                            </PrimaryButton>
-                        </div>
+                        <PrimaryButton 
+                            className="w-full justify-center py-6 rounded-[2rem] bg-primary text-sm font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 group hover:scale-[1.02] transition-all"
+                            disabled={processing}
+                        >
+                            Finalizar Registro de Acceso
+                        </PrimaryButton>
                     </form>
                 </div>
             </div>

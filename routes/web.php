@@ -15,9 +15,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\AccessLogController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -29,6 +27,7 @@ Route::middleware('auth')->group(function () {
         // Accesos
         Route::get('/access-logs/create', [\App\Http\Controllers\AccessLogController::class, 'create'])->name('access-logs.create');
         Route::post('/access-logs', [\App\Http\Controllers\AccessLogController::class, 'store'])->name('access-logs.store');
+        Route::patch('/access-logs/{accessLog}/exit', [\App\Http\Controllers\AccessLogController::class, 'markExit'])->name('access-logs.exit');
 
         // Vehículos
         Route::get('/vehicle-logs/create', [\App\Http\Controllers\VehicleLogController::class, 'create'])->name('vehicle-logs.create');

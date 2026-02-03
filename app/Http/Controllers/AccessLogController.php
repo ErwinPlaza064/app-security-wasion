@@ -10,6 +10,18 @@ use Inertia\Inertia;
 
 class AccessLogController extends Controller
 {
+    public function dashboard()
+    {
+        $activeVisitors = AccessLog::with(['externalPerson.company'])
+            ->whereNull('exit_at')
+            ->orderBy('entry_at', 'desc')
+            ->get();
+
+        return Inertia::render('Dashboard', [
+            'activeVisitors' => $activeVisitors
+        ]);
+    }
+
     public function create(Request $request)
     {
         $type = $request->query('type', 'visitor');
@@ -25,10 +37,11 @@ class AccessLogController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:visitor,supplier,contractor,laptop_only,employee_laptop',
-            'full_name' => 'required|string|max:255',
+            'visitors' => 'required|array|min:1',
+            'visitors.*.full_name' => 'required|string|max:255',
+            'visitors.*.id_number' => 'nullable|string|max:255',
             'company_id' => 'nullable|exists:companies,id',
             'new_company' => 'nullable|string|max:255',
-            'id_number' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'item_brand' => 'nullable|string|max:255',
             'item_color' => 'nullable|string|max:255',
@@ -44,24 +57,40 @@ class AccessLogController extends Controller
             $companyId = $company->id;
         }
 
-        // Buscar o crear persona externa
-        $externalPerson = ExternalPerson::firstOrCreate(
-            ['full_name' => $validated['full_name'], 'company_id' => $companyId],
-            ['id_number' => $validated['id_number'], 'phone' => $validated['phone']]
-        );
+        foreach ($validated['visitors'] as $visitorData) {
+            // Buscar o crear persona externa
+            $externalPerson = ExternalPerson::firstOrCreate(
+                ['full_name' => $visitorData['full_name'], 'company_id' => $companyId],
+                ['id_number' => $visitorData['id_number'], 'phone' => $validated['phone']]
+            );
 
-        // Crear registro de acceso
-        AccessLog::create([
-            'external_person_id' => $externalPerson->id,
-            'type' => $validated['type'],
-            'entry_at' => now(),
-            'item_brand' => $validated['item_brand'],
-            'item_color' => $validated['item_color'],
-            'item_serial' => $validated['item_serial'],
-            'notes' => $validated['notes'],
-            'signature' => $validated['signature'],
+            // Crear registro de acceso individual
+            AccessLog::create([
+                'external_person_id' => $externalPerson->id,
+                'type' => $validated['type'],
+                'entry_at' => now(),
+                'item_brand' => $validated['item_brand'],
+                'item_color' => $validated['item_color'],
+                'item_serial' => $validated['item_serial'],
+                'notes' => $validated['notes'],
+                'signature' => $validated['signature'],
+            ]);
+        }
+
+        $count = count($validated['visitors']);
+        $message = $count > 1
+            ? "Se han registrado {$count} personas correctamente."
+            : "Registro de acceso guardado correctamente.";
+
+        return redirect()->route('dashboard')->with('status', $message);
+    }
+
+    public function markExit(AccessLog $accessLog)
+    {
+        $accessLog->update([
+            'exit_at' => now()
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Registro de acceso guardado correctamente.');
+        return redirect()->back()->with('status', 'Salida registrada correctamente.');
     }
 }
