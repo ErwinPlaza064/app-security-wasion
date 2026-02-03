@@ -29,7 +29,15 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $userData = $request->validated();
+
+        // Evitar que usuarios que no sean SuperAdmin cambien su nombre o correo
+        if (!$request->user()->isSuperAdmin()) {
+            unset($userData['name']);
+            unset($userData['email']);
+        }
+
+        $request->user()->fill($userData);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
@@ -37,7 +45,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
@@ -45,6 +53,10 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        if (!$request->user()->isSuperAdmin()) {
+            return back()->with('error', 'No tienes permisos para eliminar esta cuenta. Solo el SuperAdmin puede realizar esta acción.');
+        }
+
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);

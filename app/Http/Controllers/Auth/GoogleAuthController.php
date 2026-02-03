@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 
@@ -57,10 +58,10 @@ class GoogleAuthController extends Controller
             return redirect()->intended(route('dashboard'));
         } catch (\Exception $e) {
             // Loguear el error para debug
-            \Log::error('Error en Google Auth: ' . $e->getMessage());
+            Log::error('Error en Google Auth: ' . $e->getMessage());
 
-            // Si hay un error, redirigir al login con el mensaje real para diagnosticar
-            return redirect()->route('login')->with('error', 'Error técnico: ' . $e->getMessage());
+            // Si hay un error, redirigir al login con un mensaje amigable
+            return redirect()->route('login')->with('error', 'No pudimos conectar con tu cuenta de Google. Por favor, intenta de nuevo.');
         }
     }
 }

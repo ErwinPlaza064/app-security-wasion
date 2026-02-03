@@ -46,21 +46,12 @@ export default function UpdatePasswordForm({ className = '' }) {
 
     return (
         <section className={className}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Actualizar Contraseña
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                    Asegúrate de que tu cuenta esté utilizando una contraseña larga y aleatoria para mantener la seguridad.
-                </p>
-            </header>
-
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
-                <div>
+            <form onSubmit={updatePassword} className="space-y-6">
+                <div className="space-y-1.5">
                     <InputLabel
                         htmlFor="current_password"
                         value="Contraseña Actual"
+                        className="text-gray-700 font-bold text-xs uppercase tracking-wider ms-1"
                     />
 
                     <TextInput
@@ -71,8 +62,9 @@ export default function UpdatePasswordForm({ className = '' }) {
                             setData('current_password', e.target.value)
                         }
                         type="password"
-                        className="mt-1 block w-full"
+                        className="block w-full bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-primary/20 focus:border-primary rounded-2xl py-3 px-4 shadow-sm transition-all text-sm"
                         autoComplete="current-password"
+                        placeholder="••••••••"
                     />
 
                     <InputError
@@ -81,48 +73,51 @@ export default function UpdatePasswordForm({ className = '' }) {
                     />
                 </div>
 
-                <div>
-                    <InputLabel htmlFor="password" value="Nueva Contraseña" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                        <InputLabel htmlFor="password" value="Nueva Contraseña" className="text-gray-700 font-bold text-xs uppercase tracking-wider ms-1" />
 
-                    <TextInput
-                        id="password"
-                        ref={passwordInput}
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
+                        <TextInput
+                            id="password"
+                            ref={passwordInput}
+                            value={data.password}
+                            onChange={(e) => setData('password', e.target.value)}
+                            type="password"
+                            className="block w-full bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-primary/20 focus:border-primary rounded-2xl py-3 px-4 shadow-sm transition-all text-sm"
+                            autoComplete="new-password"
+                            placeholder="Mínimo 8 caracteres"
+                        />
 
-                    <InputError message={errors.password} className="mt-2" />
+                        <InputError message={errors.password} className="mt-2" />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <InputLabel
+                            htmlFor="password_confirmation"
+                            value="Confirmar Contraseña"
+                            className="text-gray-700 font-bold text-xs uppercase tracking-wider ms-1"
+                        />
+
+                        <TextInput
+                            id="password_confirmation"
+                            value={data.password_confirmation}
+                            onChange={(e) =>
+                                setData('password_confirmation', e.target.value)
+                            }
+                            type="password"
+                            className="block w-full bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-primary/20 focus:border-primary rounded-2xl py-3 px-4 shadow-sm transition-all text-sm"
+                            autoComplete="new-password"
+                            placeholder="Repite la nueva contraseña"
+                        />
+
+                        <InputError
+                            message={errors.password_confirmation}
+                            className="mt-2"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirmar Contraseña"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Guardar</PrimaryButton>
-
+                <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-50">
                     <Transition
                         show={recentlySuccessful}
                         enter="transition ease-in-out"
@@ -130,10 +125,15 @@ export default function UpdatePasswordForm({ className = '' }) {
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">
-                            Guardado.
-                        </p>
+                        <p className="text-sm font-bold text-green-600 uppercase tracking-tighter">✓ Contraseña actualizada</p>
                     </Transition>
+
+                    <PrimaryButton 
+                        disabled={processing}
+                        className="px-8 py-3 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] transition-all bg-primary text-white font-black uppercase tracking-widest text-xs"
+                    >
+                        Cambiar Contraseña
+                    </PrimaryButton>
                 </div>
             </form>
         </section>
