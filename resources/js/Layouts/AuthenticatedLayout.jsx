@@ -126,11 +126,26 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
+                {/* Backdrop - Click para cerrar */}
+                {showingNavigationDropdown && (
+                    <div
+                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 sm:hidden"
+                        onClick={() => setShowingNavigationDropdown(false)}
+                    />
+                )}
+
+                {/* Menú móvil con animación */}
                 <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
+                    className={`
+                        absolute top-full left-0 right-0 
+                        bg-white shadow-2xl border-t border-gray-200
+                        sm:hidden z-50
+                        transition-all duration-300 ease-out origin-top
+                        ${showingNavigationDropdown 
+                            ? 'opacity-100 scale-y-100 translate-y-0' 
+                            : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+                        }
+                    `}
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink

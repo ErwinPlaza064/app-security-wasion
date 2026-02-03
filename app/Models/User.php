@@ -24,6 +24,8 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'role',
         'email_verified_at',
+        'google_id',
+        'avatar',
     ];
 
     public function isAdmin(): bool
