@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/colaborador-gafete/create', [\App\Http\Controllers\SpecialLogController::class, 'create'])->name('colaborador-gafete.create');
         Route::get('/renuncia-finiquito/create', [\App\Http\Controllers\SpecialLogController::class, 'create'])->name('renuncia-finiquito.create');
+
+        // Rondines
+        Route::get('/patrols/create', [\App\Http\Controllers\PatrolController::class, 'create'])->name('patrols.create');
+        Route::post('/patrols', [\App\Http\Controllers\PatrolController::class, 'store'])->name('patrols.store');
     });
 });
 

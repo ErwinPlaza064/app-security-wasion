@@ -81,16 +81,30 @@ export default function Dashboard({ activeVisitors = [] }) {
             params: { type: 'clearance' }, 
             color: 'text-cyan-600',
             bg: 'bg-cyan-50'
+        },
+        { 
+            name: "Rondines", 
+            icon: <><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></>, 
+            route: "patrols.create", 
+            color: 'text-rose-600',
+            bg: 'bg-rose-50'
         }
     ];
 
+    // Filtrado de MÓDULOS DE REGISTRO
+    const filteredModules = modules.filter(m => 
+        m.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const [sliderRef, instanceRef] = useKeenSlider({
         initial: 0,
-        loop: true, // Infinito para que se sienta más fluido
-        mode: "snap", // Snap para que no se "trabe" entre diapositivas
+        loop: filteredModules.length > 1, // Solo loop si hay más de uno
+        mode: "snap",
         defaultAnimation: {
-            duration: 350, // Más rápido
+            duration: 200, // Aún más rápido (de 350 a 200)
         },
+        drag: true,
+        rubberband: false, // Evita el rebote para que sea más seco y rápido
         slideChanged(slider) {
             setCurrentSlide(slider.track.details.rel);
         },
@@ -98,18 +112,18 @@ export default function Dashboard({ activeVisitors = [] }) {
             setLoaded(true);
         },
         slides: {
-            perView: 1.3,
-            spacing: 16,
+            perView: 1.2, // 1.2 para que se vea el "cachito" de la siguiente tarjeta en móvil
+            spacing: 12,
         },
         breakpoints: {
             "(min-width: 640px)": {
                 slides: { perView: 2.5, spacing: 20 },
             },
             "(min-width: 1024px)": {
-                slides: { perView: 4.5, spacing: 24 },
+                slides: { perView: Math.min(filteredModules.length, 4.5), spacing: 24 },
             },
         },
-    });
+    }); // Re-inicializar cuando cambie el término de búsqueda (necesario para KeenSlider)
 
     const handleExit = (id) => {
         if (confirm('¿Confirmar salida para esta persona?')) {
@@ -127,7 +141,10 @@ export default function Dashboard({ activeVisitors = [] }) {
                     .dot { border: none; width: 6px; height: 6px; background: #e2e8f0; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; }
                     .dot:focus { outline: none; }
                     .dot.active { width: 18px; background: #0c1869; border-radius: 3px; }
-                    .arrow { width: 30px; height: 30px; position: absolute; top: 50%; transform: translateY(-50%); fill: #0c1869; cursor: pointer; transition: all 0.3s; z-index: 20; background: white; border-radius: 50%; padding: 8px; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+                    .arrow { width: 30px; height: 30px; position: absolute; top: 50%; transform: translateY(-50%); fill: #0c1869; cursor: pointer; transition: all 0.3s; z-index: 20; background: white; border-radius: 50%; padding: 8px; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); display: none; }
+                    @media (min-width: 768px) {
+                        .arrow { display: block; }
+                    }
                     .arrow--left { left: -15px; }
                     .arrow--right { right: -15px; }
                     .arrow--disabled { fill: #cbd5e1; cursor: default; }
@@ -181,31 +198,37 @@ export default function Dashboard({ activeVisitors = [] }) {
                             <h2 className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Nuevos Registros</h2>
                         </div>
 
-                        <div className="navigation-wrapper">
+                        <div className="navigation-wrapper" key={searchTerm}>
                             <div ref={sliderRef} className="keen-slider">
-                                {modules.map((item, idx) => (
-                                    <Link
-                                        key={idx}
-                                        href={route(item.route, item.params || {})}
-                                        className="keen-slider__slide group bg-white p-6 rounded-[2rem] border border-gray-100/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgb(12,24,105,0.06)] transition-all duration-500 flex flex-col items-start min-h-[160px] justify-between overflow-hidden relative"
-                                    >
-                                        <div className={`absolute -right-10 -bottom-10 w-32 h-32 ${item.bg} rounded-full opacity-20 group-hover:scale-150 transition-all duration-700`}></div>
-                                        <div className={`w-12 h-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 shadow-sm`}>
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                                {item.icon}
-                                            </svg>
-                                        </div>
-                                        <div className="relative z-10 w-full text-left">
-                                            <h3 className="font-black text-gray-900 text-[11px] uppercase tracking-[0.15em] mb-1 group-hover:text-primary transition-colors">
-                                                {item.name}
-                                            </h3>
-                                            <div className="flex items-center space-x-1 opacity-40 group-hover:opacity-100 transition-all duration-500">
-                                                <span className="text-[9px] text-primary font-black uppercase tracking-widest">Entrar</span>
-                                                <svg className="w-2.5 h-2.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                {filteredModules.length > 0 ? (
+                                    filteredModules.map((item, idx) => (
+                                        <Link
+                                            key={idx}
+                                            href={route(item.route, item.params || {})}
+                                            className="keen-slider__slide group bg-white p-6 rounded-[2rem] border border-gray-100/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgb(12,24,105,0.06)] transition-all duration-500 flex flex-col items-start min-h-[160px] justify-between overflow-hidden relative"
+                                        >
+                                            <div className={`absolute -right-10 -bottom-10 w-32 h-32 ${item.bg} rounded-full opacity-20 group-hover:scale-150 transition-all duration-700`}></div>
+                                            <div className={`w-12 h-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 shadow-sm`}>
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                    {item.icon}
+                                                </svg>
                                             </div>
-                                        </div>
-                                    </Link>
-                                ))}
+                                            <div className="relative z-10 w-full text-left">
+                                                <h3 className="font-black text-gray-900 text-[11px] uppercase tracking-[0.15em] mb-1 group-hover:text-primary transition-colors">
+                                                    {item.name}
+                                                </h3>
+                                                <div className="flex items-center space-x-1 opacity-40 group-hover:opacity-100 transition-all duration-500">
+                                                    <span className="text-[9px] text-primary font-black uppercase tracking-widest">Entrar</span>
+                                                    <svg className="w-2.5 h-2.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="keen-slider__slide flex flex-col items-center justify-center py-12 bg-white/50 rounded-[2rem] border-2 border-dashed border-gray-100">
+                                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">No hay módulos que coincidan</p>
+                                    </div>
+                                )}
                             </div>
                             
                             {loaded && instanceRef.current && (
@@ -223,9 +246,9 @@ export default function Dashboard({ activeVisitors = [] }) {
                             )}
                         </div>
 
-                        {loaded && instanceRef.current && (
+                        {loaded && instanceRef.current && filteredModules.length > 1 && (
                             <div className="dots">
-                                {modules.map((_, idx) => (
+                                {filteredModules.map((_, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => instanceRef.current?.moveToIdx(idx)}
