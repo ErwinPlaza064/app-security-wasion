@@ -58,6 +58,13 @@ class SecuritySpecialLogResource extends Resource
                             ->label('Departamento'),
                         Forms\Components\TextInput::make('position')
                             ->label('Puesto'),
+                        Forms\Components\TextInput::make('direct_supervisor')
+                            ->label('Jefe Directo')
+                            ->placeholder('Nombre del supervisor responsable'),
+                        Forms\Components\TextInput::make('suspension_reason')
+                            ->label('Motivo de Suspensión')
+                            ->columnSpanFull()
+                            ->placeholder('Razón de la baja o finiquito'),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Notas Adicionales')
@@ -95,6 +102,14 @@ class SecuritySpecialLogResource extends Resource
                 Tables\Columns\TextColumn::make('department')
                     ->label('Depto.')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('position')
+                    ->label('Puesto')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('direct_supervisor')
+                    ->label('Jefe Directo')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha')
                     ->dateTime('d/m/Y H:i')
@@ -112,7 +127,8 @@ class SecuritySpecialLogResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array

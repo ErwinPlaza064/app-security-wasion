@@ -36,9 +36,8 @@ Route::middleware('auth')->group(function () {
         // Carga y Descarga (usa el mismo controlador con parámetros)
         Route::get('/carga-descarga/create', [\App\Http\Controllers\VehicleLogController::class, 'create'])->name('carga-descarga.create');
 
-        Route::get('/padron-vehicular/create', function () {
-            return Inertia::render('Dashboard');
-        })->name('padron-vehicular.create');
+        Route::get('/employee-vehicles/create', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'create'])->name('employee-vehicles.create');
+        Route::post('/employee-vehicles', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'store'])->name('employee-vehicles.store');
 
         // Incidencias
         Route::get('/incidents/create', [\App\Http\Controllers\IncidentController::class, 'create'])->name('incidents.create');
@@ -46,6 +45,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/dano-instalacion/create', [\App\Http\Controllers\IncidentController::class, 'create'])->name('dano-instalacion.create');
         Route::get('/incidencia-conductual/create', [\App\Http\Controllers\IncidentController::class, 'create'])->name('incidencia-conductual.create');
+        Route::patch('/incidents/{incident}/resolve', [\App\Http\Controllers\IncidentController::class, 'resolve'])->name('incidents.resolve');
 
         // Otros / Especiales
         Route::get('/laptops/create', [\App\Http\Controllers\AccessLogController::class, 'create'])->name('laptops.create');

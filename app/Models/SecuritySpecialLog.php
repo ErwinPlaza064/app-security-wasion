@@ -16,6 +16,8 @@ class SecuritySpecialLog extends Model
         'employee_id',
         'department',
         'position',
+        'suspension_reason',
+        'direct_supervisor',
         'notes',
         'happened_at',
     ];

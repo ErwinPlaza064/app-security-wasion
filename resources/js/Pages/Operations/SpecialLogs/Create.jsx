@@ -5,15 +5,23 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function Create({ type }) {
+export default function Create({ type, areas = [] }) {
+    const getLocalDateTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         type: type || 'no_badge',
         employee_name: '',
         employee_id: '',
         department: '',
         position: '',
+        suspension_reason: '',
+        direct_supervisor: '',
         notes: '',
-        happened_at: new Date().toISOString().slice(0, 16),
+        happened_at: getLocalDateTime(),
     });
 
     const titles = {
@@ -73,29 +81,76 @@ export default function Create({ type }) {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-1.5">
-                                    <InputLabel htmlFor="employee_id" value="Nº de Nómina / ID" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <InputLabel htmlFor="employee_id" value="Nº de Nómina" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                     <TextInput
                                         id="employee_id"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all font-mono"
                                         value={data.employee_id}
                                         onChange={(e) => setData('employee_id', e.target.value)}
-                                        placeholder="000XXX"
+                                        placeholder="Ingrese número..."
                                     />
                                     <InputError message={errors.employee_id} />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <InputLabel htmlFor="department" value="Departamento" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <TextInput
+                                    <InputLabel htmlFor="department" value="Departamento / Área" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <select
                                         id="department"
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.department}
                                         onChange={(e) => setData('department', e.target.value)}
-                                        placeholder="Ej. Producción, Logística..."
-                                    />
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
+                                        required
+                                    >
+                                        <option value="">Seleccione área...</option>
+                                        {areas.map(area => (
+                                            <option key={area.id} value={area.name}>{area.name}</option>
+                                        ))}
+                                    </select>
                                     <InputError message={errors.department} />
                                 </div>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="position" value="Puesto" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <TextInput
+                                        id="position"
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
+                                        value={data.position}
+                                        onChange={(e) => setData('position', e.target.value)}
+                                        placeholder="Cargo del colaborador..."
+                                    />
+                                    <InputError message={errors.position} />
+                                </div>
+
+                                {data.type === 'resignation' && (
+                                    <div className="space-y-1.5">
+                                        <InputLabel htmlFor="direct_supervisor" value="Jefe Directo" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                        <TextInput
+                                            id="direct_supervisor"
+                                            className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
+                                            value={data.direct_supervisor}
+                                            onChange={(e) => setData('direct_supervisor', e.target.value)}
+                                            placeholder="Nombre del jefe..."
+                                        />
+                                        <InputError message={errors.direct_supervisor} />
+                                    </div>
+                                )}
+                            </div>
+
+                            {data.type === 'resignation' && (
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="suspension_reason" value="Motivo de Suspensión / Baja" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <TextInput
+                                        id="suspension_reason"
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
+                                        value={data.suspension_reason}
+                                        onChange={(e) => setData('suspension_reason', e.target.value)}
+                                        placeholder="Motivo de la baja..."
+                                    />
+                                    <InputError message={errors.suspension_reason} />
+                                </div>
+                            )}
                         </div>
 
                         {/* Sección: Detalles */}
@@ -125,7 +180,7 @@ export default function Create({ type }) {
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm min-h-[120px]"
                                     value={data.notes}
                                     onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder="Motivo del ingreso sin gafete, detalles de la baja, etc..."
+                                    placeholder={data.type === 'resignation' ? "Detalles adicionales de la baja..." : "Motivo del ingreso sin gafete, detalles del pase, etc..."}
                                 />
                                 <InputError message={errors.notes} />
                             </div>

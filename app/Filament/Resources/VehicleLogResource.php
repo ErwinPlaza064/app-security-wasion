@@ -125,21 +125,9 @@ class VehicleLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('registrar_salida')
-                    ->label('Marcar Salida')
-                    ->icon('heroicon-m-truck')
-                    ->color('warning')
-                    ->hidden(fn(VehicleLog $record): bool => (bool) $record->exit_at)
-                    ->action(function (VehicleLog $record) {
-                        $record->update([
-                            'exit_at' => now(),
-                        ]);
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('¿Marcar salida del vehículo?')
-                    ->successNotificationTitle('Salida vehicular registrada'),
                 Tables\Actions\EditAction::make(),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array

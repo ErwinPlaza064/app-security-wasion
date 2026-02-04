@@ -1,48 +1,73 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
-export default function Create({ type, companies }) {
+export default function Create({ type, companies, areas }) {
     const { data, setData, post, processing, errors } = useForm({
         type: type || 'visitor',
-        people_count: 1,
-        visitors: [{ full_name: '', id_number: '' }],
+        // Datos Compartidos
         company_id: '',
         new_company: '',
-        phone: '',
-        item_brand: '',
-        item_color: '',
-        item_serial: '',
+        visiting_person: '',
+        visit_reason: '',
+        work_area: '', // Este ahora se llenará vía select
+        vehicle_brand: '',
+        vehicle_plate: '',
+        isNewCompany: false,
+        // Datos Individuales
+        people_count: 1,
+        visitors: [{ 
+            full_name: '', 
+            id_number: '', 
+            item_brand: '',
+            item_color: '',
+            item_serial: '',
+            signature: ''
+        }],
         notes: '',
-        signature: '',
     });
 
-    const [isNewCompany, setIsNewCompany] = useState(false);
-    const canvasRef = useRef(null);
+    const [currentStep, setCurrentStep] = useState(0); // 0: Datos compartidos, 1+: Integrantes
+    const canvasRefs = useRef([]);
     const [isDrawing, setIsDrawing] = useState(false);
 
-    // Actualizar lista de visitantes cuando cambia el conteo
+    // Sincronizar canvas cuando cambia el paso
+    useEffect(() => {
+        // Al cambiar de paso, si es un integrante, el canvas se monta
+    }, [currentStep]);
+
     const handlePeopleCountChange = (count) => {
         const newCount = Math.max(1, parseInt(count) || 1);
-        setData(prev => {
-            const newVisitors = [...prev.visitors];
-            if (newCount > newVisitors.length) {
-                for (let i = newVisitors.length; i < newCount; i++) {
-                    newVisitors.push({ full_name: '', id_number: '' });
-                }
-            } else {
-                newVisitors.splice(newCount);
+        const newVisitors = [...data.visitors];
+        
+        if (newCount > newVisitors.length) {
+            for (let i = newVisitors.length; i < newCount; i++) {
+                newVisitors.push({ 
+                    full_name: '', 
+                    id_number: '', 
+                    item_brand: '',
+                    item_color: '',
+                    item_serial: '',
+                    signature: ''
+                });
             }
-            return {
-                ...prev,
-                people_count: newCount,
-                visitors: newVisitors
-            };
-        });
+        } else {
+            newVisitors.splice(newCount);
+            // Si el paso actual queda fuera de rango, regresar al último disponible
+            if (currentStep > newCount) {
+                setCurrentStep(newCount);
+            }
+        }
+        
+        setData(prev => ({
+            ...prev,
+            people_count: newCount,
+            visitors: newVisitors
+        }));
     };
 
     const handleVisitorChange = (index, field, value) => {
@@ -51,28 +76,37 @@ export default function Create({ type, companies }) {
         setData('visitors', newVisitors);
     };
 
+    const nextStep = () => {
+        if (currentStep <= data.people_count) {
+            setCurrentStep(currentStep + 1);
+        }
+    };
+
+    const prevStep = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
     const titles = {
-        visitor: 'Registro de Visitante',
-        supplier: 'Registro de Proveedor',
-        contractor: 'Registro de Contratista',
+        visitor: 'Visitas',
+        supplier: 'Proveedores',
+        contractor: 'Contratación/Servicios',
     };
 
     const submit = (e) => {
         e.preventDefault();
-        
-        if (canvasRef.current) {
-            const signatureData = canvasRef.current.toDataURL();
-            setData('signature', signatureData);
-        }
-
         post(route('access-logs.store'));
     };
 
-    // Lógica del Canvas
-    const startDrawing = (e) => {
-        const canvas = canvasRef.current;
+    const startDrawing = (e, index) => {
+        const canvas = canvasRefs.current[index];
         const rect = canvas.getBoundingClientRect();
         const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#0c1869';
         ctx.beginPath();
         const clientX = (e.clientX || e.touches?.[0]?.clientX);
         const clientY = (e.clientY || e.touches?.[0]?.clientY);
@@ -80,9 +114,9 @@ export default function Create({ type, companies }) {
         setIsDrawing(true);
     };
 
-    const draw = (e) => {
+    const draw = (e, index) => {
         if (!isDrawing) return;
-        const canvas = canvasRef.current;
+        const canvas = canvasRefs.current[index];
         const rect = canvas.getBoundingClientRect();
         const ctx = canvas.getContext('2d');
         const clientX = (e.clientX || e.touches?.[0]?.clientX);
@@ -91,190 +125,220 @@ export default function Create({ type, companies }) {
         ctx.stroke();
     };
 
-    const stopDrawing = () => {
+    const stopDrawing = (index) => {
+        if (!isDrawing) return;
         setIsDrawing(false);
+        const canvas = canvasRefs.current[index];
+        if (!canvas) return;
+        const signatureData = canvas.toDataURL();
+        handleVisitorChange(index, 'signature', signatureData);
     };
 
-    const clearSignature = () => {
-        const canvas = canvasRef.current;
+    const clearSignature = (index) => {
+        const canvas = canvasRefs.current[index];
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        setData('signature', '');
+        handleVisitorChange(index, 'signature', '');
     };
 
     return (
         <AuthenticatedLayout>
             <Head title={titles[type] || 'Acceso'} />
 
-            <div className="py-12 bg-[#fdfcf9] min-h-[calc(100vh-64px)]">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
-                    <div className="mb-8 flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center space-x-2 mb-2">
-                                <Link href={route('dashboard')} className="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Dashboard</Link>
-                                <span className="text-[10px] text-gray-300">/</span>
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">{type}</span>
-                            </div>
-                            <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">{titles[type]}</h1>
-                        </div>
-                        <Link href={route('dashboard')} className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </Link>
-                    </div>
-
-                    <form onSubmit={submit} className="space-y-8">
-                        {/* Selector de Cantidad */}
-                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">Cantidad de personas</h3>
-                                    <p className="text-xs text-gray-400 font-medium tracking-tight">Añade integrantes al registro actual</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-2xl">
-                                {[1, 2, 3, 4, 5].map((num) => (
-                                    <button
-                                        key={num}
-                                        type="button"
-                                        onClick={() => handlePeopleCountChange(num)}
-                                        className={`w-12 h-12 rounded-xl text-xs font-black transition-all ${
-                                            data.people_count === num 
-                                                ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' 
-                                                : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'
-                                        }`}
-                                    >
-                                        {num}
-                                    </button>
-                                ))}
-                                <TextInput 
-                                    type="number" 
-                                    min="1" 
-                                    max="20"
-                                    value={data.people_count}
-                                    onChange={(e) => handlePeopleCountChange(e.target.value)}
-                                    className="w-16 h-12 bg-white border-none text-xs font-black text-center focus:ring-primary/20 rounded-xl"
-                                    placeholder="+"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Listado de Visitantes */}
-                        <div className="space-y-6">
-                            {data.visitors.map((visitor, index) => (
-                                <div key={index} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-6">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-8 h-8 bg-primary/5 text-primary rounded-xl flex items-center justify-center text-xs font-bold">{index + 1}</div>
-                                        <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Datos del Integrante</h2>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <InputLabel value="Nombre Completo" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
-                                            <TextInput
-                                                className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20"
-                                                value={visitor.full_name}
-                                                onChange={(e) => handleVisitorChange(index, 'full_name', e.target.value)}
-                                                required
-                                                placeholder="Nombre completo..."
-                                            />
-                                            <InputError message={errors[`visitors.${index}.full_name`]} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <InputLabel value="Identificación" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
-                                            <TextInput
-                                                className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20"
-                                                value={visitor.id_number}
-                                                onChange={(e) => handleVisitorChange(index, 'id_number', e.target.value)}
-                                                placeholder="Nº de Gafete o ID..."
-                                            />
-                                            <InputError message={errors[`visitors.${index}.id_number`]} />
-                                        </div>
-                                    </div>
-                                </div>
+            <div className="py-8 bg-[#fdfcf9] min-h-[calc(100vh-64px)] overflow-x-hidden">
+                <div className="max-w-2xl mx-auto px-4 sm:px-6">
+                    {/* Progress Indicator */}
+                    <div className="mb-10 flex items-center justify-between px-2">
+                        <div className="flex items-center space-x-1">
+                            <span className={`w-8 h-1.5 rounded-full transition-all duration-500 ${currentStep === 0 ? 'bg-primary w-12' : 'bg-gray-200'}`}></span>
+                            {[...Array(data.people_count)].map((_, i) => (
+                                <span key={i} className={`h-1.5 rounded-full transition-all duration-500 ${currentStep === i + 1 ? 'bg-primary w-12' : (currentStep > i + 1 ? 'bg-emerald-400 w-4' : 'bg-gray-200 w-4')}`}></span>
                             ))}
                         </div>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                            {currentStep === 0 ? 'DATOS DESTINO' : `INTEGRANTE ${currentStep} / ${data.people_count}`}
+                        </span>
+                    </div>
 
-                        {/* Empresa y Contacto */}
-                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-6">
-                            <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Empresa y Contacto</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center px-1">
-                                        <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase" />
-                                        <button type="button" onClick={() => setIsNewCompany(!isNewCompany)} className="text-[10px] font-black text-primary uppercase underline">{isNewCompany ? 'Seleccionar' : '+ Nueva'}</button>
+                    <form onSubmit={submit} className="space-y-6">
+                        
+                        {/* PASO 0: DATOS COMPARTIDOS */}
+                        {currentStep === 0 && (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 space-y-8">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            </div>
+                                            <div>
+                                                <h2 className="text-xl font-black text-gray-900 tracking-tight leading-none uppercase">{titles[type]}</h2>
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Configuración del grupo</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {!isNewCompany ? (
-                                        <select className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20" value={data.company_id} onChange={(e) => setData('company_id', e.target.value)} required={!isNewCompany}>
-                                            <option value="">Seleccione empresa...</option>
-                                            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                        </select>
-                                    ) : (
-                                        <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold" value={data.new_company} onChange={(e) => setData('new_company', e.target.value)} placeholder="Nombre de la empresa..." required={isNewCompany} />
-                                    )}
-                                    <InputError message={errors.company_id || errors.new_company} />
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                <button type="button" onClick={() => setData('isNewCompany', !data.isNewCompany)} className="text-[9px] font-black text-primary uppercase underline">
+                                                    {data.isNewCompany ? 'Lista' : '+ Nueva'}
+                                                </button>
+                                            </div>
+                                            {!data.isNewCompany ? (
+                                                <select className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all" value={data.company_id} onChange={(e) => setData('company_id', e.target.value)}>
+                                                    <option value="">Seleccione empresa...</option>
+                                                    {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                </select>
+                                            ) : (
+                                                <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10" value={data.new_company} onChange={(e) => setData('new_company', e.target.value)} placeholder="Nombre comercial..." />
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <InputLabel value="Persona que recibe" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                            <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10" value={data.visiting_person} onChange={(e) => setData('visiting_person', e.target.value)} placeholder="Nombre del anfitrión..." />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <InputLabel value="Motivo / Área" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10" value={data.visit_reason} onChange={(e) => setData('visit_reason', e.target.value)} placeholder="Motivo..." />
+                                                <select 
+                                                    className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all font-bold" 
+                                                    value={data.work_area} 
+                                                    onChange={(e) => setData('work_area', e.target.value)}
+                                                >
+                                                    <option value="">Seleccione área...</option>
+                                                    {areas.map(area => (
+                                                        <option key={area.id} value={area.name}>
+                                                            {area.name} ({area.plant})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 space-y-4">
+                                            <InputLabel value="¿Cuántas personas ingresan?" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                            <div className="flex flex-wrap gap-2">
+                                                {[1, 2, 3, 5, 10, 20].map((num) => (
+                                                    <button key={num} type="button" onClick={() => handlePeopleCountChange(num)} className={`px-5 py-3 rounded-xl text-xs font-black transition-all ${data.people_count === num ? 'bg-primary text-white scale-105 shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}>
+                                                        {num}
+                                                    </button>
+                                                ))}
+                                                <TextInput type="number" value={data.people_count} onChange={(e) => handlePeopleCountChange(e.target.value)} className="w-20 px-3 py-3 bg-gray-50 border-none rounded-xl text-xs font-black text-center" />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <InputLabel value="Teléfono" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
-                                    <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold focus:ring-primary/20" value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="10 dígitos..." />
-                                    <InputError message={errors.phone} />
-                                </div>
+
+                                <button type="button" onClick={nextStep} className="w-full flex items-center justify-center space-x-3 py-6 rounded-[2rem] bg-gray-900 shadow-2xl shadow-gray-200 text-white group hover:bg-primary transition-all active:scale-95">
+                                    <span className="text-xs font-black uppercase tracking-[0.3em]">Comenzar Llenado de Integrantes</span>
+                                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </button>
+                            </div>
+                        )}
+
+                        {/* PASOS DEL 1 AL N: INTEGRANTES */}
+                        {currentStep > 0 && (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                                {data.visitors.map((visitor, index) => (
+                                    index + 1 === currentStep && (
+                                        <div key={index} className="space-y-6">
+                                            <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/50 space-y-8 relative overflow-hidden">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-16 h-16 bg-primary text-white rounded-[1.5rem] flex items-center justify-center text-xl font-black shadow-xl shadow-primary/20 rotate-3">
+                                                        {currentStep}
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Datos personales</h2>
+                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Integrante de grupo</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-6">
+                                                    <div className="space-y-3">
+                                                        <InputLabel value="Nombre Completo" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                        <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-6 px-8 text-base font-bold focus:ring-4 focus:ring-primary/10 transition-all" value={visitor.full_name} onChange={(e) => handleVisitorChange(index, 'full_name', e.target.value)} required placeholder="Nombre como aparece en ID..." />
+                                                        <InputError message={errors[`visitors.${index}.full_name`]} />
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        <InputLabel value="Nº Identificación" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                        <TextInput className="block w-full bg-gray-50 border-none rounded-2xl py-6 px-8 text-base font-bold focus:ring-4 focus:ring-primary/10 transition-all" value={visitor.id_number} onChange={(e) => handleVisitorChange(index, 'id_number', e.target.value)} placeholder="INE, Gafete, etc..." />
+                                                    </div>
+
+                                                    <div className="pt-4 space-y-4">
+                                                        <div className="flex items-center justify-between px-1">
+                                                            <div className="flex items-center space-x-2">
+                                                                <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                                                <InputLabel value="Firma Digital Requerida" className="text-[10px] font-black text-gray-900 uppercase tracking-widest" />
+                                                            </div>
+                                                            <button type="button" onClick={() => clearSignature(index)} className="text-[9px] font-black text-red-500 uppercase underline">Borrar</button>
+                                                        </div>
+                                                        <div className="border-2 border-dashed border-gray-100 rounded-[2.5rem] bg-gray-50/50 h-[200px] relative overflow-hidden">
+                                                            <canvas
+                                                                ref={el => canvasRefs.current[index] = el}
+                                                                width={1200}
+                                                                height={200}
+                                                                className="w-full h-full cursor-crosshair touch-none relative z-10"
+                                                                onMouseDown={(e) => startDrawing(e, index)}
+                                                                onMouseMove={(e) => draw(e, index)}
+                                                                onMouseUp={() => stopDrawing(index)}
+                                                                onMouseOut={() => stopDrawing(index)}
+                                                                onTouchStart={(e) => startDrawing(e, index)}
+                                                                onTouchMove={(e) => draw(e, index)}
+                                                                onTouchEnd={() => stopDrawing(index)}
+                                                            />
+                                                            {!visitor.signature && (
+                                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.5em]">Firme aquí</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <InputError message={errors[`visitors.${index}.signature`]} />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-4">
+                                                <button type="button" onClick={prevStep} className="flex-1 py-6 rounded-[2rem] bg-white border border-gray-100 text-gray-400 text-xs font-black uppercase tracking-widest hover:bg-gray-50 transition-all">
+                                                    Anterior
+                                                </button>
+                                                
+                                                {currentStep < data.people_count ? (
+                                                    <button type="button" onClick={nextStep} className="flex-[2] py-6 rounded-[2rem] bg-gray-900 text-white text-xs font-black uppercase tracking-widest shadow-2xl shadow-gray-200 active:scale-95 transition-all">
+                                                        Siguiente Integrante
+                                                    </button>
+                                                ) : (
+                                                    <PrimaryButton className="flex-[2] justify-center py-6 rounded-[2rem] bg-primary text-white text-xs font-black uppercase tracking-widest shadow-2xl shadow-primary/20 active:scale-95 transition-all" disabled={processing}>
+                                                        Finalizar Registro
+                                                    </PrimaryButton>
+                                                ) }
+                                            </div>
+                                        </div>
+                                    )
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-center space-x-6 opacity-60">
+                            <div className="text-center">
+                                <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Empresa</p>
+                                <p className="text-[10px] font-black text-primary truncate max-w-[100px]">{data.company_id || data.new_company || '---'}</p>
+                            </div>
+                            <div className="w-px h-4 bg-gray-100"></div>
+                            <div className="text-center">
+                                <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Destino</p>
+                                <p className="text-[10px] font-black text-primary truncate max-w-[100px]">{data.visiting_person || '---'}</p>
+                            </div>
+                            <div className="w-px h-4 bg-gray-100"></div>
+                            <div className="text-center">
+                                <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Motivo</p>
+                                <p className="text-[10px] font-black text-primary truncate max-w-[100px]">{data.visit_reason || '---'}</p>
                             </div>
                         </div>
-
-                        {/* Equipos y Firma */}
-                        <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-8">
-                            <h2 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Información Adicional</h2>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_brand} onChange={(e) => setData('item_brand', e.target.value)} placeholder="Marca de equipo" />
-                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_color} onChange={(e) => setData('item_color', e.target.value)} placeholder="Color" />
-                                <TextInput className="bg-gray-50 border-none rounded-xl py-3 text-xs font-bold" value={data.item_serial} onChange={(e) => setData('item_serial', e.target.value)} placeholder="Nº Serial" />
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center px-1">
-                                    <InputLabel value="Firma Digital" className="text-[10px] font-black text-gray-400 uppercase" />
-                                    <button type="button" onClick={clearSignature} className="text-[10px] font-black text-red-500 uppercase underline">Borrar</button>
-                                </div>
-                                <div className="border-2 border-dashed border-gray-100 rounded-[2rem] bg-gray-50/30 overflow-hidden h-[200px]">
-                                    <canvas
-                                        ref={canvasRef}
-                                        width={800}
-                                        height={200}
-                                        className="w-full h-full cursor-crosshair touch-none"
-                                        onMouseDown={startDrawing}
-                                        onMouseMove={draw}
-                                        onMouseUp={stopDrawing}
-                                        onMouseOut={stopDrawing}
-                                        onTouchStart={startDrawing}
-                                        onTouchMove={draw}
-                                        onTouchEnd={stopDrawing}
-                                    />
-                                </div>
-                                <InputError message={errors.signature} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <InputLabel value="Observaciones" className="text-[10px] font-black text-gray-400 uppercase ms-1" />
-                                <textarea
-                                    className="block w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm font-bold min-h-[100px] focus:ring-primary/20"
-                                    value={data.notes}
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder="Notas adicionales sobre el acceso..."
-                                />
-                                <InputError message={errors.notes} />
-                            </div>
-                        </div>
-
-                        <PrimaryButton 
-                            className="w-full justify-center py-6 rounded-[2rem] bg-primary text-sm font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 group hover:scale-[1.02] transition-all"
-                            disabled={processing}
-                        >
-                            Finalizar Registro de Acceso
-                        </PrimaryButton>
                     </form>
                 </div>
             </div>

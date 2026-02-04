@@ -57,4 +57,18 @@ class IncidentController extends Controller
 
         return redirect()->route('dashboard')->with('status', 'Incidencia reportada correctamente.');
     }
+
+    public function resolve(Request $request, Incident $incident)
+    {
+        $validated = $request->validate([
+            'resolution_notes' => 'required|string|min:10',
+        ]);
+
+        $incident->update([
+            'resolution_notes' => $validated['resolution_notes'],
+            'status' => 'resolved',
+        ]);
+
+        return redirect()->back()->with('status', 'Incidencia resuelta correctamente.');
+    }
 }

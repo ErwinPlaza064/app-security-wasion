@@ -9,9 +9,14 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class RecentSecurityActivity extends BaseWidget
 {
-    protected static ?string $heading = 'Actividad de Accesos Reciente';
+    protected static ?int $sort = 5;
 
-    protected int | string | array $columnSpan = 'full';
+    protected static ?string $heading = 'Últimos Movimientos';
+
+    protected int | string | array $columnSpan = [
+        'md' => 2,
+        'xl' => 2, // Antes era 3, lo bajamos a 2 para que quepa con el chart de tipos
+    ];
 
     public function table(Table $table): Table
     {
@@ -21,27 +26,52 @@ class RecentSecurityActivity extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('externalPerson.full_name')
-                    ->label('Nombre'),
+                    ->label('Nombre')
+                    ->weight('bold')
+                    ->size('sm'),
                 Tables\Columns\TextColumn::make('externalPerson.company.name')
-                    ->label('Empresa'),
-                Tables\Columns\BadgeColumn::make('type')
+                    ->label('Empresa')
+                    ->color('primary')
+                    ->size('xs'),
+                Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
+                    ->badge()
                     ->colors([
-                        'primary' => 'visitor',
+                        'info' => 'visitor',
                         'success' => 'supplier',
                         'warning' => 'contractor',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn($state) => [
+                        'visitor' => 'Visitante',
+                        'supplier' => 'Proveedor',
+                        'contractor' => 'Contratista',
+                    ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('entry_at')
                     ->label('Entrada')
-                    ->dateTime('H:i'),
-                Tables\Columns\TextColumn::make('notes')
-                    ->label('Notas')
-                    ->limit(30),
+                    ->dateTime('H:i')
+                    ->color('gray')
+                    ->size('xs'),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Tipo')
+                    ->options([
+                        'visitor' => 'Visitante',
+                        'supplier' => 'Proveedor',
+                        'contractor' => 'Contratista',
+                    ]),
+            ])
+            ->headerActions([
+                // Esto habilita los botones de la cabecera (filtros, columnas, buscador)
             ])
             ->actions([
-                Tables\Actions\Action::make('Ver Detalles')
+                Tables\Actions\Action::make('Ver')
                     ->url(fn(AccessLog $record): string => \App\Filament\Resources\AccessLogResource::getUrl('edit', ['record' => $record]))
-                    ->icon('heroicon-m-eye'),
-            ]);
+                    ->icon('heroicon-m-eye')
+                    ->color('gray')
+                    ->button()
+                    ->size('xs'),
+            ])
+            ->paginated(false);
     }
 }

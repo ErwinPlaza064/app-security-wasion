@@ -49,6 +49,16 @@ class AccessLogResource extends Resource
                             ->required(),
                         Forms\Components\DateTimePicker::make('exit_at')
                             ->label('Fecha/Hora Salida'),
+                        Forms\Components\TextInput::make('visiting_person')
+                            ->label('Persona que Visita')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('work_area')
+                            ->label('Área de Trabajo')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('visit_reason')
+                            ->label('Motivo de la Visita')
+                            ->columnSpanFull()
+                            ->maxLength(255),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Detalles del Equipo')
@@ -61,6 +71,16 @@ class AccessLogResource extends Resource
                         Forms\Components\TextInput::make('item_serial')
                             ->label('Nº Serial'),
                     ])->columns(3),
+
+                Forms\Components\Section::make('Control Vehicular')
+                    ->schema([
+                        Forms\Components\TextInput::make('vehicle_brand')
+                            ->label('Marca del Vehículo')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('vehicle_plate')
+                            ->label('Placas')
+                            ->maxLength(255),
+                    ])->columns(2),
 
                 Forms\Components\Section::make('Validación')
                     ->schema([
@@ -82,21 +102,42 @@ class AccessLogResource extends Resource
                     ->label('Nombre Completo')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('type')
+                Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
+                    ->badge()
                     ->colors([
-                        'primary' => 'visitor',
+                        'info' => 'visitor',
                         'success' => 'supplier',
                         'warning' => 'contractor',
-                        'info' => ['laptop_only', 'employee_laptop'],
+                        'gray' => ['laptop_only', 'employee_laptop'],
                     ])
                     ->formatStateUsing(fn($state) => [
                         'visitor' => 'Visitante',
                         'supplier' => 'Proveedor',
                         'contractor' => 'Contratista',
                         'laptop_only' => 'Solo Laptop',
-                        'employee_laptop' => 'Laptop Colaborador',
+                        'employee_laptop' => 'Laptop Colab.',
                     ][$state] ?? $state),
+                Tables\Columns\TextColumn::make('externalPerson.company.name')
+                    ->label('Empresa')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('plant')
+                    ->label('Planta')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Guardia')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('visiting_person')
+                    ->label('A quién visita')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('work_area')
+                    ->label('Área')
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('entry_at')
                     ->label('Entrada')
                     ->dateTime('d/m/Y H:i')
@@ -105,34 +146,30 @@ class AccessLogResource extends Resource
                     ->label('Salida')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
-                    ->placeholder('Aún dentro'),
-                Tables\Columns\TextColumn::make('externalPerson.company.name')
-                    ->label('Empresa')
-                    ->searchable(),
+                    ->placeholder('En Planta'),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
+                    ]),
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
                         'visitor' => 'Visitantes',
                         'supplier' => 'Proveedores',
                         'contractor' => 'Contratistas',
+                        'laptop_only' => 'Laptops',
                     ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('registrar_salida')
-                    ->label('Marcar Salida')
-                    ->icon('heroicon-m-clock')
-                    ->color('warning')
-                    ->hidden(fn(AccessLog $record): bool => (bool) $record->exit_at)
-                    ->action(function (AccessLog $record) {
-                        $record->update([
-                            'exit_at' => now(),
-                        ]);
-                    })
-                    ->requiresConfirmation()
-                    ->successNotificationTitle('Salida registrada correctamente'),
                 Tables\Actions\EditAction::make(),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array

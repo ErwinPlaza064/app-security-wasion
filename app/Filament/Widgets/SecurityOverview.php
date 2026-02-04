@@ -11,6 +11,12 @@ use Carbon\Carbon;
 
 class SecurityOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
+    protected int | string | array $columnSpan = [
+        'md' => 2,
+        'xl' => 2,
+    ];
     protected function getStats(): array
     {
         $today = Carbon::today();
@@ -26,17 +32,20 @@ class SecurityOverview extends BaseWidget
             Stat::make('Visitantes Hoy', $visitorsToday)
                 ->description($visitorsToday >= $visitorsYesterday ? 'Aumento del personal externo' : 'Menos que ayer')
                 ->descriptionIcon($visitorsToday >= $visitorsYesterday ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($visitorsToday >= $visitorsYesterday ? 'success' : 'warning'),
+                ->color($visitorsToday >= $visitorsYesterday ? 'success' : 'warning')
+                ->url(\App\Filament\Resources\AccessLogResource::getUrl()),
 
             Stat::make('Accesos Vehiculares', $vehiclesToday)
                 ->description('Logística en curso')
                 ->descriptionIcon('heroicon-m-truck')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\VehicleLogResource::getUrl()),
 
             Stat::make('Incidentes Abiertos', $incidentsOpen)
                 ->description('Requieren atención inmediata')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
-                ->color($incidentsOpen > 0 ? 'danger' : 'success'),
+                ->color($incidentsOpen > 0 ? 'danger' : 'success')
+                ->url(\App\Filament\Resources\IncidentResource::getUrl()),
         ];
     }
 }

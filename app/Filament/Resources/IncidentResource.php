@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 
 class IncidentResource extends Resource
 {
@@ -31,8 +32,7 @@ class IncidentResource extends Resource
                         Forms\Components\Select::make('user_id')
                             ->label('Reportado por')
                             ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
+                            ->disabled()
                             ->required(),
                         Forms\Components\Select::make('category')
                             ->label('Categoría')
@@ -43,6 +43,7 @@ class IncidentResource extends Resource
                                 'theft' => 'Robo/Extravío',
                                 'safety' => 'Seguridad Industrial',
                             ])
+                            ->disabled()
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->label('Estado')
@@ -52,7 +53,6 @@ class IncidentResource extends Resource
                                 'resolved' => 'Resuelto',
                                 'closed' => 'Cerrado',
                             ])
-                            ->default('open')
                             ->required(),
                     ])->columns(3),
 
@@ -60,34 +60,42 @@ class IncidentResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('happened_at')
                             ->label('Fecha/Hora del Suceso')
+                            ->disabled()
                             ->required(),
                         Forms\Components\TextInput::make('location')
                             ->label('Lugar del Evento')
-                            ->placeholder('Ej. Nave 4, Pasillo B')
+                            ->disabled()
                             ->required(),
                         Forms\Components\TextInput::make('involved_person')
-                            ->label('Persona Involucrada'),
+                            ->label('Persona Involucrada')
+                            ->disabled(),
                         Forms\Components\TextInput::make('payroll_number')
-                            ->label('Número de Nómina'),
+                            ->label('Número de Nómina')
+                            ->disabled(),
                         Forms\Components\TextInput::make('company')
                             ->label('Empresa')
-                            ->default('WASION'),
+                            ->disabled(),
                         Forms\Components\Textarea::make('description')
                             ->label('Descripción Detallada')
+                            ->disabled()
                             ->required()
                             ->columnSpanFull(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Seguimiento y Evidencia')
+                Forms\Components\Section::make('Evidencia Fotográfica')
                     ->schema([
-                        Forms\Components\FileUpload::make('evidence_image')
+                        Forms\Components\Placeholder::make('evidence_image_preview')
                             ->label('Imagen de Evidencia')
-                            ->image()
-                            ->directory('incidents-evidence')
-                            ->visibility('public')
+                            ->content(
+                                fn($record) => $record && $record->evidence_image
+                                    ? new \Illuminate\Support\HtmlString('<img src="' . Storage::url($record->evidence_image) . '" class="max-h-64 rounded-xl shadow-sm border border-gray-100" />')
+                                    : 'Sin evidencia fotográfica registrada.'
+                            )
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('resolution_notes')
                             ->label('Notas de Resolución / Cierre')
+                            ->placeholder('Ingrese aquí las notas de seguimiento o resolución...')
+                            ->required(fn($get) => $get('status') === 'resolved' || $get('status') === 'closed')
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -146,7 +154,8 @@ class IncidentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array
