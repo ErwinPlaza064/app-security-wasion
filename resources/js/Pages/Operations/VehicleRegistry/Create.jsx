@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function Create({ areas = [] }) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         marbete_number: '',
         employee_name: '',
         area: '',
@@ -18,6 +18,36 @@ export default function Create({ areas = [] }) {
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        let hasErrors = false;
+
+        if (!data.marbete_number) {
+            setError('marbete_number', 'El número de marbete es obligatorio');
+            hasErrors = true;
+        }
+        if (!data.employee_name) {
+            setError('employee_name', 'El nombre del colaborador es obligatorio');
+            hasErrors = true;
+        }
+        if (!data.area) {
+            setError('area', 'Debe seleccionar un área');
+            hasErrors = true;
+        }
+        if (!data.vehicle_brand) {
+            setError('vehicle_brand', 'La marca es obligatoria');
+            hasErrors = true;
+        }
+        if (!data.vehicle_model) {
+            setError('vehicle_model', 'La submarca/modelo es obligatoria');
+            hasErrors = true;
+        }
+        if (!data.vehicle_plates) {
+            setError('vehicle_plates', 'Las placas son obligatorias');
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
         post(route('employee-vehicles.store'));
     };
 
@@ -72,7 +102,7 @@ export default function Create({ areas = [] }) {
                                         id="employee_name"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.employee_name}
-                                        onChange={(e) => setData('employee_name', e.target.value)}
+                                        onChange={(e) => setData('employee_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
                                         required
                                         placeholder="Nombre completo..."
                                     />

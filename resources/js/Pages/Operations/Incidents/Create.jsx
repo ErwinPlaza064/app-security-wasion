@@ -66,7 +66,7 @@ export default function Create({ category: initialCategory, areas }) {
     const fileInputRef = useRef(null);
     const [stream, setStream] = useState(null);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         category: initialCategory || 'general',
         description: '',
         location: '',
@@ -97,6 +97,7 @@ export default function Create({ category: initialCategory, areas }) {
 
     const processFile = (file) => {
         setData('evidence_image', file);
+        if (errors.evidence_image) clearErrors('evidence_image');
         const reader = new FileReader();
         reader.onloadend = () => setPreview(reader.result);
         reader.readAsDataURL(file);
@@ -141,15 +142,45 @@ export default function Create({ category: initialCategory, areas }) {
     };
 
     const nextStep = () => {
+        clearErrors();
+        let hasErrors = false;
+
+        if (currentStep === 1) {
+            if (!data.location) {
+                setError('location', 'Debe seleccionar una ubicación');
+                hasErrors = true;
+            }
+        } else if (currentStep === 2) {
+            if (!data.involved_person) {
+                setError('involved_person', 'Debe indicar quién está involucrado');
+                hasErrors = true;
+            }
+        } else if (currentStep === 3) {
+            if (!data.description) {
+                setError('description', 'Debe describir los hechos');
+                hasErrors = true;
+            }
+        }
+
+        if (hasErrors) return;
+
         if (currentStep < 4) setCurrentStep(currentStep + 1);
     };
 
     const prevStep = () => {
+        clearErrors();
         if (currentStep > 1) setCurrentStep(currentStep - 1);
     };
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+
+        if (!data.evidence_image) {
+            setError('evidence_image', 'Debe capturar o subir evidencia fotográfica');
+            return;
+        }
+
         post(route('incidents.store'));
     };
 
@@ -246,6 +277,7 @@ export default function Create({ category: initialCategory, areas }) {
                                             ))}
                                             <option value="OTRO">OTRO (Especificar)</option>
                                         </select>
+                                        <InputError message={errors.location} className="mt-2" />
                                     </div>
                                 </div>
                             )}
@@ -267,9 +299,10 @@ export default function Create({ category: initialCategory, areas }) {
                                             <TextInput
                                                 className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 pl-14 pr-6"
                                                 value={data.involved_person}
-                                                onChange={(e) => setData('involved_person', e.target.value)}
+                                                onChange={(e) => setData('involved_person', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
                                                 placeholder="Nombre completo..."
                                             />
+                                            <InputError message={errors.involved_person} className="mt-2" />
                                         </div>
                                     </div>
 
@@ -324,6 +357,7 @@ export default function Create({ category: initialCategory, areas }) {
                                             required
                                             placeholder="¿Qué sucedió? Describe los hechos de manera clara y objetiva..."
                                         />
+                                        <InputError message={errors.description} className="mt-2" />
                                     </div>
                                 </div>
                             )}

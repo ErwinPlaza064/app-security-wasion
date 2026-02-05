@@ -1,8 +1,10 @@
 import { Link } from '@inertiajs/react';
+import GlobalLoading from '@/Components/GlobalLoading';
 
 export default function GuestLayout({ children }) {
     return (
         <div className="relative min-h-screen flex flex-col items-center justify-center bg-[#FFF7F2] overflow-hidden selection:bg-[#0C1869] selection:text-white pb-12">
+            <GlobalLoading />
             {/* Decorative background elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#0C1869] opacity-[0.03] blur-3xl"></div>

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, usePage, useForm } from '@inertiajs/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Modal from '@/Components/Modal';
 
 export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
@@ -12,6 +12,12 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [selectedVisitor, setSelectedVisitor] = useState(null);
     const tableRef = useRef(null);
+    const actionsRef = useRef(null);
+
+    // Posicionar automáticamente en la sección de acciones al cargar
+    useEffect(() => {
+        actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, []);
 
     const scrollToTable = () => {
         tableRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -187,7 +193,7 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
 
 
                     {/* Módulos de Registro con Grid */}
-                    <div className="space-y-6 mb-16">
+                    <div className="space-y-6 mb-16" ref={actionsRef}>
                         <div className="flex items-center justify-between px-1">
                             <h2 className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Acciones de Registro</h2>
                         </div>

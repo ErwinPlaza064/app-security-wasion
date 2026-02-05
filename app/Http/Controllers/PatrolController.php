@@ -24,6 +24,7 @@ class PatrolController extends Controller
             'status' => 'required|in:ok,incident',
             'notes' => 'nullable|string',
             'evidence_image' => 'nullable|string',
+            'started_at' => 'required|date',
             'happened_at' => 'required|date',
         ]);
 
@@ -39,6 +40,7 @@ class PatrolController extends Controller
 
         PatrolLog::create([
             'user_id' => auth()->id(),
+            'started_at' => $validated['started_at'],
             'area_name' => $validated['area_name'],
             'status' => $validated['status'],
             'notes' => $validated['notes'],

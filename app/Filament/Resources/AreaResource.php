@@ -22,6 +22,12 @@ class AreaResource extends Resource
     protected static ?string $modelLabel = 'Área / Depto';
     protected static ?string $pluralModelLabel = 'Áreas y Deptos';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form

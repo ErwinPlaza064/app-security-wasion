@@ -22,6 +22,11 @@ class UserResource extends Resource
     protected static ?string $modelLabel = 'Usuario / Guardia';
     protected static ?string $pluralModelLabel = 'Usuarios y Guardias';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

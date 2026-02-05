@@ -11,6 +11,7 @@ class PatrolLog extends Model
 
     protected $fillable = [
         'user_id',
+        'started_at',
         'area_name',
         'status',
         'notes',
@@ -19,6 +20,7 @@ class PatrolLog extends Model
     ];
 
     protected $casts = [
+        'started_at' => 'datetime',
         'happened_at' => 'datetime',
     ];
 

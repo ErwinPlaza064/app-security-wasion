@@ -306,7 +306,7 @@ export default function Login({ status, canResetPassword }) {
             </div>
 
             {/* Custom styles */}
-            <style jsx>{`
+            <style>{`
                 /* Spotlight effect - luz que sale desde abajo */
                 .spotlight-wrapper {
                     position: absolute;

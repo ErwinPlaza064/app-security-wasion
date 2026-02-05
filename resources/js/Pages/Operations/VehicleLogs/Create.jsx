@@ -7,7 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { useState } from 'react';
 
 export default function Create({ operation, companies }) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         plates: '',
         brand: '',
         model: '',
@@ -29,6 +29,28 @@ export default function Create({ operation, companies }) {
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        let hasErrors = false;
+
+        if (!data.plates) {
+            setError('plates', 'Las placas son obligatorias');
+            hasErrors = true;
+        }
+        if (!data.driver_name) {
+            setError('driver_name', 'El nombre del chofer es obligatorio');
+            hasErrors = true;
+        }
+        if (!isNewCompany && !data.company_id) {
+            setError('company_id', 'Seleccione una empresa');
+            hasErrors = true;
+        }
+        if (isNewCompany && !data.new_company) {
+            setError('new_company', 'Ingrese el nombre de la empresa');
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
         post(route('vehicle-logs.store'));
     };
 
@@ -115,7 +137,7 @@ export default function Create({ operation, companies }) {
                                     id="driver_name"
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all"
                                     value={data.driver_name}
-                                    onChange={(e) => setData('driver_name', e.target.value)}
+                                    onChange={(e) => setData('driver_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
                                     required
                                     placeholder="Nombre completo del conductor"
                                 />

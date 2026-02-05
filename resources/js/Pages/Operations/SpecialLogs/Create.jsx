@@ -12,7 +12,7 @@ export default function Create({ type, areas = [] }) {
         return now.toISOString().slice(0, 16);
     };
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         type: type || 'no_badge',
         employee_name: '',
         employee_id: '',
@@ -32,6 +32,20 @@ export default function Create({ type, areas = [] }) {
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        let hasErrors = false;
+
+        if (!data.employee_name) {
+            setError('employee_name', 'El nombre del empleado es obligatorio');
+            hasErrors = true;
+        }
+        if (!data.department) {
+            setError('department', 'El departamento es obligatorio');
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
         post(route('special-logs.store'));
     };
 
@@ -72,7 +86,7 @@ export default function Create({ type, areas = [] }) {
                                     id="employee_name"
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                     value={data.employee_name}
-                                    onChange={(e) => setData('employee_name', e.target.value)}
+                                    onChange={(e) => setData('employee_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
                                     required
                                     placeholder="Nombre completo..."
                                 />
@@ -130,7 +144,7 @@ export default function Create({ type, areas = [] }) {
                                             id="direct_supervisor"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                             value={data.direct_supervisor}
-                                            onChange={(e) => setData('direct_supervisor', e.target.value)}
+                                            onChange={(e) => setData('direct_supervisor', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
                                             placeholder="Nombre del jefe..."
                                         />
                                         <InputError message={errors.direct_supervisor} />
