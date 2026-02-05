@@ -15,6 +15,10 @@ export default function Register() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+    const [nameHovered, setNameHovered] = useState(false);
+    const [emailHovered, setEmailHovered] = useState(false);
+    const [passwordHovered, setPasswordHovered] = useState(false);
+    const [confirmHovered, setConfirmHovered] = useState(false);
 
     const getPasswordStrength = (password) => {
         let strength = 0;
@@ -45,21 +49,21 @@ export default function Register() {
         <>
             <Head title="Registro de Personal" />
             
-            <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#0B0F1E]">
+            <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#FFF7F2]">
                 {/* Animated gradient background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F1E] via-[#141B2E] to-[#0B0F1E]"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#FFF7F2] via-[#f5ede8] to-[#FFF7F2]"></div>
                 
                 {/* Animated mesh gradient */}
                 <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/30 to-blue-600/30 rounded-full blur-[120px] animate-float"></div>
-                    <div className="absolute bottom-0 -right-4 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/20 to-indigo-600/20 rounded-full blur-[120px] animate-float-delayed"></div>
+                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-gradient-to-br from-[#0C1869]/30 to-[#FFF7F2]/30 rounded-full blur-[120px] animate-float"></div>
+                    <div className="absolute bottom-0 -right-4 w-[500px] h-[500px] bg-gradient-to-tl from-[#0C1869]/20 to-[#FFF7F2]/20 rounded-full blur-[120px] animate-float-delayed"></div>
                 </div>
 
                 {/* Subtle grid pattern */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                     backgroundImage: `
-                        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+                        linear-gradient(rgba(12,24,105,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(12,24,105,0.05) 1px, transparent 1px)
                     `,
                     backgroundSize: '50px 50px'
                 }}></div>
@@ -80,36 +84,36 @@ export default function Register() {
                         <div className="inline-flex items-center justify-center mb-4">
                             <div className="relative">
                                 {/* Logo glow effect */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 blur-xl opacity-50 rounded-2xl"></div>
-                                <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-2xl shadow-2xl shadow-cyan-500/30">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#0C1869] to-[#FFF7F2] blur-xl opacity-50 rounded-2xl"></div>
+                                <div className="relative bg-gradient-to-br from-[#0C1869] to-[#FFF7F2] p-3 rounded-2xl shadow-2xl shadow-[#0C1869]/30">
                                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </div>
                             </div>
                         </div>
-                        <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">Wasion MX</h1>
-                        <p className="text-sm text-gray-400 font-medium">Sistema de Seguridad Patrimonial</p>
+                        <h1 className="text-3xl font-bold text-[#0C1869] mb-1 tracking-tight">Wasion MX</h1>
+                        <p className="text-sm text-[#0C1869]/70 font-medium">Sistema de Seguridad Patrimonial</p>
                     </div>
 
                     {/* Register Card */}
                     <div className="relative animate-fade-in-up">
                         {/* Card glow */}
-                        <div className="absolute -inset-[1px] bg-gradient-to-b from-cyan-500/50 to-blue-600/50 rounded-3xl blur-sm"></div>
+                        <div className="absolute -inset-[1px] bg-gradient-to-b from-[#0C1869]/50 to-[#FFF7F2]/50 rounded-3xl blur-sm"></div>
                         
-                        <div className="relative bg-gradient-to-b from-[#1A2032] to-[#141B2E] rounded-3xl shadow-2xl overflow-hidden">
+                        <div className="relative bg-gradient-to-b from-[#f5ede8] to-[#FFF7F2] rounded-3xl shadow-2xl overflow-hidden">
                             {/* Top accent line */}
-                            <div className="h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+                            <div className="h-1 bg-gradient-to-r from-transparent via-[#0C1869] to-transparent"></div>
 
                             <div className="p-8">
                                 <div className="mb-6">
-                                    <h2 className="text-2xl font-bold text-white mb-2">Crear Cuenta</h2>
-                                    <p className="text-gray-400 text-sm">Regístrate para acceder al ecosistema de seguridad</p>
+                                    <h2 className="text-2xl font-bold text-[#0C1869] mb-2">Crear Cuenta</h2>
+                                    <p className="text-[#0C1869]/70 text-sm">Regístrate para acceder al ecosistema de seguridad</p>
                                 </div>
 
                                 {/* Flash error messages */}
                                 {usePage().props.flash?.error && (
-                                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-sm text-red-300 backdrop-blur-sm animate-slide-down">
+                                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-sm text-red-600 backdrop-blur-sm animate-slide-down">
                                         <div className="flex items-center gap-2">
                                             <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                                             {usePage().props.flash.error}
@@ -123,18 +127,26 @@ export default function Register() {
                                         <InputLabel 
                                             htmlFor="name" 
                                             value="Nombre completo" 
-                                            className="text-gray-300 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-cyan-400"
+                                            className="text-[#0C1869]/90 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-[#0C1869]"
                                         />
-                                        <div className="relative">
-                                            {/* Spotlight effect */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1"></div>
-                                                <div className="spotlight spotlight-2"></div>
-                                                <div className="spotlight spotlight-3"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setNameHovered(true)}
+                                            onMouseLeave={() => setNameHovered(false)}
+                                        >
+                                            {/* Security laser beam */}
+                                            <div 
+                                                className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+                                                style={{
+                                                    opacity: nameHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                <div className="security-laser-vertical"></div>
                                             </div>
                                             
                                             {/* Icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
@@ -144,7 +156,7 @@ export default function Register() {
                                                 id="name"
                                                 name="name"
                                                 value={data.name}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-4 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="name"
                                                 isFocused={true}
                                                 placeholder="Nombre y apellido"
@@ -152,7 +164,7 @@ export default function Register() {
                                                 required
                                             />
                                             
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
                                         <InputError message={errors.name} className="text-xs text-red-400 mt-1.5" />
                                     </div>
@@ -162,18 +174,26 @@ export default function Register() {
                                         <InputLabel 
                                             htmlFor="email" 
                                             value="Correo institucional" 
-                                            className="text-gray-300 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-cyan-400"
+                                            className="text-[#0C1869]/90 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-[#0C1869]"
                                         />
-                                        <div className="relative">
-                                            {/* Spotlight effect */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1 spotlight-delayed-1"></div>
-                                                <div className="spotlight spotlight-2 spotlight-delayed-2"></div>
-                                                <div className="spotlight spotlight-3 spotlight-delayed-3"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setEmailHovered(true)}
+                                            onMouseLeave={() => setEmailHovered(false)}
+                                        >
+                                            {/* Security laser beam */}
+                                            <div 
+                                                className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+                                                style={{
+                                                    opacity: emailHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                <div className="security-laser-vertical security-laser-delayed"></div>
                                             </div>
                                             
                                             {/* Icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
@@ -184,14 +204,14 @@ export default function Register() {
                                                 type="email"
                                                 name="email"
                                                 value={data.email}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-4 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="username"
                                                 placeholder="email@wasion.com"
                                                 onChange={(e) => setData('email', e.target.value)}
                                                 required
                                             />
                                             
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
                                         <InputError message={errors.email} className="text-xs text-red-400 mt-1.5" />
                                     </div>
@@ -201,18 +221,26 @@ export default function Register() {
                                         <InputLabel 
                                             htmlFor="password" 
                                             value="Contraseña segura" 
-                                            className="text-gray-300 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-cyan-400"
+                                            className="text-[#0C1869]/90 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-[#0C1869]"
                                         />
-                                        <div className="relative">
-                                            {/* Spotlight effect */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1 spotlight-delayed-4"></div>
-                                                <div className="spotlight spotlight-2 spotlight-delayed-5"></div>
-                                                <div className="spotlight spotlight-3 spotlight-delayed-6"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setPasswordHovered(true)}
+                                            onMouseLeave={() => setPasswordHovered(false)}
+                                        >
+                                            {/* Security laser beam */}
+                                            <div 
+                                                className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+                                                style={{
+                                                    opacity: passwordHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                <div className="security-laser-vertical security-laser-delayed-2"></div>
                                             </div>
                                             
                                             {/* Lock icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                 </svg>
@@ -223,7 +251,7 @@ export default function Register() {
                                                 type={showPassword ? "text" : "password"}
                                                 name="password"
                                                 value={data.password}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-12 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="new-password"
                                                 placeholder="Mínimo 8 caracteres"
                                                 onChange={(e) => setData('password', e.target.value)}
@@ -234,7 +262,7 @@ export default function Register() {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition-all duration-300 hover:scale-110 focus:outline-none z-10"
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 hover:text-[#0C1869] transition-all duration-300 hover:scale-110 focus:outline-none z-10"
                                             >
                                                 {showPassword ? (
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,20 +276,20 @@ export default function Register() {
                                                 )}
                                             </button>
                                             
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
 
                                         {/* Password strength indicator */}
-                                        <div className="mt-3 p-4 bg-[#0D1220]/40 backdrop-blur-sm rounded-xl border border-gray-700/30">
+                                        <div className="mt-3 p-4 bg-[#FFF7F2]/60 backdrop-blur-sm rounded-xl border border-[#0C1869]/20">
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Complejidad</span>
+                                                <span className="text-xs font-semibold text-[#0C1869]/70 uppercase tracking-wider">Complejidad</span>
                                                 <span className={`text-xs font-bold px-2 py-1 rounded-lg uppercase transition-all duration-300 ${
-                                                    strength < 50 ? 'text-red-400 bg-red-500/10' : strength < 100 ? 'text-yellow-400 bg-yellow-500/10' : 'text-green-400 bg-green-500/10'
+                                                    strength < 50 ? 'text-red-600 bg-red-500/10' : strength < 100 ? 'text-yellow-600 bg-yellow-500/10' : 'text-green-600 bg-green-500/10'
                                                 }`}>
                                                     {strength < 50 ? 'Insegura' : strength < 100 ? 'Regular' : 'Excelente'}
                                                 </span>
                                             </div>
-                                            <div className="h-2 w-full bg-gray-700/30 rounded-full overflow-hidden">
+                                            <div className="h-2 w-full bg-[#0C1869]/10 rounded-full overflow-hidden">
                                                 <div 
                                                     className={`h-full transition-all duration-700 ease-out rounded-full ${
                                                         strength < 50 ? 'bg-gradient-to-r from-red-500 to-red-400' : 
@@ -281,18 +309,26 @@ export default function Register() {
                                         <InputLabel 
                                             htmlFor="password_confirmation" 
                                             value="Verificar Contraseña" 
-                                            className="text-gray-300 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-cyan-400"
+                                            className="text-[#0C1869]/90 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-[#0C1869]"
                                         />
-                                        <div className="relative">
-                                            {/* Spotlight effect */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1 spotlight-delayed-7"></div>
-                                                <div className="spotlight spotlight-2 spotlight-delayed-8"></div>
-                                                <div className="spotlight spotlight-3 spotlight-delayed-9"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setConfirmHovered(true)}
+                                            onMouseLeave={() => setConfirmHovered(false)}
+                                        >
+                                            {/* Security laser beam */}
+                                            <div 
+                                                className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+                                                style={{
+                                                    opacity: confirmHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                <div className="security-laser-vertical security-laser-delayed-3"></div>
                                             </div>
                                             
                                             {/* Lock icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
@@ -303,7 +339,7 @@ export default function Register() {
                                                 type={showPasswordConfirmation ? "text" : "password"}
                                                 name="password_confirmation"
                                                 value={data.password_confirmation}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-12 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="new-password"
                                                 placeholder="Repite la contraseña"
                                                 onChange={(e) => setData('password_confirmation', e.target.value)}
@@ -314,7 +350,7 @@ export default function Register() {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition-all duration-300 hover:scale-110 focus:outline-none z-10"
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 hover:text-[#0C1869] transition-all duration-300 hover:scale-110 focus:outline-none z-10"
                                             >
                                                 {showPasswordConfirmation ? (
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +364,7 @@ export default function Register() {
                                                 )}
                                             </button>
                                             
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
                                         <InputError message={errors.password_confirmation} className="text-xs text-red-400 mt-1.5" />
                                     </div>
@@ -340,7 +376,7 @@ export default function Register() {
                                             disabled={processing}
                                         >
                                             {/* Gradient background */}
-                                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all duration-300 group-hover/btn:scale-105"></div>
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#0C1869] to-[#FFF7F2] transition-all duration-300 group-hover/btn:scale-105"></div>
                                             
                                             {/* Shine effect on hover */}
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
@@ -360,10 +396,10 @@ export default function Register() {
                                     {/* Divider */}
                                     <div className="relative py-2 px-10">
                                         <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-gray-700/50"></div>
+                                            <div className="w-full border-t border-[#0C1869]/20"></div>
                                         </div>
                                         <div className="relative flex justify-center text-xs">
-                                            <span className="px-4 bg-[#1A2032] text-gray-500 font-medium uppercase tracking-wider">
+                                            <span className="px-4 bg-[#f5ede8] text-[#0C1869]/60 font-medium uppercase tracking-wider">
                                                 o vía corporativa
                                             </span>
                                         </div>
@@ -372,7 +408,7 @@ export default function Register() {
                                     {/* Google Auth button */}
                                     <a
                                         href={route('auth.google')}
-                                        className="w-full inline-flex items-center justify-center gap-3 py-3 px-6 rounded-xl border border-gray-700/50 bg-[#0D1220]/40 hover:bg-[#0D1220]/60 hover:border-gray-600/70 active:scale-[0.98] transition-all group/google backdrop-blur-sm"
+                                        className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border border-[#0C1869]/20 bg-[#FFF7F2]/40 hover:bg-[#FFF7F2]/60 hover:border-[#0C1869]/30 active:scale-[0.98] transition-all group/google backdrop-blur-sm"
                                     >
                                         <svg className="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -380,7 +416,7 @@ export default function Register() {
                                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                                         </svg>
-                                        <span className="text-gray-400 font-bold group-hover/google:text-gray-300 transition-colors text-xs uppercase tracking-widest">
+                                        <span className="text-[#0C1869]/70 font-bold group-hover/google:text-[#0C1869]/90 transition-colors text-xs uppercase tracking-widest">
                                             Google Auth
                                         </span>
                                     </a>
@@ -388,12 +424,12 @@ export default function Register() {
                             </div>
 
                             {/* Footer section */}
-                            <div className="bg-[#0D1220]/40 backdrop-blur-sm p-6 border-t border-gray-700/30 text-center">
-                                <p className="text-gray-400 text-sm">
+                            <div className="bg-[#FFF7F2]/40 backdrop-blur-sm p-6 border-t border-[#0C1869]/10 text-center">
+                                <p className="text-[#0C1869]/70 text-sm">
                                     ¿Ya formas parte?{' '}
                                     <Link 
                                         href={route('login')} 
-                                        className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors underline decoration-cyan-400/30 decoration-2 underline-offset-4"
+                                        className="font-bold text-[#0C1869] hover:text-[#0C1869]/80 transition-colors underline decoration-[#0C1869]/30 decoration-2 underline-offset-4"
                                     >
                                         Identifícate aquí
                                     </Link>
@@ -404,8 +440,8 @@ export default function Register() {
 
                     {/* Footer */}
                     <div className="text-center mt-8 animate-fade-in-up-delayed">
-                        <p className="text-gray-500 text-xs uppercase tracking-widest">
-                            Wasion Security System • 2026
+                        <p className="text-[#0C1869]/50 text-xs uppercase tracking-widest">
+                            Sistema de Seguridad Patrimonial
                         </p>
                     </div>
                 </div>
@@ -413,164 +449,215 @@ export default function Register() {
 
             {/* Custom styles */}
             <style jsx>{`
-                /* Spotlight effect - luz que sale desde abajo */
-                .spotlight-wrapper {
+                /* Security laser beam - vertical line moving horizontally */
+                .security-laser-vertical {
                     position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    height: 200%;
-                    overflow: visible;
-                    pointer-events: none;
-                    z-index: 1;
-                }
-
-                .spotlight {
-                    position: absolute;
-                    bottom: 0;
-                    width: 2px;
-                    height: 100%;
-                    transform-origin: bottom center;
-                    opacity: 0;
-                    animation: spotlight-sweep 6s ease-in-out infinite;
-                }
-
-                /* Tres rayos de luz con diferentes ángulos */
-                .spotlight-1 {
-                    left: 20%;
-                    background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.4) 0%,
-                        rgba(255, 255, 255, 0.3) 20%,
-                        rgba(255, 255, 255, 0.15) 50%,
-                        rgba(255, 255, 255, 0.05) 80%,
-                        transparent 100%
-                    );
-                    filter: blur(12px);
-                    animation-delay: 0s;
-                }
-
-                .spotlight-2 {
+                    top: 0;
                     left: 50%;
+                    transform: translateX(-50%);
+                    width: 80px;
+                    height: 100%;
                     background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.5) 0%,
-                        rgba(255, 255, 255, 0.35) 20%,
-                        rgba(255, 255, 255, 0.2) 50%,
-                        rgba(255, 255, 255, 0.08) 80%,
+                        to bottom,
+                        transparent 0%,
+                        rgba(12, 24, 105, 0.1) 10%,
+                        rgba(12, 24, 105, 0.6) 40%,
+                        rgba(12, 24, 105, 0.9) 50%,
+                        rgba(12, 24, 105, 0.6) 60%,
+                        rgba(12, 24, 105, 0.1) 90%,
                         transparent 100%
                     );
-                    filter: blur(15px);
+                    box-shadow: 
+                        0 0 40px 15px rgba(12, 24, 105, 0.6),
+                        0 0 80px 30px rgba(12, 24, 105, 0.4),
+                        0 0 120px 45px rgba(12, 24, 105, 0.2);
+                    animation: laser-move-horizontal 4s ease-in-out infinite;
+                    filter: blur(8px);
+                }
+
+                .security-laser-delayed {
                     animation-delay: 0.5s;
                 }
 
-                .spotlight-3 {
-                    left: 80%;
-                    background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.35) 0%,
-                        rgba(255, 255, 255, 0.25) 20%,
-                        rgba(255, 255, 255, 0.12) 50%,
-                        rgba(255, 255, 255, 0.04) 80%,
-                        transparent 100%
-                    );
-                    filter: blur(10px);
+                .security-laser-delayed-2 {
                     animation-delay: 1s;
                 }
 
-                /* Delays escalonados para cada campo */
-                .spotlight-delayed-1 { animation-delay: 1.5s; }
-                .spotlight-delayed-2 { animation-delay: 2s; }
-                .spotlight-delayed-3 { animation-delay: 2.5s; }
-                .spotlight-delayed-4 { animation-delay: 3s; }
-                .spotlight-delayed-5 { animation-delay: 3.5s; }
-                .spotlight-delayed-6 { animation-delay: 4s; }
-                .spotlight-delayed-7 { animation-delay: 4.5s; }
-                .spotlight-delayed-8 { animation-delay: 5s; }
-                .spotlight-delayed-9 { animation-delay: 5.5s; }
+                .security-laser-delayed-3 {
+                    animation-delay: 1.5s;
+                }
 
-                @keyframes spotlight-sweep {
+                /* Horizontal movement - center to right, back to center, to left, back to center */
+                @keyframes laser-move-horizontal {
                     0% {
-                        opacity: 0;
-                        transform: rotate(-45deg) scaleY(0.5);
-                    }
-                    15% {
-                        opacity: 0.8;
-                        transform: rotate(-20deg) scaleY(1);
-                    }
-                    35% {
+                        left: 50%;
                         opacity: 1;
-                        transform: rotate(0deg) scaleY(1.2);
                     }
-                    55% {
-                        opacity: 0.8;
-                        transform: rotate(20deg) scaleY(1);
+                    20% {
+                        left: 85%;
+                        opacity: 1;
+                    }
+                    25% {
+                        left: 85%;
+                        opacity: 1;
+                    }
+                    45% {
+                        left: 50%;
+                        opacity: 1;
+                    }
+                    50% {
+                        left: 50%;
+                        opacity: 1;
                     }
                     70% {
-                        opacity: 0.4;
-                        transform: rotate(45deg) scaleY(0.5);
+                        left: 15%;
+                        opacity: 1;
+                    }
+                    75% {
+                        left: 15%;
+                        opacity: 1;
+                    }
+                    95% {
+                        left: 50%;
+                        opacity: 1;
                     }
                     100% {
-                        opacity: 0;
-                        transform: rotate(45deg) scaleY(0.5);
+                        left: 50%;
+                        opacity: 1;
                     }
                 }
 
                 /* Floating animations */
                 @keyframes float {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-20px) rotate(5deg); }
+                    0%, 100% {
+                        transform: translateY(0px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translateY(-20px) rotate(5deg);
+                    }
                 }
 
                 @keyframes float-delayed {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-30px) rotate(-5deg); }
+                    0%, 100% {
+                        transform: translateY(0px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translateY(-30px) rotate(-5deg);
+                    }
                 }
 
-                .animate-float { animation: float 20s ease-in-out infinite; }
-                .animate-float-delayed { animation: float-delayed 25s ease-in-out infinite; }
+                .animate-float {
+                    animation: float 20s ease-in-out infinite;
+                }
+
+                .animate-float-delayed {
+                    animation: float-delayed 25s ease-in-out infinite;
+                }
 
                 /* Fade in animations */
                 @keyframes fadeInDown {
-                    from { opacity: 0; transform: translateY(-20px); }
-                    to { opacity: 1; transform: translateY(0); }
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
                 }
 
                 @keyframes fadeInUp {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
                 }
 
                 @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
                 }
 
-                .animate-fade-in-down { animation: fadeInDown 0.6s ease-out; }
-                .animate-fade-in-up { animation: fadeInUp 0.6s ease-out 0.2s both; }
-                .animate-fade-in-up-delayed { animation: fadeInUp 0.6s ease-out 0.4s both; }
-                .animate-slide-down { animation: slideDown 0.4s ease-out; }
+                .animate-fade-in-down {
+                    animation: fadeInDown 0.6s ease-out;
+                }
+
+                .animate-fade-in-up {
+                    animation: fadeInUp 0.6s ease-out 0.2s both;
+                }
+
+                .animate-fade-in-up-delayed {
+                    animation: fadeInUp 0.6s ease-out 0.4s both;
+                }
+
+                .animate-slide-down {
+                    animation: slideDown 0.4s ease-out;
+                }
 
                 /* Particle animations */
                 @keyframes particle-float {
-                    0%, 100% { transform: translate(0, 0); opacity: 0.3; }
-                    50% { opacity: 0.8; }
+                    0%, 100% {
+                        transform: translate(0, 0);
+                        opacity: 0.3;
+                    }
+                    50% {
+                        opacity: 0.8;
+                    }
                 }
 
                 .particle {
                     position: absolute;
                     width: 3px;
                     height: 3px;
-                    background: radial-gradient(circle, rgba(34, 211, 238, 0.8), transparent);
+                    background: radial-gradient(circle, rgba(12, 24, 105, 0.8), transparent);
                     border-radius: 50%;
                     animation: particle-float 15s infinite;
                 }
 
-                .particle-1 { top: 20%; left: 10%; animation-delay: 0s; animation-duration: 12s; }
-                .particle-2 { top: 60%; right: 15%; animation-delay: 2s; animation-duration: 15s; }
-                .particle-3 { bottom: 30%; left: 25%; animation-delay: 4s; animation-duration: 18s; }
-                .particle-4 { top: 40%; right: 30%; animation-delay: 6s; animation-duration: 14s; }
-                .particle-5 { bottom: 20%; right: 20%; animation-delay: 8s; animation-duration: 16s; }
+                .particle-1 {
+                    top: 20%;
+                    left: 10%;
+                    animation-delay: 0s;
+                    animation-duration: 12s;
+                }
+
+                .particle-2 {
+                    top: 60%;
+                    right: 15%;
+                    animation-delay: 2s;
+                    animation-duration: 15s;
+                }
+
+                .particle-3 {
+                    bottom: 30%;
+                    left: 25%;
+                    animation-delay: 4s;
+                    animation-duration: 18s;
+                }
+
+                .particle-4 {
+                    top: 40%;
+                    right: 30%;
+                    animation-delay: 6s;
+                    animation-duration: 14s;
+                }
+
+                .particle-5 {
+                    bottom: 20%;
+                    right: 20%;
+                    animation-delay: 8s;
+                    animation-duration: 16s;
+                }
             `}</style>
         </>
     );

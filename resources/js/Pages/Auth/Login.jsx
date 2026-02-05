@@ -14,6 +14,22 @@ export default function Login({ status, canResetPassword }) {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [emailLightPos, setEmailLightPos] = useState(50);
+    const [passwordLightPos, setPasswordLightPos] = useState(50);
+    const [emailHovered, setEmailHovered] = useState(false);
+    const [passwordHovered, setPasswordHovered] = useState(false);
+
+    const handleMouseMove = (e, field) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percentage = (x / rect.width) * 100;
+        
+        if (field === 'email') {
+            setEmailLightPos(percentage);
+        } else {
+            setPasswordLightPos(percentage);
+        }
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -26,21 +42,21 @@ export default function Login({ status, canResetPassword }) {
         <>
             <Head title="Acceso de Seguridad" />
             
-            <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#0B0F1E]">
+            <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#FFF7F2]">
                 {/* Animated gradient background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F1E] via-[#141B2E] to-[#0B0F1E]"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#FFF7F2] via-[#f5ede8] to-[#FFF7F2]"></div>
                 
                 {/* Animated mesh gradient */}
                 <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/30 to-blue-600/30 rounded-full blur-[120px] animate-float"></div>
-                    <div className="absolute bottom-0 -right-4 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/20 to-indigo-600/20 rounded-full blur-[120px] animate-float-delayed"></div>
+                    <div className="absolute top-0 -left-4 w-[500px] h-[500px] bg-gradient-to-br from-[#0C1869]/30 to-[#FFF7F2]/30 rounded-full blur-[120px] animate-float"></div>
+                    <div className="absolute bottom-0 -right-4 w-[500px] h-[500px] bg-gradient-to-tl from-[#0C1869]/20 to-[#FFF7F2]/20 rounded-full blur-[120px] animate-float-delayed"></div>
                 </div>
 
                 {/* Subtle grid pattern */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                     backgroundImage: `
-                        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+                        linear-gradient(rgba(12,24,105,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(12,24,105,0.05) 1px, transparent 1px)
                     `,
                     backgroundSize: '50px 50px'
                 }}></div>
@@ -61,33 +77,33 @@ export default function Login({ status, canResetPassword }) {
                         <div className="inline-flex items-center justify-center mb-4">
                             <div className="relative">
                                 {/* Logo glow effect */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 blur-xl opacity-50 rounded-2xl"></div>
-                                <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-2xl shadow-2xl shadow-cyan-500/30">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#0C1869] to-[#FFF7F2] blur-xl opacity-50 rounded-2xl"></div>
+                                <div className="relative bg-gradient-to-br from-[#0C1869] to-[#FFF7F2] p-3 rounded-2xl shadow-2xl shadow-[#0C1869]/30">
                                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </div>
                             </div>
                         </div>
-                        <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">Wasion MX</h1>
-                        <p className="text-sm text-gray-400 font-medium">Sistema de Seguridad Patrimonial</p>
+                        <h1 className="text-3xl font-bold text-[#0C1869] mb-1 tracking-tight">Wasion MX</h1>
+                        <p className="text-sm text-[#0C1869]/70 font-medium">Sistema de Seguridad Patrimonial</p>
                     </div>
 
                     {/* Login Card */}
                     <div className="relative animate-fade-in-up">
                         {/* Card glow */}
-                        <div className="absolute -inset-[1px] bg-gradient-to-b from-cyan-500/50 to-blue-600/50 rounded-3xl blur-sm"></div>
+                        <div className="absolute -inset-[1px] bg-gradient-to-b from-[#0C1869]/50 to-[#FFF7F2]/50 rounded-3xl blur-sm"></div>
                         
-                        <div className="relative bg-gradient-to-b from-[#1A2032] to-[#141B2E] rounded-3xl shadow-2xl overflow-hidden">
+                        <div className="relative bg-gradient-to-b from-[#f5ede8] to-[#FFF7F2] rounded-3xl shadow-2xl overflow-hidden">
                             {/* Top accent line */}
-                            <div className="h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+                            <div className="h-1 bg-gradient-to-r from-transparent via-[#0C1869] to-transparent"></div>
 
                             <div className="p-8">
                                 {/* Status messages */}
                                 {status && (
-                                    <div className="mb-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl text-sm text-cyan-300 backdrop-blur-sm animate-slide-down">
+                                    <div className="mb-6 p-4 bg-[#0C1869]/10 border border-[#0C1869]/30 rounded-2xl text-sm text-[#0C1869] backdrop-blur-sm animate-slide-down">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                                            <div className="w-2 h-2 bg-[#0C1869] rounded-full animate-pulse"></div>
                                             {status}
                                         </div>
                                     </div>
@@ -108,18 +124,55 @@ export default function Login({ status, canResetPassword }) {
                                         <InputLabel 
                                             htmlFor="email" 
                                             value="Correo electrónico" 
-                                            className="text-gray-300 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-cyan-400"
+                                            className="text-[#0C1869]/90 font-semibold text-sm mb-2 block transition-colors group-focus-within:text-[#0C1869]"
                                         />
-                                        <div className="relative">
-                                            {/* Spotlight effect emanating from input */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1"></div>
-                                                <div className="spotlight spotlight-2"></div>
-                                                <div className="spotlight spotlight-3"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setEmailHovered(true)}
+                                            onMouseLeave={() => setEmailHovered(false)}
+                                        >
+                                            {/* Rotating light beam like a clock hand */}
+                                            <div 
+                                                className="pointer-events-none absolute z-[3]"
+                                                style={{
+                                                    left: 0,
+                                                    right: 0,
+                                                    top: 0,
+                                                    bottom: '-150px',
+                                                    opacity: emailHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                {/* Rotating light beam */}
+                                                <div 
+                                                    className="light-beam-rotate"
+                                                    style={{
+                                                        position: 'absolute',
+                                                        left: '50%',
+                                                        top: '50%',
+                                                        transformOrigin: '0 0'
+                                                    }}
+                                                >
+                                                    <div 
+                                                        className="absolute w-[1px]"
+                                                        style={{
+                                                            left: 0,
+                                                            top: 0,
+                                                            height: '200px',
+                                                            background: 'transparent',
+                                                            boxShadow: `
+                                                                0 0 40px 10px rgba(12, 24, 105, 0.9),
+                                                                0 0 80px 20px rgba(12, 24, 105, 0.7),
+                                                                0 0 120px 30px rgba(12, 24, 105, 0.5),
+                                                                0 0 160px 40px rgba(12, 24, 105, 0.3)
+                                                            `
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
                                             
                                             {/* Icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
@@ -131,7 +184,7 @@ export default function Login({ status, canResetPassword }) {
                                                 type="email"
                                                 name="email"
                                                 value={data.email}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-4 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="username"
                                                 isFocused={true}
                                                 placeholder="ejemplo@wasion.com"
@@ -139,7 +192,7 @@ export default function Login({ status, canResetPassword }) {
                                             />
                                             
                                             {/* Animated border glow on focus */}
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
                                         <InputError message={errors.email} className="text-xs text-red-400 mt-1.5" />
                                     </div>
@@ -150,27 +203,64 @@ export default function Login({ status, canResetPassword }) {
                                             <InputLabel 
                                                 htmlFor="password" 
                                                 value="Contraseña" 
-                                                className="text-gray-300 font-semibold text-sm transition-colors group-focus-within:text-cyan-400"
+                                                className="text-[#0C1869]/90 font-semibold text-sm transition-colors group-focus-within:text-[#0C1869]"
                                             />
                                             {canResetPassword && (
                                                 <Link 
                                                     href={route('password.request')} 
-                                                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                                                    className="text-xs text-[#0C1869] hover:text-[#0C1869]/80 transition-colors font-medium"
                                                 >
                                                     Recuperar
                                                 </Link>
                                             )}
                                         </div>
-                                        <div className="relative">
-                                            {/* Spotlight effect emanating from input - delayed animation */}
-                                            <div className="spotlight-wrapper">
-                                                <div className="spotlight spotlight-1 spotlight-delayed-1"></div>
-                                                <div className="spotlight spotlight-2 spotlight-delayed-2"></div>
-                                                <div className="spotlight spotlight-3 spotlight-delayed-3"></div>
+                                        <div 
+                                            className="relative"
+                                            onMouseEnter={() => setPasswordHovered(true)}
+                                            onMouseLeave={() => setPasswordHovered(false)}
+                                        >
+                                            {/* Rotating light beam like a clock hand */}
+                                            <div 
+                                                className="pointer-events-none absolute z-[3]"
+                                                style={{
+                                                    left: 0,
+                                                    right: 0,
+                                                    top: 0,
+                                                    bottom: '-150px',
+                                                    opacity: passwordHovered ? 1 : 0,
+                                                    transition: 'opacity 0.3s ease'
+                                                }}
+                                            >
+                                                {/* Rotating light beam - delayed */}
+                                                <div 
+                                                    className="light-beam-rotate light-beam-delayed"
+                                                    style={{
+                                                        position: 'absolute',
+                                                        left: '50%',
+                                                        top: '50%',
+                                                        transformOrigin: '0 0'
+                                                    }}
+                                                >
+                                                    <div 
+                                                        className="absolute w-[1px]"
+                                                        style={{
+                                                            left: 0,
+                                                            top: 0,
+                                                            height: '200px',
+                                                            background: 'transparent',
+                                                            boxShadow: `
+                                                                0 0 40px 10px rgba(12, 24, 105, 0.9),
+                                                                0 0 80px 20px rgba(12, 24, 105, 0.7),
+                                                                0 0 120px 30px rgba(12, 24, 105, 0.5),
+                                                                0 0 160px 40px rgba(12, 24, 105, 0.3)
+                                                            `
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
                                             
                                             {/* Lock icon */}
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 transition-all duration-300 group-focus-within:text-cyan-400 group-focus-within:scale-110 z-10">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 transition-all duration-300 group-focus-within:text-[#0C1869] group-focus-within:scale-110 z-10">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                 </svg>
@@ -182,7 +272,7 @@ export default function Login({ status, canResetPassword }) {
                                                 type={showPassword ? "text" : "password"}
                                                 name="password"
                                                 value={data.password}
-                                                className="relative z-10 w-full bg-[#0D1220]/60 backdrop-blur-sm border-2 border-gray-700/50 focus:border-cyan-400/70 focus:bg-[#0D1220]/80 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-gray-500 transition-all duration-300 shadow-lg focus:shadow-cyan-500/20 outline-none hover:border-gray-600/70"
+                                                className="relative z-10 w-full bg-[#FFF7F2]/60 backdrop-blur-sm border-2 border-[#0C1869]/20 focus:border-[#0C1869]/70 focus:bg-[#FFF7F2]/80 rounded-xl py-3.5 pl-12 pr-12 text-[#0C1869] placeholder:text-[#0C1869]/40 transition-all duration-300 shadow-lg focus:shadow-[#0C1869]/20 outline-none hover:border-[#0C1869]/30"
                                                 autoComplete="current-password"
                                                 placeholder="••••••••"
                                                 onChange={(e) => setData('password', e.target.value)}
@@ -192,7 +282,7 @@ export default function Login({ status, canResetPassword }) {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition-all duration-300 hover:scale-110 focus:outline-none z-10"
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0C1869]/50 hover:text-[#0C1869] transition-all duration-300 hover:scale-110 focus:outline-none z-10"
                                             >
                                                 {showPassword ? (
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +297,7 @@ export default function Login({ status, canResetPassword }) {
                                             </button>
                                             
                                             {/* Animated border glow on focus */}
-                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-400/20 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0C1869]/0 via-[#0C1869]/20 to-[#0C1869]/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none blur-sm z-0"></div>
                                         </div>
                                         <InputError message={errors.password} className="text-xs text-red-400 mt-1.5" />
                                     </div>
@@ -219,9 +309,9 @@ export default function Login({ status, canResetPassword }) {
                                                 name="remember"
                                                 checked={data.remember}
                                                 onChange={(e) => setData('remember', e.target.checked)}
-                                                className="rounded border-gray-600 text-cyan-500 focus:ring-cyan-500/30"
+                                                className="rounded border-[#0C1869]/30 text-[#0C1869] focus:ring-[#0C1869]/30"
                                             />
-                                            <span className="ml-2 text-sm text-gray-400 group-hover/check:text-gray-300 transition-colors">
+                                            <span className="ml-2 text-sm text-[#0C1869]/70 group-hover/check:text-[#0C1869]/90 transition-colors">
                                                 Recordar equipo
                                             </span>
                                         </label>
@@ -234,7 +324,7 @@ export default function Login({ status, canResetPassword }) {
                                             disabled={processing}
                                         >
                                             {/* Gradient background */}
-                                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all duration-300 group-hover/btn:scale-105"></div>
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#0C1869] to-[#FFF7F2] transition-all duration-300 group-hover/btn:scale-105"></div>
                                             
                                             {/* Shine effect on hover */}
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
@@ -254,10 +344,10 @@ export default function Login({ status, canResetPassword }) {
                                     {/* Divider */}
                                     <div className="relative py-2 px-10">
                                         <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-gray-700/50"></div>
+                                            <div className="w-full border-t border-[#0C1869]/20"></div>
                                         </div>
                                         <div className="relative flex justify-center text-xs">
-                                            <span className="px-4 bg-[#1A2032] text-gray-500 font-medium uppercase tracking-wider">
+                                            <span className="px-4 bg-[#f5ede8] text-[#0C1869]/60 font-medium uppercase tracking-wider">
                                                 o acceso rápido
                                             </span>
                                         </div>
@@ -266,7 +356,7 @@ export default function Login({ status, canResetPassword }) {
                                     {/* Google Auth button */}
                                     <a
                                         href={route('auth.google')}
-                                        className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border border-gray-700/50 bg-[#0D1220]/40 hover:bg-[#0D1220]/60 hover:border-gray-600/70 active:scale-[0.98] transition-all group/google backdrop-blur-sm"
+                                        className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border border-[#0C1869]/20 bg-[#FFF7F2]/40 hover:bg-[#FFF7F2]/60 hover:border-[#0C1869]/30 active:scale-[0.98] transition-all group/google backdrop-blur-sm"
                                     >
                                         <svg className="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -274,7 +364,7 @@ export default function Login({ status, canResetPassword }) {
                                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                                         </svg>
-                                        <span className="text-gray-400 font-bold group-hover/google:text-gray-300 transition-colors text-xs uppercase tracking-widest">
+                                        <span className="text-[#0C1869]/70 font-bold group-hover/google:text-[#0C1869]/90 transition-colors text-xs uppercase tracking-widest">
                                             Google Auth
                                         </span>
                                     </a>
@@ -282,12 +372,12 @@ export default function Login({ status, canResetPassword }) {
                             </div>
 
                             {/* Footer section */}
-                            <div className="bg-[#0D1220]/40 backdrop-blur-sm p-6 border-t border-gray-700/30 text-center">
-                                <p className="text-gray-400 text-sm">
+                            <div className="bg-[#FFF7F2]/40 backdrop-blur-sm p-6 border-t border-[#0C1869]/10 text-center">
+                                <p className="text-[#0C1869]/70 text-sm">
                                     ¿Nuevo en la plataforma?{' '}
                                     <Link 
                                         href={route('register')} 
-                                        className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors underline decoration-cyan-400/30 decoration-2 underline-offset-4"
+                                        className="font-bold text-[#0C1869] hover:text-[#0C1869]/80 transition-colors underline decoration-[#0C1869]/30 decoration-2 underline-offset-4"
                                     >
                                         Crea una cuenta
                                     </Link>
@@ -298,7 +388,7 @@ export default function Login({ status, canResetPassword }) {
 
                     {/* Footer */}
                     <div className="text-center mt-8 animate-fade-in-up-delayed">
-                        <p className="text-gray-500 text-xs uppercase tracking-widest">
+                        <p className="text-[#0C1869]/50 text-xs uppercase tracking-widest">
                             Sistema de Seguridad Patrimonial
                         </p>
                     </div>
@@ -307,108 +397,52 @@ export default function Login({ status, canResetPassword }) {
 
             {/* Custom styles */}
             <style jsx>{`
-                /* Spotlight effect - luz que sale desde abajo */
-                .spotlight-wrapper {
+                /* Light sweep animation - bottom part moves left to right */
+                .light-sweep-bottom {
                     position: absolute;
+                    top: 50%;
                     bottom: 0;
-                    left: 0;
-                    right: 0;
-                    height: 200%;
-                    overflow: visible;
-                    pointer-events: none;
-                    z-index: 1;
+                    width: 1px;
+                    background: transparent;
+                    box-shadow: 
+                        0 0 40px 10px rgba(12, 24, 105, 0.9),
+                        0 0 80px 20px rgba(12, 24, 105, 0.7),
+                        0 0 120px 30px rgba(12, 24, 105, 0.5),
+                        0 0 160px 40px rgba(12, 24, 105, 0.3);
+                    animation: sweep-horizontal 3s ease-in-out infinite;
                 }
 
-                .spotlight {
-                    position: absolute;
-                    bottom: 0;
-                    width: 2px;
-                    height: 100%;
-                    transform-origin: bottom center;
-                    opacity: 0;
-                    animation: spotlight-sweep 6s ease-in-out infinite;
+                .light-sweep-delayed {
+                    animation-delay: 1.5s;
                 }
 
-                /* Tres rayos de luz con diferentes ángulos */
-                .spotlight-1 {
-                    left: 20%;
-                    background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.4) 0%,
-                        rgba(255, 255, 255, 0.3) 20%,
-                        rgba(255, 255, 255, 0.15) 50%,
-                        rgba(255, 255, 255, 0.05) 80%,
-                        transparent 100%
-                    );
-                    filter: blur(12px);
-                    animation-delay: 0s;
-                }
-
-                .spotlight-2 {
-                    left: 50%;
-                    background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.5) 0%,
-                        rgba(255, 255, 255, 0.35) 20%,
-                        rgba(255, 255, 255, 0.2) 50%,
-                        rgba(255, 255, 255, 0.08) 80%,
-                        transparent 100%
-                    );
-                    filter: blur(15px);
-                    animation-delay: 0.5s;
-                }
-
-                .spotlight-3 {
-                    left: 80%;
-                    background: linear-gradient(
-                        to top,
-                        rgba(255, 255, 255, 0.35) 0%,
-                        rgba(255, 255, 255, 0.25) 20%,
-                        rgba(255, 255, 255, 0.12) 50%,
-                        rgba(255, 255, 255, 0.04) 80%,
-                        transparent 100%
-                    );
-                    filter: blur(10px);
-                    animation-delay: 1s;
-                }
-
-                /* Delays para el segundo input */
-                .spotlight-delayed-1 {
-                    animation-delay: 2s;
-                }
-
-                .spotlight-delayed-2 {
-                    animation-delay: 2.5s;
-                }
-
-                .spotlight-delayed-3 {
-                    animation-delay: 3s;
-                }
-
-                @keyframes spotlight-sweep {
+                @keyframes sweep-horizontal {
                     0% {
+                        left: 0%;
                         opacity: 0;
-                        transform: rotate(-45deg) scaleY(0.5);
                     }
-                    15% {
-                        opacity: 0.8;
-                        transform: rotate(-20deg) scaleY(1);
-                    }
-                    35% {
+                    10% {
                         opacity: 1;
-                        transform: rotate(0deg) scaleY(1.2);
                     }
-                    55% {
-                        opacity: 0.8;
-                        transform: rotate(20deg) scaleY(1);
+                    50% {
+                        left: 100%;
+                        opacity: 1;
                     }
-                    70% {
-                        opacity: 0.4;
-                        transform: rotate(45deg) scaleY(0.5);
+                    50.1% {
+                        left: 100%;
+                        opacity: 0;
+                    }
+                    50.2% {
+                        left: 100%;
+                        opacity: 0;
+                    }
+                    60% {
+                        left: 100%;
+                        opacity: 1;
                     }
                     100% {
-                        opacity: 0;
-                        transform: rotate(45deg) scaleY(0.5);
+                        left: 0%;
+                        opacity: 1;
                     }
                 }
 
@@ -504,7 +538,7 @@ export default function Login({ status, canResetPassword }) {
                     position: absolute;
                     width: 3px;
                     height: 3px;
-                    background: radial-gradient(circle, rgba(34, 211, 238, 0.8), transparent);
+                    background: radial-gradient(circle, rgba(12, 24, 105, 0.8), transparent);
                     border-radius: 50%;
                     animation: particle-float 15s infinite;
                 }
