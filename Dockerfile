@@ -1,5 +1,4 @@
-FROM php:8.3-fpm
-
+FROM php:8.4-fpm
 # Instalar dependencias del sistema con mejor manejo de errores
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
