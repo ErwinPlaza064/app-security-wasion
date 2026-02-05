@@ -48,10 +48,21 @@ class PatrolLogResource extends Resource
                 Forms\Components\DateTimePicker::make('happened_at')
                     ->label('Hora de Finalización')
                     ->disabled(), // Inmovilizado
+                Forms\Components\TextInput::make('duration')
+                    ->label('Duración del Recorrido')
+                    ->afterStateHydrated(fn($component, $record) => $component->state($record?->duration))
+                    ->prefixIcon('heroicon-m-clock')
+                    ->disabled(),
                 Forms\Components\Textarea::make('notes')
-                    ->label('Notas y Duración')
+                    ->label('Notas o Hallazgos')
+                    ->afterStateHydrated(function ($component, $state) {
+                        if (!$state) return;
+                        // Filtramos el texto antiguo de duración para que no aparezca en las notas
+                        $clean = preg_replace('/Duración del recorrido:.*?\n*/i', '', $state);
+                        $component->state(trim($clean) ?: 'Sin hallazgos registrados');
+                    })
                     ->columnSpanFull()
-                    ->disabled(), // TOTALMENTE INEDITABLE
+                    ->disabled(),
             ]);
     }
 
@@ -84,8 +95,17 @@ class PatrolLogResource extends Resource
                     ->label('Fin')
                     ->dateTime('H:i:s')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Duración')
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('notes')
                     ->label('Hallazgos')
+                    ->formatStateUsing(function ($state) {
+                        if (!$state) return 'Sin hallazgos';
+                        $clean = preg_replace('/Duración del recorrido:.*?\n*/i', '', $state);
+                        return trim($clean) ?: 'Sin hallazgos';
+                    })
                     ->limit(30)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date_only')

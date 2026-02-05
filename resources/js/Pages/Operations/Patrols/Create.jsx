@@ -63,16 +63,8 @@ export default function Create() {
 
     const submit = (e) => {
         e.preventDefault();
-        
-        const durationText = `Duración del recorrido: ${formatTime(seconds)}`;
-        const finalNotes = data.notes ? `${durationText}\n\n${data.notes}` : durationText;
-
-        // Transformamos la data justo antes de enviar para incluir la duración y asegurar consistencia
-        transform((data) => ({
-            ...data,
-            notes: finalNotes
-        }));
-        
+        // Ya no prependeamos la duración a las notas, 
+        // el sistema la calcula automáticamente en base a los timestamps
         post(route('patrols.store'));
     };
 

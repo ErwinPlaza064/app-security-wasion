@@ -28,4 +28,20 @@ class PatrolLog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getDurationAttribute()
+    {
+        if (!$this->started_at || !$this->happened_at) {
+            return 'N/A';
+        }
+
+        $diff = $this->started_at->diff($this->happened_at);
+
+        $parts = [];
+        if ($diff->h > 0) $parts[] = $diff->h . 'h';
+        if ($diff->i > 0) $parts[] = $diff->i . 'm';
+        $parts[] = $diff->s . 's';
+
+        return implode(' ', $parts);
+    }
 }
