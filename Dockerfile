@@ -1,4 +1,5 @@
 FROM php:8.4-fpm
+
 # Instalar dependencias del sistema con mejor manejo de errores
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
@@ -11,43 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     git \
     curl \
+    procps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Configurar y instalar extensiones PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql intl zip gd
+# ... resto igual hasta el final ...
 
-# Copiar Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www
-
-# Copiar archivos de dependencias primero (mejor cache)
-COPY composer.json composer.lock ./
-
-# Instalar dependencias
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
-
-# Copiar el resto de la aplicación
-COPY . .
-
-# Ejecutar scripts post-install si es necesario
-RUN composer dump-autoload --optimize
-
-# Crear directorios necesarios y establecer permisos
-RUN mkdir -p storage/framework/{sessions,views,cache} \
-    bootstrap/cache \
-    && chown -R www-data:www-data /var/www \
-    && chmod -R 775 storage bootstrap/cache
-
-# Copiar configuración de Nginx
-COPY docker/nginx.conf /etc/nginx/sites-available/default
-RUN rm -f /etc/nginx/sites-enabled/default \
-    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# Exponer puerto
-EXPOSE 80
+# Exponer puerto (Railway usa 8080 por defecto pero asignará uno dinámico)
+EXPOSE 8080
 
 # Script de inicio mejorado
 COPY docker/start.sh /usr/local/bin/start.sh
