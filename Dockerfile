@@ -23,6 +23,11 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php artisan key:generate --force \
+ && php artisan config:clear \
+ && php artisan cache:clear
+
+
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 COPY nginx.conf /etc/nginx/sites-available/default
