@@ -1,31 +1,19 @@
 FROM php:8.4-fpm
 
-# System deps
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
+    nginx \
     zip \
     unzip \
     libzip-dev \
     libicu-dev \
-    nginx \
-    supervisor
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    git \
+    curl
 
-# PHP extensions
-RUN docker-php-ext-install \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    intl \
-    zip
+RUN docker-php-ext-install pdo_mysql intl zip gd
 
-# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
@@ -34,11 +22,10 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD service nginx start && php-fpm
