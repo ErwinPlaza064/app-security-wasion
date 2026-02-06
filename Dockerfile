@@ -1,3 +1,25 @@
+# ============================================
+# Builder de Node para compilar assets
+# ============================================
+FROM node:20-alpine AS node-builder
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar dependencias de Node
+RUN npm ci
+
+# Copiar código fuente completo
+COPY . .
+
+# Compilar assets con Vite
+RUN npm run build
+
+# ============================================
+# Imagen final con PHP
+# ============================================
 FROM php:8.4-fpm
 
 # Instalar dependencias del sistema
@@ -26,7 +48,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Establecer directorio de trabajo
 WORKDIR /var/www
 
-# Copiar archivos de dependencias primero (mejor cache de Docker)
+# Copiar archivos de dependencias de PHP
 COPY composer.json composer.lock ./
 
 # Instalar dependencias de PHP
@@ -35,24 +57,25 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # Copiar el resto de la aplicación
 COPY . .
 
-# Ejecutar scripts post-install
+# Copiar assets compilados desde el builder de Node
+COPY --from=node-builder /app/public/build ./public/build
+
+# Post-install de Composer
 RUN composer dump-autoload --optimize
 
-# Crear directorios necesarios y establecer permisos
+# Crear directorios y permisos
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     bootstrap/cache \
     && chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache
 
-# Copiar configuración completa de Nginx
+# Copiar configuración de Nginx
 COPY docker/nginx-full.conf /etc/nginx/nginx.conf
 
 # Copiar script de inicio
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-# Exponer puerto
 EXPOSE 8080
 
-# Comando de inicio
 CMD ["/usr/local/bin/start.sh"]
