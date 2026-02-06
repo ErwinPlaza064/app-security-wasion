@@ -69,16 +69,11 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
     && chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache
 
-# Copiar configuración de Nginx
-COPY docker/nginx-full.conf /etc/nginx/nginx.conf
+# Copiar configuración de PHP-FPM
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Copiar script de inicio
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
-
-EXPOSE 8080
-
-COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
-
 
 CMD ["/usr/local/bin/start.sh"]
