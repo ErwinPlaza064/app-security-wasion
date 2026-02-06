@@ -3,17 +3,14 @@ set -e
 
 echo "=== Starting Laravel on Railway ==="
 
-# Asegurarse de estar en el directorio correcto
 cd /var/www
 
-# Verificar que artisan existe
 if [ ! -f artisan ]; then
-    echo "ERROR: artisan file not found in /var/www"
-    ls -la /var/www
+    echo "ERROR: artisan file not found"
     exit 1
 fi
 
-# Crear .env básico
+# Crear .env
 cat > .env << EOF
 APP_NAME=Laravel
 APP_ENV=${APP_ENV:-production}
@@ -35,15 +32,28 @@ EOF
 # Permisos
 chown -R www-data:www-data storage bootstrap/cache
 
-# Limpiar y cachear configuración
+# Cache
 php artisan config:clear
 php artisan cache:clear 2>/dev/null || true
 php artisan config:cache 2>/dev/null || true
-php artisan route:cache 2>/dev/null || true
 
 echo "✓ Laravel configured"
-echo "✓ Starting Nginx on port 8080..."
-nginx
 
+# Iniciar PHP-FPM en background
 echo "✓ Starting PHP-FPM..."
-exec php-fpm
+php-fpm -D
+
+# Esperar a que PHP-FPM esté listo
+sleep 2
+
+# Verificar que PHP-FPM está corriendo
+if ! pgrep -x php-fpm > /dev/null; then
+    echo "ERROR: PHP-FPM failed to start"
+    exit 1
+fi
+
+echo "✓ PHP-FPM running"
+echo "✓ Starting Nginx on port 8080..."
+
+# Nginx en foreground (mantiene el contenedor vivo)
+exec nginx -g 'daemon off;'
