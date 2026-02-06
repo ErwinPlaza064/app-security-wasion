@@ -46,12 +46,17 @@ EOF
 chown -R www-data:www-data storage bootstrap/cache
 
 # Limpiar configuración
+echo "Clearing configuration cache..."
 php artisan config:clear
 
-# Intentar comandos de cache de forma segura
+# Cachear configuración
 echo "Caching configuration..."
 php artisan config:cache 2>&1 || echo "⚠ Config cache skipped"
 php artisan route:cache 2>&1 || echo "⚠ Route cache skipped"
+
+# Ejecutar migraciones de base de datos
+echo "Running database migrations..."
+php artisan migrate --force 2>&1 || echo "⚠ Migrations skipped or failed"
 
 echo "✓ Laravel configured"
 
