@@ -2,7 +2,6 @@
 set -e
 
 echo "=== Starting Laravel on Railway ==="
-echo "=== Port configured: ${PORT:-8080} ==="
 
 # Asegurarse de estar en el directorio correcto
 cd /var/www
@@ -13,6 +12,10 @@ if [ ! -f artisan ]; then
     ls -la /var/www
     exit 1
 fi
+
+# Determinar el puerto
+NGINX_PORT=${PORT:-8080}
+echo "=== Port configured: $NGINX_PORT ==="
 
 # Crear .env desde variables de entorno
 cat > .env << EOF
@@ -31,13 +34,12 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
-# Database - usar variables de Railway MySQL
 DB_CONNECTION=mysql
-DB_HOST=${MYSQL_HOST:-127.0.0.1}
-DB_PORT=${MYSQL_PORT:-3306}
-DB_DATABASE=${MYSQL_DATABASE:-laravel}
-DB_USERNAME=${MYSQL_USER:-root}
-DB_PASSWORD=${MYSQL_PASSWORD:-}
+DB_HOST=${MYSQLHOST:-127.0.0.1}
+DB_PORT=${MYSQLPORT:-3306}
+DB_DATABASE=${MYSQLDATABASE:-laravel}
+DB_USERNAME=${MYSQLUSER:-root}
+DB_PASSWORD=${MYSQLPASSWORD:-}
 EOF
 
 # Permisos
@@ -46,42 +48,15 @@ chown -R www-data:www-data storage bootstrap/cache
 # Limpiar configuración
 php artisan config:clear
 
-# Intentar cachear config solo si la DB está disponible
-echo "Checking database connection..."
-if php artisan db:show 2>/dev/null; then
-    echo "✓ Database connected"
-    php artisan config:cache || echo "⚠ Config cache failed (non-critical)"
-    php artisan route:cache || echo "⚠ Route cache failed (non-critical)"
-else
-    echo "⚠ Database not available - skipping cache commands"
-fi
-
-# Opcional: correr migraciones automáticamente
-# php artisan migrate --force || echo "⚠ Migrations failed"
+# Intentar comandos de cache de forma segura
+echo "Caching configuration..."
+php artisan config:cache 2>&1 || echo "⚠ Config cache skipped"
+php artisan route:cache 2>&1 || echo "⚠ Route cache skipped"
 
 echo "✓ Laravel configured"
 
-# Iniciar PHP-FPM en background
-echo "✓ Starting PHP-FPM..."
-php-fpm -D
-
-# Esperar a que PHP-FPM esté listo
-sleep 2
-
-# Verificar que PHP-FPM está corriendo
-if pgrep -x php-fpm > /dev/null; then
-    echo "✓ PHP-FPM is running"
-else
-    echo "ERROR: PHP-FPM failed to start"
-    exit 1
-fi
-
-# Configurar puerto desde Railway
-NGINX_PORT=${PORT:-8080}
-export NGINX_PORT
-
-# Generar config de Nginx con el puerto correcto
-cat > /etc/nginx/nginx.conf << 'NGINX_EOF'
+# Generar configuración de Nginx con el puerto correcto
+cat > /etc/nginx/nginx.conf << NGINX_EOF
 user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
@@ -105,37 +80,53 @@ http {
     types_hash_max_size 2048;
 
     gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss;
 
     upstream php-fpm {
         server 127.0.0.1:9000;
     }
 
     server {
-        listen ${NGINX_PORT} default_server;
+        listen $NGINX_PORT default_server;
         server_name _;
         root /var/www/public;
         index index.php index.html;
 
+        client_max_body_size 50M;
+        
+        # Timeouts aumentados
         fastcgi_read_timeout 300;
         fastcgi_send_timeout 300;
+        proxy_read_timeout 300;
+        proxy_send_timeout 300;
 
         location / {
-            try_files $uri $uri/ /index.php?$query_string;
+            try_files \$uri \$uri/ /index.php?\$query_string;
         }
 
         location ~ \.php$ {
-            try_files $uri =404;
+            try_files \$uri =404;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_pass php-fpm;
             fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            fastcgi_param PATH_INFO $fastcgi_path_info;
+            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+            fastcgi_param PATH_INFO \$fastcgi_path_info;
             include fastcgi_params;
             
+            # Headers adicionales
             fastcgi_param HTTP_PROXY "";
             fastcgi_intercept_errors off;
-            fastcgi_buffer_size 16k;
-            fastcgi_buffers 4 16k;
+            fastcgi_buffer_size 32k;
+            fastcgi_buffers 8 32k;
+            fastcgi_busy_buffers_size 64k;
+        }
+
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            access_log off;
         }
 
         location ~ /\.(?!well-known).* {
@@ -145,32 +136,29 @@ http {
 }
 NGINX_EOF
 
-# Reemplazar el placeholder del puerto
-sed -i "s/\${NGINX_PORT}/$NGINX_PORT/g" /etc/nginx/nginx.conf
-
 echo "✓ Nginx config generated for port $NGINX_PORT"
+
+# Iniciar PHP-FPM en foreground pero en background del script
+echo "✓ Starting PHP-FPM..."
+php-fpm &
+
+# Esperar a que PHP-FPM esté listo
+sleep 3
+
+# Verificar que PHP-FPM está escuchando en el puerto 9000
+if ss -tuln | grep -q ':9000'; then
+    echo "✓ PHP-FPM is running on port 9000"
+else
+    echo "ERROR: PHP-FPM is not listening on port 9000"
+    echo "Open ports:"
+    ss -tuln
+    exit 1
+fi
 
 # Verificar configuración de Nginx
 nginx -t
 
 echo "✓ Starting Nginx on port $NGINX_PORT..."
 
-# Nginx en foreground
+# Nginx en foreground para mantener el contenedor vivo
 exec nginx -g 'daemon off;'
-```
-
-### Opción 3: Variables de entorno en Railway
-
-Asegúrate de tener estas variables configuradas en Railway:
-```
-APP_KEY=base64:mN1jZ1KjwiKfS/cTGw85JMNa5uInsXNS5JAwuztFDIo=
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://tu-app.railway.app
-
-# Si agregaste MySQL, estas se crean automáticamente:
-MYSQL_HOST=containers-us-west-xxx.railway.app
-MYSQL_PORT=3306
-MYSQL_DATABASE=railway
-MYSQL_USER=root
-MYSQL_PASSWORD=xxx
