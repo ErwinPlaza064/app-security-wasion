@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
 
+# Usar PORT de Railway o 8080 por defecto
+export PORT=${PORT:-8080}
+
 echo "=== Starting Laravel on Railway ==="
+echo "=== Listening on port: $PORT ==="
 
 cd /var/www
 
@@ -29,31 +33,73 @@ DB_USERNAME=${DB_USERNAME:-root}
 DB_PASSWORD=${DB_PASSWORD:-}
 EOF
 
-# Permisos
 chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
 
-# Cache
 php artisan config:clear
 php artisan cache:clear 2>/dev/null || true
-php artisan config:cache 2>/dev/null || true
 
 echo "✓ Laravel configured"
 
-# Iniciar PHP-FPM en background
-echo "✓ Starting PHP-FPM..."
-php-fpm -D
+# Crear config de Nginx con el puerto dinámico
+cat > /etc/nginx/nginx.conf << 'NGINXCONF'
+user www-data;
+worker_processes 1;
+error_log /dev/stderr warn;
+pid /run/nginx.pid;
 
-# Esperar a que PHP-FPM esté listo
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    access_log /dev/stdout;
+    error_log /dev/stderr warn;
+
+    server {
+        listen ${PORT};
+        server_name _;
+        root /var/www/public;
+        index index.php index.html;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+    }
+}
+NGINXCONF
+
+# Reemplazar ${PORT} con el valor real
+sed -i "s/\${PORT}/$PORT/g" /etc/nginx/nginx.conf
+
+echo "✓ Starting PHP-FPM..."
+php-fpm -D -R
+
 sleep 2
 
-# Verificar que PHP-FPM está corriendo
 if ! pgrep -x php-fpm > /dev/null; then
     echo "ERROR: PHP-FPM failed to start"
     exit 1
 fi
 
-echo "✓ PHP-FPM running"
-echo "✓ Starting Nginx on port 8080..."
+echo "✓ PHP-FPM is running"
+echo "✓ Starting Nginx on port $PORT..."
 
-# Nginx en foreground (mantiene el contenedor vivo)
 exec nginx -g 'daemon off;'
+```
+
+**O más simple:** Ya que internamente funciona con el puerto 8080, solo agrega la variable de entorno en Railway:
+
+**Settings → Variables → Add Variable:**
+```
+PORT=8080
