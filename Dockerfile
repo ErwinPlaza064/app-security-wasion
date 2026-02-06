@@ -78,4 +78,7 @@ RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 8080
 
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+
+
 CMD ["/usr/local/bin/start.sh"]
