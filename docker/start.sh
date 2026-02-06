@@ -17,6 +17,14 @@ fi
 NGINX_PORT=${PORT:-8080}
 echo "=== Port configured: $NGINX_PORT ==="
 
+# Debug: Mostrar variables de MySQL (sin mostrar password completo)
+echo "=== Database Configuration ==="
+echo "MYSQLHOST: ${MYSQLHOST:-NOT SET}"
+echo "MYSQLPORT: ${MYSQLPORT:-NOT SET}"
+echo "MYSQLDATABASE: ${MYSQLDATABASE:-NOT SET}"
+echo "MYSQLUSER: ${MYSQLUSER:-NOT SET}"
+echo "MYSQLPASSWORD: ${MYSQLPASSWORD:+***SET***}"
+
 # Crear .env desde variables de entorno
 cat > .env << EOF
 APP_NAME=Laravel
@@ -35,12 +43,16 @@ SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
 DB_CONNECTION=mysql
-DB_HOST=${MYSQLHOST:-127.0.0.1}
-DB_PORT=${MYSQLPORT:-3306}
-DB_DATABASE=${MYSQLDATABASE:-laravel}
-DB_USERNAME=${MYSQLUSER:-root}
-DB_PASSWORD=${MYSQLPASSWORD:-}
+DB_HOST=${MYSQLHOST}
+DB_PORT=${MYSQLPORT}
+DB_DATABASE=${MYSQLDATABASE}
+DB_USERNAME=${MYSQLUSER}
+DB_PASSWORD=${MYSQLPASSWORD}
 EOF
+
+# Mostrar el .env generado (sin password)
+echo "=== Generated .env (DB section) ==="
+grep "^DB_" .env | grep -v "DB_PASSWORD"
 
 # Permisos
 chown -R www-data:www-data storage bootstrap/cache
@@ -54,9 +66,13 @@ echo "Caching configuration..."
 php artisan config:cache 2>&1 || echo "⚠ Config cache skipped"
 php artisan route:cache 2>&1 || echo "⚠ Route cache skipped"
 
-# Ejecutar migraciones de base de datos
-echo "Running database migrations..."
-php artisan migrate --force 2>&1 || echo "⚠ Migrations skipped or failed"
+# Ejecutar migraciones de base de datos solo si las variables están configuradas
+if [ -n "$MYSQLHOST" ]; then
+    echo "Running database migrations..."
+    php artisan migrate --force 2>&1 || echo "⚠ Migrations skipped or failed"
+else
+    echo "⚠ MySQL variables not set - skipping migrations"
+fi
 
 echo "✓ Laravel configured"
 
@@ -163,7 +179,7 @@ fi
 # Verificar configuración de Nginx
 nginx -t
 
-echo "✓ Starting Nginx on port $NGINX_PORT..."
+echo "✓ Starting Nginx on port 8080..."
 
 # Nginx en foreground para mantener el contenedor vivo
 exec nginx -g 'daemon off;'
