@@ -4,8 +4,8 @@
 [phases.setup]
 nixPkgs = [
     "php84",
-    "php84Extensions.pdo_mysql",
-    "php84Extensions.mysqlnd",
+    "php84Extensions.pdo_pgsql",
+    "php84Extensions.pgsql",
     "php84Extensions.gd",
     "php84Extensions.intl",
     "php84Extensions.zip",
