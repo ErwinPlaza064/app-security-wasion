@@ -58,6 +58,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
                 PDO::ATTR_EMULATE_PREPARES => true,
                 PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
             ]) : [],
         ],
 
