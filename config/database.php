@@ -59,7 +59,8 @@ return [
                 PDO::ATTR_EMULATE_PREPARES => true,
                 PDO::MYSQL_ATTR_LOCAL_INFILE => true,
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
-                // Forzamos a que no use SSL si falla el handshake interno de Railway
+                // Forzamos a que ignore la verificación de certificado para permitir el handshake RSA
+                // necesario para caching_sha2_password sobre la red interna de Railway
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ]) : [],
         ],
