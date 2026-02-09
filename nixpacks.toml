@@ -1,3 +1,6 @@
+[variables]
+    NIXPACKS_PHP_VERSION = "8.4"
+
 [phases.setup]
 nixPkgs = [
     "php84",
@@ -6,13 +9,13 @@ nixPkgs = [
     "php84Extensions.intl",
     "php84Extensions.zip",
     "php84Packages.composer",
-    "nodejs-20_x",
+    "nodejs_20",
     "git"
 ]
 
 [phases.install]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-interaction",
+    "composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php+",
     "npm ci"
 ]
 
@@ -25,5 +28,4 @@ cmds = [
 ]
 
 [start]
-# Running migrations, seeders, linking storage and then starting the server
 cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=$PORT"
