@@ -12,25 +12,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'role' => 'SuperAdmin',
-        ]);
+        // Solo creamos los accesos de gestión inicial si no existen
+        if (!\App\Models\User::where('email', 'superadmin@example.com')->exists()) {
+            \App\Models\User::create([
+                'name' => 'Super Admin',
+                'email' => 'superadmin@example.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'SuperAdmin',
+            ]);
+        }
 
-        \App\Models\User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'role' => 'Admin',
-        ]);
-
-        \App\Models\User::create([
-            'name' => 'Regular User',
-            'email' => 'user@example.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'role' => 'user',
-        ]);
+        if (!\App\Models\User::where('email', 'admin@example.com')->exists()) {
+            \App\Models\User::create([
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'Admin',
+            ]);
+        }
     }
 }
