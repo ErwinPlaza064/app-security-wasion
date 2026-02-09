@@ -11,6 +11,7 @@ nixPkgs = [
     "php84Extensions.zip",
     "php84Extensions.bcmath",
     "php84Extensions.mbstring",
+    "php84Extensions.openssl",
     "php84Packages.composer",
     "nodejs_20",
     "git"
@@ -32,4 +33,4 @@ cmds = [
 ]
 
 [start]
-cmd = "php artisan migrate --force && php artisan db:seed --class=SuperAdminSeeder --force && php artisan storage:link --force && (php artisan queue:work --tries=3 --timeout=90 &) && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "sleep 5 && php artisan migrate --force && php artisan db:seed --class=SuperAdminSeeder --force && php artisan storage:link --force && (php artisan queue:work --tries=3 --timeout=90 &) && php artisan serve --host=0.0.0.0 --port=$PORT"

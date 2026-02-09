@@ -41,7 +41,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DB_URL'),
+            // 'url' => env('DB_URL'),
             'host' => env('DB_HOST') ?: env('MYSQLHOST') ?: env('MYSQL_HOST') ?: '127.0.0.1',
             'port' => env('DB_PORT') ?: env('MYSQLPORT') ?: env('MYSQL_PORT') ?: '3306',
             'database' => env('DB_DATABASE') ?: env('MYSQLDATABASE') ?: env('MYSQL_DATABASE') ?: 'laravel',
@@ -54,15 +54,11 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                PDO::ATTR_EMULATE_PREPARES => true,
-                PDO::MYSQL_ATTR_LOCAL_INFILE => true,
-                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
-                // Forzamos a que ignore la verificación de certificado para permitir el handshake RSA
-                // necesario para caching_sha2_password sobre la red interna de Railway
+            'options' => [
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-            ]) : [],
+                PDO::ATTR_EMULATE_PREPARES => true,
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
+            ],
         ],
 
         'mariadb' => [
