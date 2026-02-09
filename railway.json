@@ -8,6 +8,6 @@
     "sleepApplication": false,
     "restartPolicyType": "ALWAYS",
     "healthcheckPath": "/",
-    "healthcheckTimeout": 100
+    "healthcheckTimeout": 300
   }
 }
