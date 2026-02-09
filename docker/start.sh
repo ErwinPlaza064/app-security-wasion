@@ -17,13 +17,12 @@ fi
 NGINX_PORT=${PORT:-8080}
 echo "=== Port configured: $NGINX_PORT ==="
 
-# Debug: Mostrar variables de MySQL (sin mostrar password completo)
-echo "=== Database Configuration ==="
-echo "MYSQLHOST: ${MYSQLHOST:-NOT SET}"
-echo "MYSQLPORT: ${MYSQLPORT:-NOT SET}"
-echo "MYSQLDATABASE: ${MYSQLDATABASE:-NOT SET}"
-echo "MYSQLUSER: ${MYSQLUSER:-NOT SET}"
-echo "MYSQLPASSWORD: ${MYSQLPASSWORD:+***SET***}"
+# Determinar variables de BD con fallbacks
+FINAL_DB_HOST=${DB_HOST:-${MYSQLHOST:-127.0.0.1}}
+FINAL_DB_PORT=${DB_PORT:-${MYSQLPORT:-3306}}
+FINAL_DB_USER=${DB_USERNAME:-${MYSQLUSER:-root}}
+FINAL_DB_PASS=${DB_PASSWORD:-${MYSQLPASSWORD:-}}
+FINAL_DB_NAME=${DB_DATABASE:-${MYSQL_DATABASE:-${MYSQLDATABASE:-laravel}}}
 
 # Crear .env desde variables de entorno
 cat > .env << EOF
@@ -43,11 +42,11 @@ SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
 DB_CONNECTION=mysql
-DB_HOST=${MYSQLHOST}
-DB_PORT=${MYSQLPORT}
-DB_DATABASE=${MYSQLDATABASE}
-DB_USERNAME=${MYSQLUSER}
-DB_PASSWORD=${MYSQLPASSWORD}
+DB_HOST=${FINAL_DB_HOST}
+DB_PORT=${FINAL_DB_PORT}
+DB_DATABASE=${FINAL_DB_NAME}
+DB_USERNAME=${FINAL_DB_USER}
+DB_PASSWORD=${FINAL_DB_PASS}
 EOF
 
 # Mostrar el .env generado (sin password)
@@ -66,12 +65,13 @@ echo "Caching configuration..."
 php artisan config:cache 2>&1 || echo "⚠ Config cache skipped"
 php artisan route:cache 2>&1 || echo "⚠ Route cache skipped"
 
-# Ejecutar migraciones de base de datos solo si las variables están configuradas
-if [ -n "$MYSQLHOST" ]; then
-    echo "Running database migrations..."
-    php artisan migrate --force 2>&1 || echo "⚠ Migrations skipped or failed"
+# Ejecutar migraciones de base de datos
+if [ -n "$FINAL_DB_HOST" ] && [ "$FINAL_DB_HOST" != "127.0.0.1" ]; then
+    echo "Running database migrations and seeders..."
+    php artisan migrate --force 2>&1 || echo "⚠ Migrations failed"
+    php artisan db:seed --force 2>&1 || echo "⚠ Seeding failed"
 else
-    echo "⚠ MySQL variables not set - skipping migrations"
+    echo "⚠ Database variables not fully set - skipping migrations"
 fi
 
 echo "✓ Laravel configured"
