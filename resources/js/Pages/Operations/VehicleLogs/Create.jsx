@@ -168,9 +168,13 @@ export default function Create({ operation, companies }) {
                                         <button 
                                             type="button" 
                                             onClick={() => setIsNewCompany(!isNewCompany)}
-                                            className="text-[10px] font-black text-primary uppercase tracking-tighter hover:underline"
+                                            className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter transition-all duration-300 ${
+                                                isNewCompany 
+                                                ? "bg-gray-100 text-gray-400" 
+                                                : "bg-emerald-500/20 text-emerald-600 animate-pulse hover:animate-none hover:bg-emerald-600 hover:text-white"
+                                            }`}
                                         >
-                                            {isNewCompany ? 'Existente' : '+ Nueva'}
+                                            {isNewCompany ? 'Volver a Lista' : '+ Registrar Nueva'}
                                         </button>
                                     </div>
                                     
@@ -178,13 +182,22 @@ export default function Create({ operation, companies }) {
                                         <select
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all text-sm"
                                             value={data.company_id}
-                                            onChange={(e) => setData('company_id', e.target.value)}
+                                            onChange={(e) => {
+                                                if (e.target.value === "new") {
+                                                    setIsNewCompany(true);
+                                                } else {
+                                                    setData('company_id', e.target.value);
+                                                }
+                                            }}
                                             required={!isNewCompany}
                                         >
                                             <option value="">Seleccione empresa...</option>
                                             {companies.map(c => (
                                                 <option key={c.id} value={c.id}>{c.name}</option>
                                             ))}
+                                            <option value="new" className="text-emerald-600 font-bold">
+                                                ¿No aparece en la lista? ➕ REGISTRAR NUEVA
+                                            </option>
                                         </select>
                                     ) : (
                                         <TextInput

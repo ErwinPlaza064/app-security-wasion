@@ -300,23 +300,28 @@ export default function Create({ type, companies, areas }) {
                                                             !data.isNewCompany,
                                                         )
                                                     }
-                                                    className="text-[9px] font-black text-primary uppercase underline"
+                                                    className={`text-[9px] font-black px-3 py-1 rounded-full uppercase transition-all duration-300 ${
+                                                        data.isNewCompany 
+                                                        ? "bg-gray-100 text-gray-400" 
+                                                        : "bg-primary/20 text-primary animate-pulse hover:animate-none hover:bg-primary hover:text-white"
+                                                    }`}
                                                 >
                                                     {data.isNewCompany
-                                                        ? "Lista"
-                                                        : "+ Nueva"}
+                                                        ? "Volver a Lista"
+                                                        : "+ Registrar Nueva"}
                                                 </button>
                                             </div>
                                             {!data.isNewCompany ? (
                                                 <select
                                                     className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all"
                                                     value={data.company_id}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "company_id",
-                                                            e.target.value,
-                                                        )
-                                                    }
+                                                    onChange={(e) => {
+                                                        if (e.target.value === "new") {
+                                                            setData("isNewCompany", true);
+                                                        } else {
+                                                            setData("company_id", e.target.value);
+                                                        }
+                                                    }}
                                                 >
                                                     <option value="">
                                                         Seleccione empresa...
@@ -329,6 +334,9 @@ export default function Create({ type, companies, areas }) {
                                                             {c.name}
                                                         </option>
                                                     ))}
+                                                    <option value="new" className="text-primary font-black">
+                                                        ¿No aparece en la lista? ➕ REGISTRAR NUEVA
+                                                    </option>
                                                 </select>
                                             ) : (
                                                 <TextInput

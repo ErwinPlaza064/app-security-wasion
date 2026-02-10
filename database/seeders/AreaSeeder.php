@@ -82,7 +82,7 @@ class AreaSeeder extends Seeder
 
         foreach ($data as $plant => $areas) {
             foreach ($areas as $areaName) {
-                Area::create([
+                Area::firstOrCreate([
                     'plant' => $plant,
                     'name' => $areaName,
                 ]);
