@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,10 +13,7 @@ Route::get('/dashboard', [\App\Http\Controllers\AccessLogController::class, 'das
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Módulo de Operaciones (User Normal)
     Route::prefix('operations')->group(function () {
         // Accesos
         Route::get('/access-logs/create', [\App\Http\Controllers\AccessLogController::class, 'create'])->name('access-logs.create');
@@ -56,9 +52,5 @@ Route::middleware('auth')->group(function () {
         Route::post('/patrols', [\App\Http\Controllers\PatrolController::class, 'store'])->name('patrols.store');
     });
 });
-
-// Rutas de autenticación con Google
-Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 require __DIR__ . '/auth.php';

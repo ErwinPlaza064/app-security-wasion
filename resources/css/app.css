@@ -24,13 +24,33 @@
         }
     }
     @keyframes police-rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
     @keyframes police-strobe {
-        0%, 18%, 20%, 48%, 50%, 100% { opacity: 0.3; background: rgba(12, 24, 105, 0.2); }
-        19%, 49% { opacity: 0.8; background: rgba(220, 38, 38, 0.4); } /* Destello Rojo */
-        21%, 51% { opacity: 0.8; background: rgba(29, 78, 216, 0.4); } /* Destello Azul */
+        0%,
+        18%,
+        20%,
+        48%,
+        50%,
+        100% {
+            opacity: 0.3;
+            background: rgba(12, 24, 105, 0.2);
+        }
+        19%,
+        49% {
+            opacity: 0.8;
+            background: rgba(220, 38, 38, 0.4);
+        } /* Destello Rojo */
+        21%,
+        51% {
+            opacity: 0.8;
+            background: rgba(29, 78, 216, 0.4);
+        } /* Destello Azul */
     }
     .lighthouse-card {
         position: relative;
@@ -42,7 +62,7 @@
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
     }
     .lighthouse-card::before {
-        content: '';
+        content: "";
         position: absolute;
         z-index: -2;
         left: -50%;
@@ -50,18 +70,18 @@
         width: 200%;
         height: 200%;
         background-image: conic-gradient(
-            transparent, 
-            rgba(220, 38, 38, 1) 5%,    /* Rojo */
-            transparent 15%, 
+            transparent,
+            rgba(220, 38, 38, 1) 5%,
+            /* Rojo */ transparent 15%,
             transparent 50%,
-            rgba(29, 78, 216, 1) 55%,   /* Azul */
-            transparent 65%
+            rgba(29, 78, 216, 1) 55%,
+            /* Azul */ transparent 65%
         );
         animation: police-rotate 2s linear infinite;
         filter: blur(10px);
     }
     .lighthouse-card::after {
-        content: '';
+        content: "";
         position: absolute;
         z-index: -1;
         left: 3px;
@@ -76,7 +96,7 @@
         padding: 24px;
     }
     .lighthouse-wrapper::after {
-        content: '';
+        content: "";
         position: absolute;
         inset: 40px;
         z-index: -3;
@@ -91,8 +111,9 @@
         position: relative;
     }
 
-    .searchlight-input:focus-within, .searchlight-input:hover {
-        box-shadow: 
+    .searchlight-input:focus-within,
+    .searchlight-input:hover {
+        box-shadow:
             0 0 20px rgba(12, 24, 105, 0.1),
             0 0 40px rgba(29, 78, 216, 0.15);
         transform: translateY(-2px);
@@ -105,13 +126,18 @@
     }
 
     .searchlight-field::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: -100px;
         width: 80px;
         height: 200%;
-        background: conic-gradient(from 0deg at 50% 50%, transparent 40%, rgba(29, 78, 216, 0.4) 50%, transparent 60%);
+        background: conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 40%,
+            rgba(29, 78, 216, 0.4) 50%,
+            transparent 60%
+        );
         transform: translateY(-50%) rotate(-90deg);
         filter: blur(20px);
         opacity: 0;
@@ -120,16 +146,39 @@
         z-index: 20;
     }
 
-    .searchlight-field:hover::before, .searchlight-field:focus-within::before {
+    .searchlight-field:hover::before,
+    .searchlight-field:focus-within::before {
         opacity: 1;
         animation: searchlight-sweep 2s infinite ease-in-out;
     }
 
     @keyframes searchlight-sweep {
-        0% { left: -100px; opacity: 0; }
-        15% { opacity: 0.8; }
-        85% { opacity: 0.8; }
-        100% { left: 110%; opacity: 0; }
+        0% {
+            left: -100px;
+            opacity: 0;
+        }
+        15% {
+            opacity: 0.8;
+        }
+        85% {
+            opacity: 0.8;
+        }
+        100% {
+            left: 110%;
+            opacity: 0;
+        }
+    }
+
+    @keyframes rotate-beam {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    .animate-beam {
+        animation: rotate-beam 3s linear infinite;
     }
 }
 

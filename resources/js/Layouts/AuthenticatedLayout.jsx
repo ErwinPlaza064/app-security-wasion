@@ -46,6 +46,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
+
                                             <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
                                             <Dropdown.Link href={route('logout')} method="post" as="button">Cerrar sesión</Dropdown.Link>
                                         </Dropdown.Content>
@@ -134,6 +135,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             {user ? (
                                 <>
+
                                     <Link 
                                         href={route('profile.edit')}
                                         className={`flex items-center space-x-3 p-4 rounded-2xl font-bold text-sm transition-all ${
