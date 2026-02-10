@@ -19,19 +19,14 @@ export default function GlobalLoading() {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 backdrop-blur-sm transition-all duration-300">
             <div className="relative">
-                {/* Outer Glow */}
                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse"></div>
                 
-                {/* Spinner Container */}
                 <div className="relative bg-white p-8 rounded-[2.5rem] shadow-2xl shadow-primary/10 flex flex-col items-center space-y-4 border border-primary/5">
                     <div className="relative w-16 h-16">
-                        {/* Static base circle */}
                         <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
                         
-                        {/* Spinning primary circle */}
                         <div className="absolute inset-0 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
                         
-                        {/* Inner pulsing logo circle */}
                         <div className="absolute inset-2 bg-primary/5 rounded-full flex items-center justify-center">
                             <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
                         </div>

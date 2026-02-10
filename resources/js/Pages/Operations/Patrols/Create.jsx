@@ -6,7 +6,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { useState, useEffect } from 'react';
 
 export default function Create() {
-    // Estado del patrullaje: 'idle', 'running', 'finished'
     const [patrolState, setPatrolState] = useState('idle');
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
@@ -43,7 +42,6 @@ export default function Create() {
         setIsRunning(true);
         setSeconds(0);
 
-        // Capturar hora de inicio
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
@@ -54,19 +52,14 @@ export default function Create() {
         setIsRunning(false);
         setPatrolState('finished');
         
-        // Formatear fecha y hora actual para el registro
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
         setData('happened_at', localISOTime);
     };
 
-    const submit = (e) => {
         e.preventDefault();
-        // Ya no prependeamos la duración a las notas, 
-        // el sistema la calcula automáticamente en base a los timestamps
         post(route('patrols.store'));
-    };
 
     return (
         <AuthenticatedLayout>
@@ -74,7 +67,6 @@ export default function Create() {
 
             <div className="py-12 bg-[#fdfcf9] min-h-[calc(100vh-64px)]">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
                     <div className="mb-12 flex items-center justify-between">
                         <div>
                             <div className="flex items-center space-x-2 mb-2">
@@ -92,7 +84,6 @@ export default function Create() {
                     </div>
 
                     <div className="space-y-8">
-                        {/* Estado 1: Idle - Botón Iniciar */}
                         {patrolState === 'idle' && (
                             <div className="bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-[0_20px_50px_rgb(0,0,0,0.03)] text-center space-y-8">
                                 <div className="space-y-4">
@@ -114,7 +105,6 @@ export default function Create() {
                             </div>
                         )}
 
-                        {/* Estado 2: Running - Timer y Finalizar */}
                         {patrolState === 'running' && (
                             <div className="bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-[0_20px_50px_rgb(0,0,0,0.03)] text-center space-y-10">
                                 <div className="space-y-2">
@@ -138,7 +128,6 @@ export default function Create() {
                             </div>
                         )}
 
-                        {/* Estado 3: Finished - Notas y Guardar */}
                         {patrolState === 'finished' && (
                             <form onSubmit={submit} className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
                                 <div className="bg-white p-10 rounded-[3.5rem] border border-gray-100 shadow-[0_20px_50px_rgb(0,0,0,0.03)] space-y-8">
@@ -186,7 +175,6 @@ export default function Create() {
                 </div>
             </div>
             
-            {/* Custom styles */}
             <style>{`
                 @keyframes spin-slow {
                     from { transform: rotate(0deg); }

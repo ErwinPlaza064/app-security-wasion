@@ -12,7 +12,6 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    // Bloquear scroll cuando el menú está abierto
     useEffect(() => {
         if (showingNavigationDropdown) {
             document.body.style.overflow = 'hidden';
@@ -24,11 +23,9 @@ export default function AuthenticatedLayout({ header, children }) {
     return (
         <div className="min-h-screen bg-cream">
             <GlobalLoading />
-            {/* Navbar Principal */}
             <nav className="border-b border-primary/5 bg-cream/80 backdrop-blur-xl sticky top-0 z-40 w-full">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between items-center">
-                        {/* Logo */}
                         <div className="flex-shrink-0">
                             <Link href={route('dashboard')} className="text-primary font-black text-xl tracking-tighter uppercase flex items-center">
                                 Wasion Security
@@ -64,7 +61,6 @@ export default function AuthenticatedLayout({ header, children }) {
                             )}
                         </div>
 
-                        {/* Mobile Button */}
                         <div className="flex items-center sm:hidden">
                             <button
                                 onClick={() => setShowingNavigationDropdown(true)}
@@ -79,9 +75,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            {/* Mobile Sidebar Navigation */}
             <div className="sm:hidden">
-                {/* Backdrop */}
                 <div 
                     className={`fixed inset-0 bg-primary/20 backdrop-blur-sm z-[60] transition-opacity duration-300 ${
                         showingNavigationDropdown ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -89,14 +83,12 @@ export default function AuthenticatedLayout({ header, children }) {
                     onClick={() => setShowingNavigationDropdown(false)}
                 />
 
-                {/* Sidebar Drawer */}
                 <div 
                     className={`fixed inset-y-0 right-0 w-[280px] bg-white z-[70] shadow-2xl transition-transform duration-500 ease-in-out ${
                         showingNavigationDropdown ? 'translate-x-0' : 'translate-x-full'
                     }`}
                 >
                     <div className="flex flex-col h-full">
-                        {/* Drawer Header */}
                         <div className="p-6 border-b border-gray-50 flex justify-between items-center">
                             <span className="text-primary font-black text-xs uppercase tracking-[0.2em]">Navegación</span>
                             <button 
@@ -109,7 +101,6 @@ export default function AuthenticatedLayout({ header, children }) {
                             </button>
                         </div>
 
-                        {/* User Profile Info */}
                         {user && (
                             <div className="p-6 bg-gradient-to-b from-primary/5 to-transparent border-b border-gray-50">
                                 <div className="flex items-center space-x-4 mb-3">
@@ -127,7 +118,6 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         )}
 
-                        {/* Links Control */}
                         <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                             <Link 
                                 href={route('dashboard')}
@@ -182,7 +172,6 @@ export default function AuthenticatedLayout({ header, children }) {
                             )}
                         </div>
 
-                        {/* Drawer Footer */}
                         <div className="p-8 border-t border-gray-50 flex flex-col items-center">
                             <span className="text-[9px] text-gray-400 font-black uppercase tracking-[0.3em]">&copy; 2026 Wasion Security</span>
                         </div>

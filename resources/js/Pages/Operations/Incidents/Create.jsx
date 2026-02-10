@@ -6,7 +6,6 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useState, useRef, useEffect } from 'react';
 
-// Icons using SVG for a professional look
 const Icons = {
     MapPin: () => (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,8 +189,7 @@ export default function Create({ category: initialCategory, areas }) {
 
             <div className="py-12 bg-[#fdfcf9] min-h-[calc(100vh-64px)]">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    
-                    {/* Stepper (Professional SVG Style) */}
+
                     <div className="mb-12">
                         <div className="relative flex justify-between">
                             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -translate-y-1/2 z-0"></div>
@@ -225,7 +223,6 @@ export default function Create({ category: initialCategory, areas }) {
                     <form onSubmit={submit} className="space-y-6">
                         <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] min-h-[450px] flex flex-col">
                             
-                            {/* STEP 1: CATEGORY & LOCATION */}
                             {currentStep === 1 && (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     <div>
@@ -282,7 +279,6 @@ export default function Create({ category: initialCategory, areas }) {
                                 </div>
                             )}
 
-                            {/* STEP 2: PEOPLE INVOLVED */}
                             {currentStep === 2 && (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="flex items-center space-x-3 mb-2">
@@ -329,7 +325,6 @@ export default function Create({ category: initialCategory, areas }) {
                                 </div>
                             )}
 
-                            {/* STEP 3: DESCRIPTION & TIME */}
                             {currentStep === 3 && (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="flex items-center space-x-3 mb-2">
@@ -362,7 +357,6 @@ export default function Create({ category: initialCategory, areas }) {
                                 </div>
                             )}
 
-                            {/* STEP 4: EVIDENCE */}
                             {currentStep === 4 && (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 flex-1 flex flex-col">
                                     <div className="flex items-center space-x-3 mb-2">
@@ -416,7 +410,6 @@ export default function Create({ category: initialCategory, areas }) {
                                 </div>
                             )}
 
-                            {/* FOOTER ACTIONS */}
                             <div className="mt-auto pt-8 flex gap-4">
                                 <button 
                                     type="button" 

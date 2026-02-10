@@ -10,16 +10,14 @@ export default function Create({ type, companies, areas }) {
     const { data, setData, post, processing, errors, setError, clearErrors } =
         useForm({
             type: type || "visitor",
-            // Datos Compartidos
             company_id: "",
             new_company: "",
             visiting_person: "",
             visit_reason: "",
-            work_area: "", // Este ahora se llenará vía select
+            work_area: "",
             vehicle_brand: "",
             vehicle_plate: "",
             isNewCompany: false,
-            // Datos Individuales
             people_count: 1,
             visitors: [
                 {
@@ -34,13 +32,11 @@ export default function Create({ type, companies, areas }) {
             notes: "",
         });
 
-    const [currentStep, setCurrentStep] = useState(0); // 0: Datos compartidos, 1+: Integrantes
+    const [currentStep, setCurrentStep] = useState(0);
     const canvasRefs = useRef([]);
     const [isDrawing, setIsDrawing] = useState(false);
 
-    // Sincronizar canvas cuando cambia el paso
     useEffect(() => {
-        // Al cambiar de paso, si es un integrante, el canvas se monta
     }, [currentStep]);
 
     const handlePeopleCountChange = (count) => {
@@ -60,7 +56,6 @@ export default function Create({ type, companies, areas }) {
             }
         } else {
             newVisitors.splice(newCount);
-            // Si el paso actual queda fuera de rango, regresar al último disponible
             if (currentStep > newCount) {
                 setCurrentStep(newCount);
             }
@@ -75,7 +70,6 @@ export default function Create({ type, companies, areas }) {
 
     const handleVisitorChange = (index, field, value) => {
         const newVisitors = [...data.visitors];
-        // Capitalizar automáticamente si es el campo de nombre
         const processedValue = field === 'full_name' 
             ? value.replace(/\b\w/g, l => l.toUpperCase()) 
             : value;
@@ -180,7 +174,6 @@ export default function Create({ type, companies, areas }) {
         const rect = canvas.getBoundingClientRect();
         const ctx = canvas.getContext("2d");
         
-        // Calcular escala entre el tamaño visual y el tamaño interno del canvas
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
 
@@ -241,7 +234,6 @@ export default function Create({ type, companies, areas }) {
 
             <div className="py-8 bg-[#fdfcf9] min-h-[calc(100vh-64px)] overflow-x-hidden">
                 <div className="max-w-2xl mx-auto px-4 sm:px-6">
-                    {/* Progress Indicator */}
                     <div className="mb-10 flex items-center justify-between px-2">
                         <div className="flex items-center space-x-1">
                             <span
@@ -262,7 +254,6 @@ export default function Create({ type, companies, areas }) {
                     </div>
 
                     <form onSubmit={submit} className="space-y-6">
-                        {/* PASO 0: DATOS COMPARTIDOS */}
                         {currentStep === 0 && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                                 <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 space-y-8">
@@ -487,7 +478,6 @@ export default function Create({ type, companies, areas }) {
                             </div>
                         )}
 
-                        {/* PASOS DEL 1 AL N: INTEGRANTES */}
                         {currentStep > 0 && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                                 {data.visitors.map(
