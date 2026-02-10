@@ -50,6 +50,12 @@ Route::middleware('auth')->group(function () {
         // Rondines
         Route::get('/patrols/create', [\App\Http\Controllers\PatrolController::class, 'create'])->name('patrols.create');
         Route::post('/patrols', [\App\Http\Controllers\PatrolController::class, 'store'])->name('patrols.store');
+
+        // Vales de Salida
+        Route::get('/exit-vouchers', [\App\Http\Controllers\ExitVoucherController::class, 'index'])->name('exit-vouchers.index');
+        Route::get('/exit-vouchers/create', [\App\Http\Controllers\ExitVoucherController::class, 'create'])->name('exit-vouchers.create');
+        Route::post('/exit-vouchers', [\App\Http\Controllers\ExitVoucherController::class, 'store'])->name('exit-vouchers.store');
+        Route::post('/exit-vouchers/{voucher}/close', [\App\Http\Controllers\ExitVoucherController::class, 'close'])->name('exit-vouchers.close');
     });
 });
 
