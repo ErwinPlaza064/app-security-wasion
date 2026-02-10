@@ -106,7 +106,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             <div className="p-6 bg-gradient-to-b from-primary/5 to-transparent border-b border-gray-50">
                                 <div className="flex items-center space-x-4 mb-3">
                                     <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/20 overflow-hidden">
-                                        {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user.name.charAt(0)}
+                                        {user.name.charAt(0)}
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-gray-900 font-bold text-sm leading-none mb-1">{user.name}</span>

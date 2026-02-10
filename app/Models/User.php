@@ -24,9 +24,6 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'role',
         'plant',
-        'email_verified_at',
-        'google_id',
-        'avatar',
     ];
 
     public function isAdmin(): bool
@@ -86,7 +83,6 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

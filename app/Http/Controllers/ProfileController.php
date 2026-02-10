@@ -40,7 +40,7 @@ class ProfileController extends Controller
         $request->user()->fill($userData);
 
         if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            // Logic removed since email_verified_at is being dropped
         }
 
         $request->user()->save();
