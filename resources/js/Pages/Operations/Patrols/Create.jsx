@@ -57,10 +57,10 @@ export default function Create() {
         const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
         setData('happened_at', localISOTime);
     };
-
+    const submit = (e) => {
         e.preventDefault();
         post(route('patrols.store'));
-
+    };
     return (
         <AuthenticatedLayout>
             <Head title="Rondín de Planta" />
