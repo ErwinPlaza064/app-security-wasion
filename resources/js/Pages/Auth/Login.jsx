@@ -73,7 +73,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center p-8 lg:p-16 bg-white overflow-y-auto">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 lg:p-16 bg-cream overflow-y-auto">
                 <div className="w-full max-w-[380px]">
                     <div className="mb-8 md:hidden text-center">
                         <h2 className="text-2xl font-black text-[#0C1869] tracking-tight">Wasion MX</h2>
