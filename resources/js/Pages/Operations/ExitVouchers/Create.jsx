@@ -61,10 +61,15 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                             <div className="flex flex-col md:flex-row gap-6 md:gap-8 pb-8 md:pb-10 border-b border-gray-50">
                                 <div className="space-y-3 flex-1">
                                     <InputLabel value="Folio de Control" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <div className="bg-gray-50 rounded-2xl md:rounded-[2rem] py-4 md:py-5 px-6 md:px-8 flex items-baseline">
-                                        <span className="text-lg mr-2 text-gray-300 font-serif italic">№</span>
-                                        <span className="text-2xl md:text-3xl font-black text-[#0A192F] tracking-tighter">{data.folio}</span>
+                                    <div className="relative group">
+                                        <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-lg text-gray-300 font-serif italic z-10">№</span>
+                                        <TextInput
+                                            value={data.folio}
+                                            className={`block w-full bg-gray-50 border-none rounded-2xl md:rounded-[2rem] py-5 md:py-6 pl-12 md:pl-16 pr-6 md:px-8 text-2xl md:text-3xl font-black text-[#0A192F] tracking-tighter focus:ring-4 transition-all ${errors.folio ? 'ring-4 ring-red-100' : 'focus:ring-gray-100'}`}
+                                            onChange={(e) => setData("folio", e.target.value)}
+                                        />
                                     </div>
+                                    <InputError message={errors.folio} />
                                 </div>
                                 <div className="space-y-3 flex-[2]">
                                     <InputLabel value="Referencia Automática" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
