@@ -36,7 +36,7 @@
 <body class="flex items-center justify-center min-h-screen p-6 bg-[#FDFCF9]">
     <div class="max-w-md w-full text-center space-y-12 animate-slide-up">
         <div class="relative">
-            {/* Background 500 text */}
+            {{-- Background 500 text --}}
             <h1 class="text-[10rem] font-black opacity-5 navy-blue leading-none select-none">500</h1>
             
             <div class="absolute inset-0 flex items-center justify-center">

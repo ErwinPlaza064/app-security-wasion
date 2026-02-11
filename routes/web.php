@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee-vehicles/create', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'create'])->name('employee-vehicles.create');
         Route::post('/employee-vehicles', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'store'])->name('employee-vehicles.store');
 
+        Route::get('/vehicle-incidents/create', [\App\Http\Controllers\Operations\VehicleIncidentController::class, 'create'])->name('vehicle-incidents.create');
+        Route::post('/vehicle-incidents', [\App\Http\Controllers\Operations\VehicleIncidentController::class, 'store'])->name('vehicle-incidents.store');
+
         // Incidencias
         Route::get('/incidents/create', [\App\Http\Controllers\IncidentController::class, 'create'])->name('incidents.create');
         Route::post('/incidents', [\App\Http\Controllers\IncidentController::class, 'store'])->name('incidents.store');
