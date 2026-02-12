@@ -52,4 +52,12 @@ class VehicleLogController extends Controller
 
         return redirect()->route('dashboard')->with('status', 'Registro vehicular guardado correctamente.');
     }
+    public function markExit(VehicleLog $vehicleLog)
+    {
+        $vehicleLog->update([
+            'exit_at' => now()
+        ]);
+
+        return redirect()->back()->with('status', 'Salida vehicular registrada correctamente.');
+    }
 }

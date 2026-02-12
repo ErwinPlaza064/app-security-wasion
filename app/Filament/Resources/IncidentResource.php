@@ -105,22 +105,26 @@ class IncidentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\SelectColumn::make('status')
                     ->label('Estado')
-                    ->colors([
-                        'danger' => 'open',
-                        'warning' => 'investigating',
-                        'success' => 'resolved',
-                        'secondary' => 'closed',
-                    ])
-                    ->formatStateUsing(fn($state) => [
+                    ->options([
                         'open' => 'Abierto',
                         'investigating' => 'Investigando',
                         'resolved' => 'Resuelto',
                         'closed' => 'Cerrado',
-                    ][$state] ?? $state),
+                    ])
+                    ->selectablePlaceholder(false),
                 Tables\Columns\TextColumn::make('category')
                     ->label('Categoría')
+                    ->icon(fn(string $state): string => match ($state) {
+                        'general' => 'heroicon-m-information-circle',
+                        'damage' => 'heroicon-m-wrench-screwdriver',
+                        'conduct' => 'heroicon-m-user-minus',
+                        'theft' => 'heroicon-m-archive-box-x-mark',
+                        'safety' => 'heroicon-m-shield-check',
+                        default => 'heroicon-m-question-mark-circle',
+                    })
+                    ->iconColor('primary')
                     ->formatStateUsing(fn($state) => [
                         'general' => 'General',
                         'damage' => 'Daño',
@@ -130,14 +134,18 @@ class IncidentResource extends Resource
                     ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('location')
                     ->label('Ubicación')
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold'),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha del Suceso')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->color('gray'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Guardia')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-m-user')
+                    ->iconColor('gray'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -155,7 +163,7 @@ class IncidentResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->poll('3s');
+            ->poll('5s');
     }
 
     public static function getPages(): array

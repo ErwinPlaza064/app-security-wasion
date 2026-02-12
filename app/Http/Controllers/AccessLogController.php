@@ -17,8 +17,14 @@ class AccessLogController extends Controller
             ->latest('entry_at')
             ->get();
 
+        $activeVehicles = \App\Models\VehicleLog::whereNull('exit_at')
+            ->with(['company'])
+            ->latest('entry_at')
+            ->get();
+
         return Inertia::render('Dashboard', [
-            'activeVisitors' => $activeVisitors
+            'activeVisitors' => $activeVisitors,
+            'activeVehicles' => $activeVehicles,
         ]);
     }
 
@@ -84,7 +90,7 @@ class AccessLogController extends Controller
             );
 
             // Create individual log with shared group data + personal data
-            AccessLog::create([
+            $log = AccessLog::create([
                 'external_person_id' => $externalPerson->id,
                 'user_id' => auth()->id(),
                 'plant' => auth()->user()->plant,

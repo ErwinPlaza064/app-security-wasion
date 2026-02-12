@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
         // Vehículos
         Route::get('/vehicle-logs/create', [\App\Http\Controllers\VehicleLogController::class, 'create'])->name('vehicle-logs.create');
         Route::post('/vehicle-logs', [\App\Http\Controllers\VehicleLogController::class, 'store'])->name('vehicle-logs.store');
+        Route::patch('/vehicle-logs/{vehicleLog}/exit', [\App\Http\Controllers\VehicleLogController::class, 'markExit'])->name('vehicle-logs.exit');
 
         // Carga y Descarga (usa el mismo controlador con parámetros)
         Route::get('/carga-descarga/create', [\App\Http\Controllers\VehicleLogController::class, 'create'])->name('carga-descarga.create');

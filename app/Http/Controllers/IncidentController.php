@@ -42,7 +42,7 @@ class IncidentController extends Controller
             $imagePath = $request->file('evidence_image')->store('incidents-evidence', 'public');
         }
 
-        Incident::create([
+        $incident = Incident::create([
             'user_id' => Auth::id(),
             'category' => $validated['category'],
             'description' => $validated['description'],

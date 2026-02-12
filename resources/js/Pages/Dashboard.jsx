@@ -5,15 +5,18 @@ import DashboardHeader from './Dashboard/Partials/DashboardHeader';
 import ModuleSearch from './Dashboard/Partials/ModuleSearch';
 import ModuleGrid from './Dashboard/Partials/ModuleGrid';
 import ActiveVisitorsTable from './Dashboard/Partials/ActiveVisitorsTable';
+import ActiveVehiclesTable from './Dashboard/Partials/ActiveVehiclesTable';
 import ExitConfirmationModal from './Dashboard/Partials/ExitConfirmationModal';
 import { modules } from '@/Constants/modules';
 
-export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
+export default function Dashboard({ activeVisitors = [], activeVehicles = [], openIncidents = [] }) {
     const { auth } = usePage().props;
     const { patch, processing } = useForm();
     const [searchTerm, setSearchTerm] = useState('');
     const [confirmExitModal, setConfirmExitModal] = useState(false);
-    const [selectedVisitor, setSelectedVisitor] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [exitType, setExitType] = useState('person'); // 'person' or 'vehicle'
+    const [activeTab, setActiveTab] = useState('persons'); // 'persons' or 'vehicles'
     const tableRef = useRef(null);
     const actionsRef = useRef(null);
 
@@ -25,17 +28,19 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
         tableRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const handleExit = (visitor) => {
-        setSelectedVisitor(visitor);
+    const handleExit = (item, type = 'person') => {
+        setSelectedItem(item);
+        setExitType(type);
         setConfirmExitModal(true);
     };
 
     const confirmExit = () => {
-        if (selectedVisitor) {
-            patch(route('access-logs.exit', selectedVisitor.id), {
+        if (selectedItem) {
+            const routeName = exitType === 'person' ? 'access-logs.exit' : 'vehicle-logs.exit';
+            patch(route(routeName, selectedItem.id), {
                 onSuccess: () => {
                     setConfirmExitModal(false);
-                    setSelectedVisitor(null);
+                    setSelectedItem(null);
                 }
             });
         }
@@ -49,8 +54,13 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <DashboardHeader 
                         operatorName={auth.user.name} 
-                        activeCount={activeVisitors.length} 
-                        onScrollToTable={scrollToTable} 
+                        activePersons={activeVisitors.length}
+                        activeVehicles={activeVehicles.length}
+                        activeTab={activeTab}
+                        onTabChange={(tab) => {
+                            setActiveTab(tab);
+                            scrollToTable();
+                        }}
                     />
 
                     <ModuleSearch 
@@ -65,11 +75,18 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
                         />
                     </div>
 
-                    <div ref={tableRef}>
-                        <ActiveVisitorsTable 
-                            visitors={activeVisitors} 
-                            onExit={handleExit} 
-                        />
+                    <div ref={tableRef} className="pt-8">
+                        {activeTab === 'persons' ? (
+                            <ActiveVisitorsTable 
+                                visitors={activeVisitors} 
+                                onExit={(visitor) => handleExit(visitor, 'person')} 
+                            />
+                        ) : (
+                            <ActiveVehiclesTable 
+                                vehicles={activeVehicles} 
+                                onExit={(vehicle) => handleExit(vehicle, 'vehicle')} 
+                            />
+                        )}
                     </div>
                 </div>
             </div>
@@ -77,7 +94,8 @@ export default function Dashboard({ activeVisitors = [], openIncidents = [] }) {
             <ExitConfirmationModal 
                 show={confirmExitModal} 
                 onClose={() => setConfirmExitModal(false)} 
-                visitor={selectedVisitor} 
+                item={selectedItem}
+                type={exitType}
                 onConfirm={confirmExit} 
                 processing={processing} 
             />

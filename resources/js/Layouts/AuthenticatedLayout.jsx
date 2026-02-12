@@ -3,6 +3,7 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import GlobalLoading from '@/Components/GlobalLoading';
+import FloatingTimer from '@/Components/FloatingTimer';
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
@@ -192,6 +193,8 @@ export default function AuthenticatedLayout({ header, children }) {
             <main className="relative z-0">
                 {children}
             </main>
+
+            <FloatingTimer />
         </div>
     );
 }

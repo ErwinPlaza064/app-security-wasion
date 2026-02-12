@@ -1,6 +1,9 @@
 import Modal from '@/Components/Modal';
 
-export default function ExitConfirmationModal({ show, onClose, visitor, onConfirm, processing }) {
+export default function ExitConfirmationModal({ show, onClose, item, type = 'person', onConfirm, processing }) {
+    const name = type === 'person' ? item?.external_person?.full_name : item?.driver_name;
+    const company = type === 'person' ? item?.external_person?.company?.name : item?.company?.name;
+
     return (
         <Modal show={show} onClose={onClose} maxWidth="md">
             <div className="p-10">
@@ -16,8 +19,8 @@ export default function ExitConfirmationModal({ show, onClose, visitor, onConfir
                     <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Confirmar Salida</h2>
                     <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2">Se registrará la salida para:</p>
-                        <p className="text-sm font-black text-primary uppercase">{visitor?.external_person?.full_name}</p>
-                        <p className="text-[11px] font-bold text-gray-500 mt-1">{visitor?.external_person?.company?.name}</p>
+                        <p className="text-sm font-black text-primary uppercase">{name}</p>
+                        <p className="text-[11px] font-bold text-gray-500 mt-1">{company}</p>
                     </div>
                 </div>
 

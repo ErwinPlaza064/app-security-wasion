@@ -111,6 +111,14 @@ class AccessLogResource extends Resource
                         'warning' => 'contractor',
                         'gray' => ['laptop_only', 'employee_laptop'],
                     ])
+                    ->icon(fn(string $state): string => match ($state) {
+                        'visitor' => 'heroicon-m-user',
+                        'supplier' => 'heroicon-m-truck',
+                        'contractor' => 'heroicon-m-wrench-screwdriver',
+                        'laptop_only' => 'heroicon-m-laptop',
+                        'employee_laptop' => 'heroicon-m-laptop',
+                        default => 'heroicon-m-question-mark-circle',
+                    })
                     ->formatStateUsing(fn($state) => [
                         'visitor' => 'Visitante',
                         'supplier' => 'Proveedor',
@@ -128,7 +136,10 @@ class AccessLogResource extends Resource
                     ->color('info')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Guardia')
+                    ->label('Registró')
+                    ->searchable()
+                    ->icon('heroicon-m-user')
+                    ->iconColor('gray')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('visiting_person')
                     ->label('A quién visita')
@@ -140,13 +151,13 @@ class AccessLogResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('entry_at')
                     ->label('Entrada')
-                    ->dateTime('d/m/Y H:i')
+                    ->dateTime('d/m/y H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('exit_at')
                     ->label('Salida')
-                    ->dateTime('d/m/Y H:i')
+                    ->dateTime('d/m/y H:i')
                     ->sortable()
-                    ->placeholder('En Planta'),
+                    ->placeholder('Pendiente...'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('plant')
@@ -169,7 +180,7 @@ class AccessLogResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->poll('3s');
+            ->poll('5s');
     }
 
     public static function getPages(): array
