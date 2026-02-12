@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import DashboardTabToggle from './DashboardTabToggle';
 
-export default function ActiveVehiclesTable({ vehicles, onExit }) {
+export default function ActiveVehiclesTable({ vehicles, onExit, tabToggle }) {
     const [tableSearch, setTableSearch] = useState('');
     const [operationFilter, setOperationFilter] = useState('');
 
@@ -40,29 +41,32 @@ export default function ActiveVehiclesTable({ vehicles, onExit }) {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
                 <h2 className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Carga y Vehículos en Planta</h2>
                 
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <select 
-                        value={operationFilter}
-                        onChange={(e) => setOperationFilter(e.target.value)}
-                        className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest px-6 py-3 focus:ring-primary/10 transition-all cursor-pointer shadow-sm"
-                    >
-                        <option value="">Todas las Operaciones</option>
-                        <option value="load">Solo Carga</option>
-                        <option value="unload">Solo Descarga</option>
-                        <option value="transport">Solo Transporte</option>
-                        <option value="visit">Solo Visita</option>
-                    </select>
+                <div className="flex flex-col items-end gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <select 
+                            value={operationFilter}
+                            onChange={(e) => setOperationFilter(e.target.value)}
+                            className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest px-6 py-3 focus:ring-primary/10 transition-all cursor-pointer shadow-sm"
+                        >
+                            <option value="">Todas las Operaciones</option>
+                            <option value="load">Solo Carga</option>
+                            <option value="unload">Solo Descarga</option>
+                            <option value="transport">Solo Transporte</option>
+                            <option value="visit">Solo Visita</option>
+                        </select>
 
-                    <div className="relative">
-                        <input 
-                            type="text"
-                            value={tableSearch}
-                            onChange={(e) => setTableSearch(e.target.value)}
-                            placeholder="BUSCAR VEHÍCULO..."
-                            className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest pl-10 pr-6 py-3 focus:ring-primary/10 transition-all shadow-sm w-full sm:w-[250px]"
-                        />
-                        <svg className="w-3.5 h-3.5 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <div className="relative">
+                            <input 
+                                type="text"
+                                value={tableSearch}
+                                onChange={(e) => setTableSearch(e.target.value)}
+                                placeholder="BUSCAR VEHÍCULO..."
+                                className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest pl-10 pr-6 py-3 focus:ring-primary/10 transition-all shadow-sm w-full sm:w-[250px]"
+                            />
+                            <svg className="w-3.5 h-3.5 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
                     </div>
+                    {tabToggle}
                 </div>
             </div>
 

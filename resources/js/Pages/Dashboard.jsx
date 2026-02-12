@@ -6,6 +6,7 @@ import ModuleSearch from './Dashboard/Partials/ModuleSearch';
 import ModuleGrid from './Dashboard/Partials/ModuleGrid';
 import ActiveVisitorsTable from './Dashboard/Partials/ActiveVisitorsTable';
 import ActiveVehiclesTable from './Dashboard/Partials/ActiveVehiclesTable';
+import DashboardTabToggle from './Dashboard/Partials/DashboardTabToggle';
 import ExitConfirmationModal from './Dashboard/Partials/ExitConfirmationModal';
 import { modules } from '@/Constants/modules';
 
@@ -46,6 +47,18 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
         }
     };
 
+    const tabToggle = (
+        <DashboardTabToggle 
+            activeTab={activeTab} 
+            onTabChange={(tab) => {
+                setActiveTab(tab);
+                scrollToTable();
+            }}
+            personsCount={activeVisitors.length}
+            vehiclesCount={activeVehicles.length}
+        />
+    );
+
     return (
         <AuthenticatedLayout>
             <Head title="Escritorio Operativo" />
@@ -80,11 +93,13 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
                             <ActiveVisitorsTable 
                                 visitors={activeVisitors} 
                                 onExit={(visitor) => handleExit(visitor, 'person')} 
+                                tabToggle={tabToggle}
                             />
                         ) : (
                             <ActiveVehiclesTable 
                                 vehicles={activeVehicles} 
                                 onExit={(vehicle) => handleExit(vehicle, 'vehicle')} 
+                                tabToggle={tabToggle}
                             />
                         )}
                     </div>
