@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, usePage, useForm } from '@inertiajs/react';
+import { Head, usePage, useForm, router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
 import DashboardHeader from './Dashboard/Partials/DashboardHeader';
 import ModuleSearch from './Dashboard/Partials/ModuleSearch';
@@ -12,7 +12,7 @@ import { modules } from '@/Constants/modules';
 
 export default function Dashboard({ activeVisitors = [], activeVehicles = [], openIncidents = [] }) {
     const { auth } = usePage().props;
-    const { patch, processing } = useForm();
+    const [processing, setProcessing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -35,10 +35,12 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
         setConfirmExitModal(true);
     };
 
-    const confirmExit = () => {
+    const confirmExit = (signature) => {
         if (selectedItem) {
             const routeName = exitType === 'person' ? 'access-logs.exit' : 'vehicle-logs.exit';
-            patch(route(routeName, selectedItem.id), {
+            router.patch(route(routeName, selectedItem.id), { signature }, {
+                onStart: () => setProcessing(true),
+                onFinish: () => setProcessing(false),
                 onSuccess: () => {
                     setConfirmExitModal(false);
                     setSelectedItem(null);

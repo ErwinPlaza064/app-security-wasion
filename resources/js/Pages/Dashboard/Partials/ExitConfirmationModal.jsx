@@ -1,11 +1,19 @@
 import Modal from '@/Components/Modal';
+import SignaturePad from '@/Pages/Operations/AccessLogs/Partials/SignaturePad';
+import { useState } from 'react';
 
 export default function ExitConfirmationModal({ show, onClose, item, type = 'person', onConfirm, processing }) {
-    const name = type === 'person' ? item?.external_person?.full_name : item?.driver_name;
-    const company = type === 'person' ? item?.external_person?.company?.name : item?.company?.name;
+    const [signature, setSignature] = useState('');
+    
+    const name = type === 'person' ? (item?.external_person?.full_name || item?.visiting_person) : item?.driver_name;
+    const company = type === 'person' ? (item?.external_person?.company?.name || (['resignation', 'clearance'].includes(item?.type) ? 'INTERNO' : '---')) : item?.company?.name;
+
+    const handleConfirm = () => {
+        onConfirm(signature);
+    };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="md">
+        <Modal show={show} onClose={() => { setSignature(''); onClose(); }} maxWidth="md">
             <div className="p-10">
                 <div className="flex items-center justify-center mb-8">
                     <div className="w-20 h-20 bg-red-50 text-red-600 rounded-[2.5rem] flex items-center justify-center shadow-inner">
@@ -15,7 +23,7 @@ export default function ExitConfirmationModal({ show, onClose, item, type = 'per
                     </div>
                 </div>
                 
-                <div className="text-center space-y-4 mb-10">
+                <div className="text-center space-y-4 mb-4">
                     <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Confirmar Salida</h2>
                     <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2">Se registrará la salida para:</p>
@@ -24,18 +32,27 @@ export default function ExitConfirmationModal({ show, onClose, item, type = 'per
                     </div>
                 </div>
 
+                {type === 'person' && (
+                    <div className="mb-8">
+                        <SignaturePad 
+                            value={signature}
+                            onChange={setSignature}
+                        />
+                    </div>
+                )}
+
                 <div className="flex gap-4">
                     <button 
                         type="button"
-                        onClick={onClose}
+                        onClick={() => { setSignature(''); onClose(); }}
                         className="flex-1 px-8 py-5 rounded-[1.5rem] bg-white border-2 border-gray-100 text-gray-400 text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 hover:border-gray-200 transition-all"
                     >
                         Cancelar
                     </button>
                     <button 
                         type="button"
-                        onClick={onConfirm}
-                        disabled={processing}
+                        onClick={handleConfirm}
+                        disabled={processing || (type === 'person' && !signature)}
                         className="flex-1 px-8 py-5 rounded-[1.5rem] bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-gray-200 hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {processing ? (

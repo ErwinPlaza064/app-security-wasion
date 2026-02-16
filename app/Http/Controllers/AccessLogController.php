@@ -123,10 +123,15 @@ class AccessLogController extends Controller
         return redirect()->route('dashboard')->with('status', $message);
     }
 
-    public function markExit(AccessLog $accessLog)
+    public function markExit(Request $request, AccessLog $accessLog)
     {
+        $validated = $request->validate([
+            'signature' => 'nullable|string'
+        ]);
+
         $accessLog->update([
-            'exit_at' => now()
+            'exit_at' => now(),
+            'exit_signature' => $validated['signature'] ?? null
         ]);
 
         return redirect()->back()->with('status', 'Salida registrada correctamente.');

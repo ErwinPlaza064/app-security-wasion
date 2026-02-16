@@ -40,7 +40,7 @@ class SpecialLogController extends Controller
             'happened_at' => 'required|date',
         ]);
 
-        \App\Models\SecuritySpecialLog::create([
+        $specialLog = \App\Models\SecuritySpecialLog::create([
             'user_id' => Auth::id(),
             'type' => $validated['type'],
             'plant' => Auth::user()->plant,
@@ -53,6 +53,19 @@ class SpecialLogController extends Controller
             'notes' => $validated['notes'],
             'happened_at' => $validated['happened_at'],
         ]);
+
+        // Registrar como un acceso de visitante si es renuncia o finiquito
+        if (in_array($validated['type'], ['resignation', 'clearance'])) {
+            \App\Models\AccessLog::create([
+                'user_id' => Auth::id(),
+                'plant' => Auth::user()->plant,
+                'type' => $validated['type'],
+                'entry_at' => $validated['happened_at'],
+                'visiting_person' => $validated['employee_name'], // Usamos este campo para el nombre del empleado en estos tipos
+                'work_area' => ($validated['department'] ?? '') . ($validated['position'] ? ' / ' . $validated['position'] : ''),
+                'notes' => "Registro automático desde " . ($validated['type'] === 'resignation' ? 'Renuncia' : 'Finiquito') . ". " . ($validated['notes'] ?? ''),
+            ]);
+        }
 
         return redirect()->route('dashboard')->with('status', 'Registro especial guardado correctamente.');
     }
