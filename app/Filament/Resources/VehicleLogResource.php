@@ -19,8 +19,8 @@ class VehicleLogResource extends Resource
     }
     protected static ?string $navigationIcon = 'heroicon-o-truck';
     protected static ?string $navigationGroup = 'Control de Accesos';
-    protected static ?string $modelLabel = 'Bitácora Vehicular';
-    protected static ?string $pluralModelLabel = 'Bitácoras Vehiculares';
+    protected static ?string $modelLabel = 'Transportista / Vehículo';
+    protected static ?string $pluralModelLabel = 'Transportistas y Vehículos';
 
     public static function form(Form $form): Form
     {
@@ -111,6 +111,8 @@ class VehicleLogResource extends Resource
                         'info' => 'visit',
                     ])
                     ->formatStateUsing(fn($state) => [
+                        'load' => 'Carga',
+                        'unload' => 'Descarga',
                         'transport' => 'Transporte',
                         'visit' => 'Visita',
                     ][$state] ?? $state),
