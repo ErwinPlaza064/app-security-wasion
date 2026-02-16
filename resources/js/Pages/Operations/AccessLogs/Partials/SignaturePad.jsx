@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
 
-export default function SignaturePad({ index, value, onChange, error }) {
+export default function SignaturePad({ index, value, onChange, error, label = "Firma Digital Requerida" }) {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
 
@@ -83,9 +83,9 @@ export default function SignaturePad({ index, value, onChange, error }) {
         <div className="pt-4 space-y-4">
             <div className="flex items-center justify-between px-1">
                 <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${label.includes('Opcional') ? 'bg-gray-300' : 'bg-primary'}`}></div>
                     <InputLabel
-                        value="Firma Digital Requerida"
+                        value={label}
                         className="text-[10px] font-black text-gray-900 uppercase tracking-widest"
                     />
                 </div>
