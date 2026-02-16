@@ -42,6 +42,8 @@ class AccessLogResource extends Resource
                                 'contractor' => 'Contratista',
                                 'laptop_only' => 'Solo Laptop',
                                 'employee_laptop' => 'Laptop Colaborador',
+                                'resignation' => 'Renuncia',
+                                'clearance' => 'Finiquito',
                             ])
                             ->required(),
                         Forms\Components\DateTimePicker::make('entry_at')
@@ -87,9 +89,28 @@ class AccessLogResource extends Resource
                         Forms\Components\Textarea::make('notes')
                             ->label('Observaciones')
                             ->columnSpanFull(),
-                        Forms\Components\ViewField::make('signature')
-                            ->label('Firma')
-                            ->view('filament.forms.components.signature-preview'),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\ViewField::make('signature')
+                                    ->label('Firma de Entrada')
+                                    ->view('filament.forms.components.signature-preview'),
+                                Forms\Components\ViewField::make('exit_signature')
+                                    ->label('Firma de Salida')
+                                    ->view('filament.forms.components.signature-preview'),
+                            ]),
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('clear_signatures')
+                                ->label('Limpiar Firmas')
+                                ->color('danger')
+                                ->icon('heroicon-m-trash')
+                                ->requiresConfirmation()
+                                ->action(function (AccessLog $record) {
+                                    $record->update([
+                                        'signature' => null,
+                                        'exit_signature' => null,
+                                    ]);
+                                }),
+                        ]),
                     ]),
             ]);
     }
@@ -98,9 +119,10 @@ class AccessLogResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('externalPerson.full_name')
+                Tables\Columns\TextColumn::make('name')
                     ->label('Nombre Completo')
-                    ->searchable()
+                    ->getStateUsing(fn($record) => $record->externalPerson?->full_name ?? $record->visiting_person)
+                    ->searchable(['visiting_person'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
@@ -110,6 +132,8 @@ class AccessLogResource extends Resource
                         'success' => 'supplier',
                         'warning' => 'contractor',
                         'gray' => ['laptop_only', 'employee_laptop'],
+                        'danger' => 'resignation',
+                        'amber' => 'clearance',
                     ])
                     ->icon(fn(string $state): string => match ($state) {
                         'visitor' => 'heroicon-m-user',
@@ -117,6 +141,8 @@ class AccessLogResource extends Resource
                         'contractor' => 'heroicon-m-wrench-screwdriver',
                         'laptop_only' => 'heroicon-m-laptop',
                         'employee_laptop' => 'heroicon-m-laptop',
+                        'resignation' => 'heroicon-m-user-minus',
+                        'clearance' => 'heroicon-m-document-check',
                         default => 'heroicon-m-question-mark-circle',
                     })
                     ->formatStateUsing(fn($state) => [
@@ -125,9 +151,12 @@ class AccessLogResource extends Resource
                         'contractor' => 'Contratista',
                         'laptop_only' => 'Solo Laptop',
                         'employee_laptop' => 'Laptop Colab.',
+                        'resignation' => 'Renuncia',
+                        'clearance' => 'Finiquito',
                     ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('externalPerson.company.name')
                     ->label('Empresa')
+                    ->getStateUsing(fn($record) => $record->externalPerson?->company?->name ?? (in_array($record->type, ['resignation', 'clearance']) ? 'INTERNO' : '---'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('plant')
