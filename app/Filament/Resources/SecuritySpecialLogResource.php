@@ -19,8 +19,8 @@ class SecuritySpecialLogResource extends Resource
     }
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
     protected static ?string $navigationGroup = 'Seguridad Corporativa';
-    protected static ?string $modelLabel = 'Bitácora Especial';
-    protected static ?string $pluralModelLabel = 'Bitácoras Especiales';
+    protected static ?string $modelLabel = 'Baja / Especial';
+    protected static ?string $pluralModelLabel = 'Bajas y Especiales';
 
     public static function form(Form $form): Form
     {
@@ -43,7 +43,17 @@ class SecuritySpecialLogResource extends Resource
                         Forms\Components\DateTimePicker::make('happened_at')
                             ->label('Fecha/Hora del Registro')
                             ->required(),
-                    ])->columns(3),
+                        Forms\Components\Select::make('plant')
+                            ->label('Planta')
+                            ->options([
+                                'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
+                                'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
+                                'Planta 5' => 'Planta 5',
+                            ])
+                            ->required(),
+                    ])->columns(4),
 
                 Forms\Components\Section::make('Datos del Colaborador')
                     ->schema([
@@ -110,6 +120,11 @@ class SecuritySpecialLogResource extends Resource
                     ->label('Jefe Directo')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('plant')
+                    ->label('Planta')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha')
                     ->dateTime('d/m/Y H:i')
@@ -123,6 +138,15 @@ class SecuritySpecialLogResource extends Resource
                     ->options([
                         'resignation' => 'Renuncias',
                         'no_badge' => 'Sin Gafete',
+                    ]),
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
                     ]),
             ])
             ->actions([

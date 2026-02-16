@@ -63,6 +63,16 @@ class PatrolLogResource extends Resource
                     })
                     ->columnSpanFull()
                     ->disabled(),
+                Forms\Components\Select::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
+                    ])
+                    ->disabled(),
             ]);
     }
 
@@ -110,12 +120,25 @@ class PatrolLogResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date_only')
                     ->label('Fecha')
-                    ->getStateUsing(fn($record) => $record->happened_at->format('d/m/Y'))
+                    ->getStateUsing(fn($record) => $record->happened_at ? $record->happened_at->format('d/m/Y') : 'N/A')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('plant')
+                    ->label('Planta')
+                    ->badge()
+                    ->color('info')
                     ->sortable(),
             ])
             ->defaultSort('happened_at', 'desc')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(), // Solo Ver, no Editar

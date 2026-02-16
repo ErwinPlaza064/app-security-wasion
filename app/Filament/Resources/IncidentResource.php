@@ -54,7 +54,17 @@ class IncidentResource extends Resource
                                 'closed' => 'Cerrado',
                             ])
                             ->required(),
-                    ])->columns(3),
+                        Forms\Components\Select::make('plant')
+                            ->label('Planta')
+                            ->options([
+                                'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
+                                'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
+                                'Planta 5' => 'Planta 5',
+                            ])
+                            ->required(),
+                    ])->columns(4),
 
                 Forms\Components\Section::make('Hechos y Ubicación')
                     ->schema([
@@ -136,6 +146,11 @@ class IncidentResource extends Resource
                     ->label('Ubicación')
                     ->searchable()
                     ->weight('bold'),
+                Tables\Columns\TextColumn::make('plant')
+                    ->label('Planta')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha del Suceso')
                     ->dateTime('d/m/Y H:i')
@@ -158,6 +173,15 @@ class IncidentResource extends Resource
                     ->options([
                         'damage' => 'Daños',
                         'conduct' => 'Conducta',
+                    ]),
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
                     ]),
             ])
             ->actions([

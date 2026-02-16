@@ -70,10 +70,20 @@ class VehicleLogResource extends Resource
                             ->required(),
                         Forms\Components\DateTimePicker::make('exit_at')
                             ->label('Fecha/Hora Salida'),
+                        Forms\Components\Select::make('plant')
+                            ->label('Planta')
+                            ->options([
+                                'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
+                                'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
+                                'Planta 5' => 'Planta 5',
+                            ])
+                            ->required(),
                         Forms\Components\Textarea::make('notes')
                             ->label('Notas de Bitácora')
                             ->columnSpanFull(),
-                    ])->columns(2),
+                    ])->columns(3),
             ]);
     }
 
@@ -101,11 +111,14 @@ class VehicleLogResource extends Resource
                         'info' => 'visit',
                     ])
                     ->formatStateUsing(fn($state) => [
-                        'load' => 'Carga',
-                        'unload' => 'Descarga',
                         'transport' => 'Transporte',
                         'visit' => 'Visita',
                     ][$state] ?? $state),
+                Tables\Columns\TextColumn::make('plant')
+                    ->label('Planta')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('entry_at')
                     ->label('Entrada')
                     ->dateTime('d/m/Y H:i')
@@ -122,6 +135,15 @@ class VehicleLogResource extends Resource
                         'load' => 'Carga',
                         'unload' => 'Descarga',
                         'transport' => 'Transporte',
+                    ]),
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
                     ]),
             ])
             ->actions([
