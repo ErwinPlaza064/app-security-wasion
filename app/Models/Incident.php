@@ -13,6 +13,7 @@ class Incident extends Model
         'location',
         'happened_at',
         'involved_person',
+        'plant',
         'payroll_number',
         'company',
         'evidence_image',

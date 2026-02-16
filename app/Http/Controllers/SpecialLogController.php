@@ -43,6 +43,7 @@ class SpecialLogController extends Controller
         \App\Models\SecuritySpecialLog::create([
             'user_id' => Auth::id(),
             'type' => $validated['type'],
+            'plant' => Auth::user()->plant,
             'employee_name' => $validated['employee_name'],
             'employee_id' => $validated['employee_id'],
             'department' => $validated['department'],

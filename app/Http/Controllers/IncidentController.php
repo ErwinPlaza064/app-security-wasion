@@ -45,6 +45,7 @@ class IncidentController extends Controller
         $incident = Incident::create([
             'user_id' => Auth::id(),
             'category' => $validated['category'],
+            'plant' => Auth::user()->plant,
             'description' => $validated['description'],
             'location' => $validated['location'],
             'happened_at' => $validated['happened_at'],

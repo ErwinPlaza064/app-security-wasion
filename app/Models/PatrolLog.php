@@ -11,6 +11,7 @@ class PatrolLog extends Model
 
     protected $fillable = [
         'user_id',
+        'plant',
         'started_at',
         'area_name',
         'status',

@@ -12,19 +12,25 @@ class AccessLogController extends Controller
 {
     public function dashboard()
     {
-        $activeVisitors = AccessLog::whereNull('exit_at')
-            ->with(['externalPerson.company'])
-            ->latest('entry_at')
-            ->get();
+        $user = auth()->user();
 
-        $activeVehicles = \App\Models\VehicleLog::whereNull('exit_at')
+        $activeVisitorsQuery = AccessLog::whereNull('exit_at')
+            ->with(['externalPerson.company'])
+            ->latest('entry_at');
+
+        $activeVehiclesQuery = \App\Models\VehicleLog::whereNull('exit_at')
             ->with(['company'])
-            ->latest('entry_at')
-            ->get();
+            ->latest('entry_at');
+
+        // Si no es admin/superadmin, filtrar por planta
+        if (!$user->isAdmin()) {
+            $activeVisitorsQuery->where('plant', $user->plant);
+            $activeVehiclesQuery->where('plant', $user->plant);
+        }
 
         return Inertia::render('Dashboard', [
-            'activeVisitors' => $activeVisitors,
-            'activeVehicles' => $activeVehicles,
+            'activeVisitors' => $activeVisitorsQuery->get(),
+            'activeVehicles' => $activeVehiclesQuery->get(),
         ]);
     }
 

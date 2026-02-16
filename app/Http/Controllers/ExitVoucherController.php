@@ -26,7 +26,9 @@ class ExitVoucherController extends Controller
     public function create()
     {
         // Generar un folio sugerido (Secuencial: № 0001)
-        $count = ExitVoucher::whereDate('created_at', now())->count() + 1;
+        $count = ExitVoucher::where('plant', Auth::user()->plant)
+            ->whereDate('created_at', now())
+            ->count() + 1;
         $suggestedFolio = str_pad($count, 4, '0', STR_PAD_LEFT);
 
         // Generar número de referencia automático (Basado en fecha: REF-20240210-1055)

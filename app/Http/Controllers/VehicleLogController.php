@@ -46,6 +46,7 @@ class VehicleLogController extends Controller
             'driver_name' => $validated['driver_name'],
             'company_id' => $companyId,
             'operation' => $validated['operation'],
+            'plant' => auth()->user()->plant,
             'entry_at' => now(),
             'notes' => $validated['notes'],
         ]);

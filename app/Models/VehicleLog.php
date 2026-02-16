@@ -13,6 +13,7 @@ class VehicleLog extends Model
         'driver_name',
         'company_id',
         'operation',
+        'plant',
         'entry_at',
         'exit_at',
         'notes',

@@ -13,7 +13,7 @@ class PatrolController extends Controller
     public function create()
     {
         return Inertia::render('Operations/Patrols/Create', [
-            'areas' => Area::all(),
+            'areas' => Area::where('plant', auth()->user()->plant)->get(),
         ]);
     }
 
@@ -40,6 +40,7 @@ class PatrolController extends Controller
 
         PatrolLog::create([
             'user_id' => auth()->id(),
+            'plant' => auth()->user()->plant,
             'started_at' => $validated['started_at'],
             'area_name' => $validated['area_name'],
             'status' => $validated['status'],
