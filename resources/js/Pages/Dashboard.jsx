@@ -17,9 +17,14 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [exitType, setExitType] = useState('person'); // 'person' or 'vehicle'
-    const [activeTab, setActiveTab] = useState('persons'); // 'persons' or 'vehicles'
+    const [activeTab, setActiveTab] = useState('persons'); // 'persons', 'vehicles', or 'resignations'
     const tableRef = useRef(null);
     const actionsRef = useRef(null);
+
+    // Separar registros de acceso normales de renuncias/finiquitos
+    const resignationTypes = ['resignation', 'clearance'];
+    const pureVisitors = activeVisitors.filter(v => !resignationTypes.includes(v.type));
+    const activeResignations = activeVisitors.filter(v => resignationTypes.includes(v.type));
 
     useEffect(() => {
         actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -56,8 +61,9 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
                 setActiveTab(tab);
                 scrollToTable();
             }}
-            personsCount={activeVisitors.length}
+            personsCount={pureVisitors.length}
             vehiclesCount={activeVehicles.length}
+            resignationsCount={activeResignations.length}
         />
     );
 
@@ -69,8 +75,9 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <DashboardHeader 
                         operatorName={auth.user.name} 
-                        activePersons={activeVisitors.length}
+                        activePersons={pureVisitors.length}
                         activeVehicles={activeVehicles.length}
+                        activeResignations={activeResignations.length}
                         activeTab={activeTab}
                         onTabChange={(tab) => {
                             setActiveTab(tab);
@@ -91,17 +98,26 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
                     </div>
 
                     <div ref={tableRef} className="pt-8">
-                        {activeTab === 'persons' ? (
+                        {activeTab === 'persons' && (
                             <ActiveVisitorsTable 
-                                visitors={activeVisitors} 
+                                visitors={pureVisitors} 
                                 onExit={(visitor) => handleExit(visitor, 'person')} 
                                 tabToggle={tabToggle}
                             />
-                        ) : (
+                        )}
+                        {activeTab === 'vehicles' && (
                             <ActiveVehiclesTable 
                                 vehicles={activeVehicles} 
                                 onExit={(vehicle) => handleExit(vehicle, 'vehicle')} 
                                 tabToggle={tabToggle}
+                            />
+                        )}
+                        {activeTab === 'resignations' && (
+                            <ActiveVisitorsTable 
+                                visitors={activeResignations} 
+                                onExit={(visitor) => handleExit(visitor, 'person')} 
+                                tabToggle={tabToggle}
+                                title="Renuncias y Finiquitos"
                             />
                         )}
                     </div>

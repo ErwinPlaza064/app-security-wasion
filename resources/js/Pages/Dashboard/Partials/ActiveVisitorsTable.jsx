@@ -1,21 +1,21 @@
 import { useState } from "react";
 import DashboardTabToggle from "./DashboardTabToggle";
 
-export default function ActiveVisitorsTable({ visitors, onExit, tabToggle }) {
+export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title = "Personal en Planta" }) {
     const [tableSearch, setTableSearch] = useState("");
     const [companyFilter, setCompanyFilter] = useState("");
 
     const activeCompanies = [
         ...new Set(
             visitors
-                .map((v) => v.external_person?.company?.name)
+                .map((v) => v.external_person?.company?.name || (['resignation', 'clearance'].includes(v.type) ? 'INTERNO' : null))
                 .filter(Boolean),
         ),
     ].sort();
 
     const filteredVisitors = visitors.filter((v) => {
         const name = v.external_person?.full_name || v.visiting_person;
-        const companyName = v.external_person?.company?.name || "INTERNO";
+        const companyName = v.external_person?.company?.name || (['resignation', 'clearance'].includes(v.type) ? 'INTERNO' : '---');
 
         const matchesSearch =
             name?.toLowerCase().includes(tableSearch.toLowerCase()) ||
@@ -30,7 +30,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle }) {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
                 <h2 className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">
-                    Personal en Planta
+                    {title}
                 </h2>
 
                 <div className="flex flex-col items-end gap-3">

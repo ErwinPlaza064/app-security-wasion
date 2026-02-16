@@ -1,4 +1,4 @@
-export default function DashboardHeader({ operatorName, activePersonsPercent, activeVehiclesPercent, activePersons, activeVehicles, activeTab, onTabChange }) {
+export default function DashboardHeader({ operatorName, activePersonsPercent, activeVehiclesPercent, activePersons, activeVehicles, activeResignations, activeTab, onTabChange }) {
     return (
         <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-gray-100 pb-8 uppercase">
             <div>
@@ -43,6 +43,23 @@ export default function DashboardHeader({ operatorName, activePersonsPercent, ac
                         <div className="flex items-center space-x-2">
                             <span className="text-2xl font-black text-primary leading-none">{activeVehicles}</span>
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                        </div>
+                    </div>
+                </button>
+
+                <button 
+                    onClick={() => onTabChange('resignations')}
+                    className={`px-6 py-3 rounded-2xl border transition-all flex items-center space-x-4 active:scale-95 shadow-sm hover:shadow-md ${
+                        activeTab === 'resignations' 
+                            ? 'bg-white border-primary/20 ring-1 ring-primary/5' 
+                            : 'bg-gray-50/50 border-transparent grayscale opacity-70'
+                    }`}
+                >
+                    <div className="flex flex-col items-start">
+                        <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Renuncias</span>
+                        <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-black text-primary leading-none">{activeResignations}</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
                         </div>
                     </div>
                 </button>
