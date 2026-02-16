@@ -24,6 +24,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'role',
         'plant',
+        'last_login_at',
     ];
 
     public function isAdmin(): bool
@@ -84,6 +85,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 }

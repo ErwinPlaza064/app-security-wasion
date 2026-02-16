@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Login;
+use App\Listeners\UpdateLastLoginAt;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,5 +29,10 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        Event::listen(
+            Login::class,
+            UpdateLastLoginAt::class
+        );
     }
 }

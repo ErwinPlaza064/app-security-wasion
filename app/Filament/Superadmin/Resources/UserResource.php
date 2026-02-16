@@ -47,7 +47,9 @@ class UserResource extends Resource
                             ->label('Planta Asignada')
                             ->options([
                                 'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
                                 'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
                                 'Planta 5' => 'Planta 5',
                             ])
                             ->required(fn(Forms\Get $get) => $get('role') === 'user')
@@ -95,13 +97,20 @@ class UserResource extends Resource
                     ->label('Fecha Registro')
                     ->dateTime('d/m/Y')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('last_login_at')
+                    ->label('Última Conexión')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->placeholder('Nunca se ha conectado'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('plant')
                     ->label('Filtrar por Planta')
                     ->options([
                         'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
                         'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ]),
                 Tables\Filters\SelectFilter::make('role')

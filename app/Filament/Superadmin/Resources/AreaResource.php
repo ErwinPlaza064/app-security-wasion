@@ -28,7 +28,9 @@ class AreaResource extends Resource
                             ->label('Planta')
                             ->options([
                                 'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
                                 'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
                                 'Planta 5' => 'Planta 5',
                             ])
                             ->required(),
@@ -60,7 +62,9 @@ class AreaResource extends Resource
                     ->label('Filtrar por Planta')
                     ->options([
                         'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
                         'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ]),
             ])
