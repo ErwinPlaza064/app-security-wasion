@@ -38,10 +38,15 @@ class PatrolLog extends Model
 
         $diff = $this->started_at->diff($this->happened_at);
 
+        // Si la diferencia es de 0 segundos, mostrar 0s
+        if ($diff->h === 0 && $diff->i === 0 && $diff->s === 0) {
+            return '0s';
+        }
+
         $parts = [];
         if ($diff->h > 0) $parts[] = $diff->h . 'h';
         if ($diff->i > 0) $parts[] = $diff->i . 'm';
-        $parts[] = $diff->s . 's';
+        if ($diff->s > 0 || empty($parts)) $parts[] = $diff->s . 's';
 
         return implode(' ', $parts);
     }

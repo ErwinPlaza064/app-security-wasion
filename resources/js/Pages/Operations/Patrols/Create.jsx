@@ -73,7 +73,7 @@ export default function Create() {
         const now = new Date();
         const timestamp = Date.now();
         const offset = now.getTimezoneOffset() * 60000;
-        const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+        const localISOTime = new Date(now - offset).toISOString().slice(0, 19);
         
         localStorage.setItem('patrol_start_timestamp', timestamp.toString());
         setPatrolState('running');
@@ -91,7 +91,7 @@ export default function Create() {
         
         const now = new Date(timestamp);
         const offset = now.getTimezoneOffset() * 60000;
-        const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+        const localISOTime = new Date(now - offset).toISOString().slice(0, 19);
         setData('happened_at', localISOTime);
     };
 
