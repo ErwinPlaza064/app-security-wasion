@@ -59,14 +59,7 @@ class SuperadminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Superadmin/Widgets'), for: 'App\\Filament\\Superadmin\\Widgets')
             ->resources([
-                \App\Filament\Resources\AccessLogResource::class,
-                \App\Filament\Resources\VehicleLogResource::class,
-                \App\Filament\Resources\IncidentResource::class,
-                \App\Filament\Resources\SecuritySpecialLogResource::class,
-                \App\Filament\Resources\PatrolLogResource::class,
-                \App\Filament\Resources\ExitVoucherResource::class,
-                \App\Filament\Resources\EmployeeVehicleResource::class,
-                \App\Filament\Resources\VehicleIncidentResource::class,
+                // Los recursos se cargan vía discoverResources desde Filament/Superadmin/Resources
             ])
             ->widgets([
                 Widgets\AccountWidget::class,
