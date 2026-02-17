@@ -8,14 +8,14 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
     const activeCompanies = [
         ...new Set(
             visitors
-                .map((v) => v.external_person?.company?.name || (['resignation', 'clearance'].includes(v.type) ? 'INTERNO' : null))
+                .map((v) => v.external_person?.company?.name || (['resignation', 'clearance', 'no_badge'].includes(v.type) ? 'INTERNO' : null))
                 .filter(Boolean),
         ),
     ].sort();
 
     const filteredVisitors = visitors.filter((v) => {
         const name = v.external_person?.full_name || v.visiting_person;
-        const companyName = v.external_person?.company?.name || (['resignation', 'clearance'].includes(v.type) ? 'INTERNO' : '---');
+        const companyName = v.external_person?.company?.name || (['resignation', 'clearance', 'no_badge'].includes(v.type) ? 'INTERNO' : '---');
 
         const matchesSearch =
             name?.toLowerCase().includes(tableSearch.toLowerCase()) ||
@@ -135,6 +135,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                                                 ([
                                                     "resignation",
                                                     "clearance",
+                                                    "no_badge",
                                                 ].includes(v.type)
                                                     ? "INTERNO"
                                                     : "---")}
@@ -152,7 +153,9 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                                                             : v.type ===
                                                                 "clearance"
                                                               ? "FINIQUITO"
-                                                              : "VISITANTE"}
+                                                              : v.type === "no_badge"
+                                                                ? "SIN GAFETE"
+                                                                : "VISITANTE"}
                                                 </span>
                                                 <span className="text-[10px] font-black text-gray-900">
                                                     {v.work_area || "---"}

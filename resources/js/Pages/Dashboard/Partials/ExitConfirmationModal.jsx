@@ -19,7 +19,7 @@ export default function ExitConfirmationModal({
     const company =
         type === "person"
             ? item?.external_person?.company?.name ||
-              (["resignation", "clearance"].includes(item?.type)
+              (["resignation", "clearance", "no_badge"].includes(item?.type)
                   ? "INTERNO"
                   : "---")
             : item?.company?.name;
@@ -78,7 +78,7 @@ export default function ExitConfirmationModal({
                         <SignaturePad
                             value={signature}
                             onChange={setSignature}
-                            label={['resignation', 'clearance'].includes(item?.type) ? "Firma Digital (Opcional)" : "Firma Digital Requerida"}
+                            label="Firma Digital (Opcional)"
                         />
                     </div>
                 )}
@@ -97,14 +97,7 @@ export default function ExitConfirmationModal({
                     <button
                         type="button"
                         onClick={handleConfirm}
-                        disabled={
-                            processing ||
-                            (type === "person" &&
-                                !["resignation", "clearance"].includes(
-                                    item?.type,
-                                ) &&
-                                !signature)
-                        }
+                        disabled={processing}
                         className="flex-1 px-6 py-4 rounded-2xl bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest shadow-xl shadow-gray-200 hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {processing ? (

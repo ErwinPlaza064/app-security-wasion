@@ -44,6 +44,7 @@ class AccessLogResource extends Resource
                                 'employee_laptop' => 'Laptop Colaborador',
                                 'resignation' => 'Renuncia',
                                 'clearance' => 'Finiquito',
+                                'no_badge' => 'Sin Gafete',
                             ])
                             ->required(),
                         Forms\Components\DateTimePicker::make('entry_at')
@@ -134,6 +135,7 @@ class AccessLogResource extends Resource
                         'gray' => ['laptop_only', 'employee_laptop'],
                         'danger' => 'resignation',
                         'amber' => 'clearance',
+                        'indigo' => 'no_badge',
                     ])
                     ->icon(fn(string $state): string => match ($state) {
                         'visitor' => 'heroicon-m-user',
@@ -143,6 +145,7 @@ class AccessLogResource extends Resource
                         'employee_laptop' => 'heroicon-m-laptop',
                         'resignation' => 'heroicon-m-user-minus',
                         'clearance' => 'heroicon-m-document-check',
+                        'no_badge' => 'heroicon-m-identification',
                         default => 'heroicon-m-question-mark-circle',
                     })
                     ->formatStateUsing(fn($state) => [
@@ -153,10 +156,11 @@ class AccessLogResource extends Resource
                         'employee_laptop' => 'Laptop Colab.',
                         'resignation' => 'Renuncia',
                         'clearance' => 'Finiquito',
+                        'no_badge' => 'Sin Gafete',
                     ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('externalPerson.company.name')
                     ->label('Empresa')
-                    ->getStateUsing(fn($record) => $record->externalPerson?->company?->name ?? (in_array($record->type, ['resignation', 'clearance']) ? 'INTERNO' : '---'))
+                    ->getStateUsing(fn($record) => $record->externalPerson?->company?->name ?? (in_array($record->type, ['resignation', 'clearance', 'no_badge']) ? 'INTERNO' : '---'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('plant')
