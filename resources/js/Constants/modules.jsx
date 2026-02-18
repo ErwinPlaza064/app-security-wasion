@@ -33,7 +33,7 @@ export const modules = [
     { 
         name: "Padrón Vehicular", 
         icon: <><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></>, 
-        route: "employee-vehicles.create", 
+        route: "employee-vehicles.index", 
         color: 'text-blue-600',
         bg: 'bg-blue-50'
     },

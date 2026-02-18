@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
         // Carga y Descarga (usa el mismo controlador con parámetros)
         Route::get('/carga-descarga/create', [\App\Http\Controllers\VehicleLogController::class, 'create'])->name('carga-descarga.create');
 
+        Route::get('/employee-vehicles', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'index'])->name('employee-vehicles.index');
         Route::get('/employee-vehicles/create', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'create'])->name('employee-vehicles.create');
         Route::post('/employee-vehicles', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'store'])->name('employee-vehicles.store');
 

@@ -11,6 +11,19 @@ use Inertia\Inertia;
 
 class EmployeeVehicleController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+        $vehicles = EmployeeVehicle::where('plant', $user->plant)
+            ->with('user:id,name')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Operations/VehicleRegistry/Index', [
+            'vehicles' => $vehicles,
+        ]);
+    }
+
     public function create()
     {
         $user = Auth::user();
