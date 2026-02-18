@@ -89,8 +89,11 @@ class VehicleIncidentResource extends Resource
                     ->label('Planta')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
-                        'PLANT 1' => 'info',
-                        'PLANT 2' => 'success',
+                        'Planta 1' => 'info',
+                        'Planta 2' => 'success',
+                        'Planta 3' => 'warning',
+                        'Planta 4' => 'danger',
+                        'Planta 5' => 'primary',
                         default => 'gray',
                     })
                     ->sortable(),
@@ -107,8 +110,11 @@ class VehicleIncidentResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('plant')
                     ->options([
-                        'PLANT 1' => 'PLANT 1',
-                        'PLANT 2' => 'PLANT 2',
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
                         'ESPECIAL' => 'ESPECIAL',
                     ]),
             ])
