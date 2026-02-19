@@ -134,6 +134,7 @@ class EmployeeVehicleResource extends Resource
     {
         return [
             'index' => Pages\ListEmployeeVehicles::route('/'),
+            'view' => Pages\ViewEmployeeVehicle::route('/{record}'),
         ];
     }
 }
