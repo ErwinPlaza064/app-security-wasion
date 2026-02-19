@@ -14,6 +14,11 @@ class AccessLogController extends Controller
     {
         $user = auth()->user();
 
+        // Si es admin o superadmin, redirigir a su panel de Filament
+        if ($user->isAdmin()) {
+            return redirect($user->getRedirectRoute());
+        }
+
         $activeVisitorsQuery = AccessLog::whereNull('exit_at')
             ->with(['externalPerson.company'])
             ->latest('entry_at');
@@ -22,7 +27,7 @@ class AccessLogController extends Controller
             ->with(['company'])
             ->latest('entry_at');
 
-        // Si no es admin/superadmin, filtrar por planta
+        // Si no es admin/superadmin (aunque ya filtramos arriba), filtrar por planta
         if (!$user->isAdmin()) {
             $activeVisitorsQuery->where('plant', $user->plant);
             $activeVehiclesQuery->where('plant', $user->plant);
