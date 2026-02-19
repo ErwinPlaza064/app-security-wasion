@@ -70,32 +70,6 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->spa()
-            ->renderHook(
-                'panels::body.start',
-                fn (): string => Blade::render('
-                    <div x-data="{ loading: false }" 
-                         x-show="loading"
-                         x-on:livewire-loading.window="loading = true" 
-                         x-on:livewire-load.window="loading = false"
-                         x-on:livewire:navigating.window="loading = true"
-                         x-on:livewire:navigated.window="loading = false"
-                         class="fixed inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm"
-                         style="display: none;"
-                    >
-                        <div class="w-full h-full p-8 animate-pulse">
-                            <div class="flex flex-col space-y-4">
-                                <div class="h-12 bg-gray-200 rounded-lg w-1/4"></div>
-                                <div class="grid grid-cols-3 gap-4">
-                                    <div class="h-32 bg-gray-200 rounded-lg col-span-2"></div>
-                                    <div class="h-32 bg-gray-200 rounded-lg"></div>
-                                </div>
-                                <div class="h-64 bg-gray-200 rounded-lg w-full"></div>
-                            </div>
-                        </div>
-                    </div>
-                ')
-            )
             ->authMiddleware([
                 Authenticate::class,
             ]);
