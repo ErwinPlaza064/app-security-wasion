@@ -187,7 +187,7 @@ class IncidentResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->poll('5s');
+            ->poll('3s');
     }
 
     public static function getPages(): array

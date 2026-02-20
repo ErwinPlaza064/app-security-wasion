@@ -6,15 +6,27 @@ export default function Toast() {
     const [visible, setVisible] = useState(false);
     const [message, setMessage] = useState('');
     const [type, setType] = useState('success');
+    const [lastMsg, setLastMsg] = useState({ content: '', timestamp: 0 });
 
     useEffect(() => {
+        const currentMsg = flash.success || flash.error;
+        if (!currentMsg) return;
+
+        // Si el mensaje es el mismo y ocurrió hace menos de 500ms, lo ignoramos
+        const now = Date.now();
+        if (currentMsg === lastMsg.content && (now - lastMsg.timestamp) < 500) {
+            return;
+        }
+
         if (flash.success) {
             setMessage(flash.success);
             setType('success');
+            setLastMsg({ content: flash.success, timestamp: now });
             showToast();
         } else if (flash.error) {
             setMessage(flash.error);
             setType('error');
+            setLastMsg({ content: flash.error, timestamp: now });
             showToast();
         }
     }, [flash]);

@@ -15,6 +15,13 @@ class VehicleIncident extends Model
         'happened_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'happened_at' => 'datetime',
+        ];
+    }
+
     /**
      * Get the user who reported the incident.
      */

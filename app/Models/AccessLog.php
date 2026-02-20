@@ -25,6 +25,14 @@ class AccessLog extends Model
         'signature',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'entry_at' => 'datetime',
+            'exit_at' => 'datetime',
+        ];
+    }
+
     public function externalPerson()
     {
         return $this->belongsTo(ExternalPerson::class);

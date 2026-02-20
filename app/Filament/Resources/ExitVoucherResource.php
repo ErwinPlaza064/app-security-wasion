@@ -213,7 +213,8 @@ class ExitVoucherResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageExitVouchers::route('/'),
+            'index' => Pages\ListExitVouchers::route('/'),
+            'edit' => Pages\EditExitVoucher::route('/{record}/edit'),
         ];
     }
 }

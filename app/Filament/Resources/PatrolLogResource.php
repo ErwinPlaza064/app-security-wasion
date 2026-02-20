@@ -148,13 +148,15 @@ class PatrolLogResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePatrolLogs::route('/'),
+            'index' => Pages\ListPatrolLogs::route('/'),
+            'edit' => Pages\EditPatrolLog::route('/{record}/edit'),
         ];
     }
 }

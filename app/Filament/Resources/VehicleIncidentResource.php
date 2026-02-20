@@ -81,9 +81,14 @@ class VehicleIncidentResource extends Resource
                     ->label('Título / Vehículo')
                     ->searchable()
                     ->sortable()
+                    ->icon('heroicon-m-exclamation-circle')
+                    ->iconColor('danger')
+                    ->weight('bold')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Reportado por')
+                    ->icon('heroicon-m-user')
+                    ->iconColor('gray')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
@@ -99,13 +104,9 @@ class VehicleIncidentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha y Hora')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
+                    ->color('gray')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Registro')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('plant')
@@ -115,7 +116,6 @@ class VehicleIncidentResource extends Resource
                         'Planta 3' => 'Planta 3',
                         'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
-                        'ESPECIAL' => 'ESPECIAL',
                     ]),
             ])
             ->actions([
@@ -126,13 +126,15 @@ class VehicleIncidentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageVehicleIncidents::route('/'),
+            'index' => Pages\ListVehicleIncidents::route('/'),
+            'edit' => Pages\EditVehicleIncident::route('/{record}/edit'),
         ];
     }
 }

@@ -112,13 +112,15 @@ class NoBadgeLogResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('3s');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageNoBadgeLogs::route('/'),
+            'index' => Pages\ListNoBadgeLogs::route('/'),
+            'edit' => Pages\EditNoBadgeLog::route('/{record}/edit'),
         ];
     }
 }

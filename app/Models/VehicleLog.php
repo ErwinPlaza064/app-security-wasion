@@ -19,6 +19,14 @@ class VehicleLog extends Model
         'notes',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'entry_at' => 'datetime',
+            'exit_at' => 'datetime',
+        ];
+    }
+
     public function company()
     {
         return $this->belongsTo(Company::class);

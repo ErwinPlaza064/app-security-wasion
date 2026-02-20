@@ -21,6 +21,13 @@ class Incident extends Model
         'resolution_notes',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'happened_at' => 'datetime',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
