@@ -25,10 +25,13 @@ export default function Create({ type, areas = [] }) {
     });
 
     const titles = {
-        resignation: 'Registro de Renuncia / Finiquito',
+        resignation: 'Registro de Renuncia',
+        settlement: 'Registro de Finiquito',
         no_badge: 'Acceso de Colaborador Sin Gafete',
         clearance: 'Pase de Salida',
     };
+
+    const isResignationOrSettlement = data.type === 'resignation' || data.type === 'settlement';
 
     const submit = (e) => {
         e.preventDefault();
@@ -73,6 +76,34 @@ export default function Create({ type, areas = [] }) {
                     </div>
 
                     <form onSubmit={submit} className="space-y-6">
+                        {/* Selector de Tipo (Solo si es Renuncia o Finiquito) */}
+                        {isResignationOrSettlement && (
+                            <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-sm flex space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setData('type', 'resignation')}
+                                    className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                        data.type === 'resignation' 
+                                        ? 'bg-amber-600 text-white shadow-lg shadow-amber-200' 
+                                        : 'text-gray-400 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Renuncia
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setData('type', 'settlement')}
+                                    className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                        data.type === 'settlement' 
+                                        ? 'bg-amber-600 text-white shadow-lg shadow-amber-200' 
+                                        : 'text-gray-400 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Finiquito
+                                </button>
+                            </div>
+                        )}
+
                         {/* Sección: Información del Empleado */}
                         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
                             <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
@@ -137,7 +168,7 @@ export default function Create({ type, areas = [] }) {
                                     <InputError message={errors.position} />
                                 </div>
 
-                                {data.type === 'resignation' && (
+                                {isResignationOrSettlement && (
                                     <div className="space-y-1.5">
                                         <InputLabel htmlFor="direct_supervisor" value="Jefe Directo" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                         <TextInput
@@ -152,15 +183,15 @@ export default function Create({ type, areas = [] }) {
                                 )}
                             </div>
 
-                            {data.type === 'resignation' && (
+                            {isResignationOrSettlement && (
                                 <div className="space-y-1.5">
-                                    <InputLabel htmlFor="suspension_reason" value="Motivo de Suspensión / Baja" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <InputLabel htmlFor="suspension_reason" value={data.type === 'resignation' ? "Motivo de la Renuncia" : "Motivo del Finiquito"} className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                     <TextInput
                                         id="suspension_reason"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.suspension_reason}
                                         onChange={(e) => setData('suspension_reason', e.target.value)}
-                                        placeholder="Motivo de la baja..."
+                                        placeholder={data.type === 'resignation' ? "Razón por la que renuncia..." : "Razón del finiquito..."}
                                     />
                                     <InputError message={errors.suspension_reason} />
                                 </div>

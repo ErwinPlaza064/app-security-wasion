@@ -41,7 +41,8 @@ class SecuritySpecialLogResource extends Resource
                         Forms\Components\Select::make('type')
                             ->label('Tipo de Evento')
                             ->options([
-                                'resignation' => 'Renuncia / Finiquito',
+                                'resignation' => 'Renuncia',
+                                'settlement' => 'Finiquito',
                                 'clearance' => 'Pase de Salida',
                             ])
                             ->required(),
@@ -99,10 +100,12 @@ class SecuritySpecialLogResource extends Resource
                     ->label('Evento')
                     ->colors([
                         'danger' => 'resignation',
+                        'warning' => 'settlement',
                         'success' => 'clearance',
                     ])
                     ->formatStateUsing(fn($state) => [
                         'resignation' => 'Renuncia',
+                        'settlement' => 'Finiquito',
                         'clearance' => 'Pase de Salida',
                     ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('employee_name')

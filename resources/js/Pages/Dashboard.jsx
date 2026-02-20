@@ -22,7 +22,7 @@ export default function Dashboard({ activeVisitors = [], activeVehicles = [], op
     const actionsRef = useRef(null);
 
     // Separar registros de acceso normales de renuncias/finiquitos
-    const resignationTypes = ['resignation', 'clearance'];
+    const resignationTypes = ['resignation', 'settlement', 'clearance'];
     const pureVisitors = activeVisitors.filter(v => !resignationTypes.includes(v.type));
     const activeResignations = activeVisitors.filter(v => resignationTypes.includes(v.type));
 

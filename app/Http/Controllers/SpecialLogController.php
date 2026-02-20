@@ -29,7 +29,7 @@ class SpecialLogController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|in:resignation,no_badge,clearance',
+            'type' => 'required|in:resignation,settlement,no_badge,clearance',
             'employee_name' => 'required|string|max:255',
             'employee_id' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
@@ -55,9 +55,10 @@ class SpecialLogController extends Controller
         ]);
 
         // Registrar como un acceso de visitante si es renuncia, finiquito o sin gafete
-        if (in_array($validated['type'], ['resignation', 'clearance', 'no_badge'])) {
+        if (in_array($validated['type'], ['resignation', 'settlement', 'clearance', 'no_badge'])) {
             $typeLabel = match ($validated['type']) {
                 'resignation' => 'Renuncia',
+                'settlement' => 'Finiquito',
                 'clearance' => 'Pase de Salida',
                 'no_badge' => 'Sin Gafete',
                 default => 'Especial'
