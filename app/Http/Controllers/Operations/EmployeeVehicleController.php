@@ -45,6 +45,6 @@ class EmployeeVehicleController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Vehículo registrado en el padrón correctamente.');
+        return redirect()->route('dashboard')->with('success', 'Vehículo registrado en el padrón correctamente.');
     }
 }

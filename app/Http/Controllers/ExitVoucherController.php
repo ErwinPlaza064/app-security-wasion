@@ -78,7 +78,7 @@ class ExitVoucherController extends Controller
 
             DB::commit();
 
-            return redirect()->route('dashboard')->with('message', 'Vale de salida creado exitosamente.');
+            return redirect()->route('dashboard')->with('success', 'Vale de salida creado exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Ocurrió un error al crear el vale: ' . $e->getMessage()]);
@@ -98,6 +98,6 @@ class ExitVoucherController extends Controller
             'closed_by_user_id' => Auth::id()
         ]);
 
-        return redirect()->route('exit-vouchers.index')->with('message', 'Vale de salida cerrado correctamente.');
+        return redirect()->route('exit-vouchers.index')->with('success', 'Vale de salida cerrado correctamente.');
     }
 }

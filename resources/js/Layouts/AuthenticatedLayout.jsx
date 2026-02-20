@@ -4,6 +4,8 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import GlobalLoading from '@/Components/GlobalLoading';
 import FloatingTimer from '@/Components/FloatingTimer';
+import Toast from '@/Components/Toast';
+import Modal from '@/Components/Modal';
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
@@ -12,6 +14,10 @@ export default function AuthenticatedLayout({ header, children }) {
     const user = auth?.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [showingSettings, setShowingSettings] = useState(false);
+    const [soundEnabled, setSoundEnabled] = useState(() => {
+        return localStorage.getItem('toast_sound_enabled') !== 'false';
+    });
 
     useEffect(() => {
         if (showingNavigationDropdown) {
@@ -20,6 +26,14 @@ export default function AuthenticatedLayout({ header, children }) {
             document.body.style.overflow = 'unset';
         }
     }, [showingNavigationDropdown]);
+
+    const toggleSound = () => {
+        const newValue = !soundEnabled;
+        setSoundEnabled(newValue);
+        localStorage.setItem('toast_sound_enabled', newValue.toString());
+        // Disparar evento personalizado para que el Toast se entere si está montado
+        window.dispatchEvent(new Event('settings-updated'));
+    };
 
     return (
         <div className="min-h-screen bg-cream">
@@ -49,6 +63,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <Dropdown.Content>
 
                                             <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
+                                            <button 
+                                                onClick={() => setShowingSettings(true)}
+                                                className="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none font-bold"
+                                            >
+                                                Configuración
+                                            </button>
                                             <Dropdown.Link href={route('logout')} method="post" as="button">Cerrar sesión</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
@@ -149,6 +169,19 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </svg>
                                         <span>Mi Perfil</span>
                                     </Link>
+                                    <button 
+                                        onClick={() => {
+                                            setShowingNavigationDropdown(false);
+                                            setShowingSettings(true);
+                                        }}
+                                        className="w-full flex items-center space-x-3 p-4 rounded-2xl font-bold text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-all text-left"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span>Configuración</span>
+                                    </button>
                                     <Link 
                                         href={route('logout')}
                                         method="post"
@@ -195,6 +228,67 @@ export default function AuthenticatedLayout({ header, children }) {
             </main>
 
             <FloatingTimer />
+            <Toast />
+
+            {/* Settings Modal */}
+            <Modal show={showingSettings} onClose={() => setShowingSettings(false)} maxWidth="md">
+                <div className="p-8">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Configuración</h2>
+                        </div>
+                        <button 
+                            onClick={() => setShowingSettings(false)}
+                            className="p-2 rounded-xl bg-gray-50 text-gray-400 hover:text-primary transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] border border-gray-100">
+                            <div>
+                                <p className="text-sm font-bold text-gray-900">Sonidos de Notificación</p>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                                    Toasts y avisos de éxito
+                                </p>
+                            </div>
+                            <button 
+                                onClick={toggleSound}
+                                className={`w-14 h-8 rounded-full transition-all duration-300 relative ${soundEnabled ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-gray-200'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 ${soundEnabled ? 'translate-x-6 shadow-sm' : 'translate-x-0'}`} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10">
+                            <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mb-2 text-center italic">
+                                Preferencias guardadas localmente
+                            </p>
+                            <p className="text-[9px] text-gray-500 font-medium text-center leading-relaxed px-4">
+                                Estos ajustes se guardan en este navegador y dispositivo para tu comodidad.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-8">
+                        <button 
+                            onClick={() => setShowingSettings(false)}
+                            className="w-full py-4 rounded-2xl bg-gray-900 text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-gray-100 hover:bg-black transition-all active:scale-[0.98]"
+                        >
+                            Guardar y Cerrar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

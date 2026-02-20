@@ -125,7 +125,7 @@ class AccessLogController extends Controller
             ? "Se han registrado {$count} personas correctamente."
             : "Registro de acceso guardado correctamente.";
 
-        return redirect()->route('dashboard')->with('status', $message);
+        return redirect()->route('dashboard')->with('success', $message);
     }
 
     public function markExit(Request $request, AccessLog $accessLog)
@@ -139,6 +139,6 @@ class AccessLogController extends Controller
             'exit_signature' => $validated['signature'] ?? null
         ]);
 
-        return redirect()->back()->with('status', 'Salida registrada correctamente.');
+        return redirect()->back()->with('success', 'Salida registrada correctamente.');
     }
 }

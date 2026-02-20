@@ -51,7 +51,7 @@ class VehicleLogController extends Controller
             'notes' => $validated['notes'],
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Registro vehicular guardado correctamente.');
+        return redirect()->route('dashboard')->with('success', 'Registro vehicular guardado correctamente.');
     }
     public function markExit(VehicleLog $vehicleLog)
     {
@@ -59,6 +59,6 @@ class VehicleLogController extends Controller
             'exit_at' => now()
         ]);
 
-        return redirect()->back()->with('status', 'Salida vehicular registrada correctamente.');
+        return redirect()->back()->with('success', 'Salida vehicular registrada correctamente.');
     }
 }

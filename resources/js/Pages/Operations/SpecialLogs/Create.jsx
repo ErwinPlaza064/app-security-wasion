@@ -27,7 +27,7 @@ export default function Create({ type, areas = [] }) {
     const titles = {
         resignation: 'Registro de Renuncia / Finiquito',
         no_badge: 'Acceso de Colaborador Sin Gafete',
-        clearance: 'Pase de Salida / Liquidación',
+        clearance: 'Pase de Salida',
     };
 
     const submit = (e) => {
@@ -61,7 +61,7 @@ export default function Create({ type, areas = [] }) {
                             <div className="flex items-center space-x-2 mb-2">
                                 <Link href={route('dashboard')} className="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Dashboard</Link>
                                 <span className="text-[10px] text-gray-300">/</span>
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Especiales</span>
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Operaciones</span>
                             </div>
                             <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">{titles[data.type]}</h1>
                         </div>

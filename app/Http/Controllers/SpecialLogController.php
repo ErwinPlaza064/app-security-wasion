@@ -58,7 +58,7 @@ class SpecialLogController extends Controller
         if (in_array($validated['type'], ['resignation', 'clearance', 'no_badge'])) {
             $typeLabel = match ($validated['type']) {
                 'resignation' => 'Renuncia',
-                'clearance' => 'Finiquito',
+                'clearance' => 'Pase de Salida',
                 'no_badge' => 'Sin Gafete',
                 default => 'Especial'
             };
@@ -74,6 +74,6 @@ class SpecialLogController extends Controller
             ]);
         }
 
-        return redirect()->route('dashboard')->with('status', 'Registro especial guardado correctamente.');
+        return redirect()->route('dashboard')->with('success', 'Registro especial guardado correctamente.');
     }
 }

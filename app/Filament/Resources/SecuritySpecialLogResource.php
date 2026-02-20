@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class SecuritySpecialLogResource extends Resource
 {
@@ -18,9 +19,14 @@ class SecuritySpecialLogResource extends Resource
         return false;
     }
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
-    protected static ?string $navigationGroup = 'Seguridad Corporativa';
-    protected static ?string $modelLabel = 'Baja / Especial';
-    protected static ?string $pluralModelLabel = 'Bajas y Especiales';
+    protected static ?string $navigationGroup = 'Operaciones';
+    protected static ?string $modelLabel = 'Pase / Baja / Especial';
+    protected static ?string $pluralModelLabel = 'Pases de Salida y Renuncias';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('type', '!=', 'no_badge');
+    }
 
     public static function form(Form $form): Form
     {
@@ -36,7 +42,6 @@ class SecuritySpecialLogResource extends Resource
                             ->label('Tipo de Evento')
                             ->options([
                                 'resignation' => 'Renuncia / Finiquito',
-                                'no_badge' => 'Ingreso sin Gafete',
                                 'clearance' => 'Pase de Salida',
                             ])
                             ->required(),
@@ -94,13 +99,11 @@ class SecuritySpecialLogResource extends Resource
                     ->label('Evento')
                     ->colors([
                         'danger' => 'resignation',
-                        'warning' => 'no_badge',
                         'success' => 'clearance',
                     ])
                     ->formatStateUsing(fn($state) => [
-                        'resignation' => 'Baja / Renuncia',
-                        'no_badge' => 'Sin Gafete',
-                        'clearance' => 'Liquidación',
+                        'resignation' => 'Renuncia',
+                        'clearance' => 'Pase de Salida',
                     ][$state] ?? $state),
                 Tables\Columns\TextColumn::make('employee_name')
                     ->label('Colaborador')
@@ -137,7 +140,7 @@ class SecuritySpecialLogResource extends Resource
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
                         'resignation' => 'Renuncias',
-                        'no_badge' => 'Sin Gafete',
+                        'clearance' => 'Pases de Salida',
                     ]),
                 Tables\Filters\SelectFilter::make('plant')
                     ->label('Planta')

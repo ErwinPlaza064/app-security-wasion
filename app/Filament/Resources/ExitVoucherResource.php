@@ -22,6 +22,11 @@ class ExitVoucherResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     protected static ?string $navigationLabel = 'Vales de Salida';
 
     protected static ?string $modelLabel = 'Vale de Salida';

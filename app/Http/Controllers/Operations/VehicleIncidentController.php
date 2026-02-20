@@ -36,6 +36,6 @@ class VehicleIncidentController extends Controller
             'happened_at' => now(),
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Incidencia vehicular registrada correctamente.');
+        return redirect()->route('dashboard')->with('success', 'Incidencia vehicular registrada correctamente.');
     }
 }

@@ -56,7 +56,7 @@ class IncidentController extends Controller
             'status' => 'open',
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Incidencia reportada correctamente.');
+        return redirect()->route('dashboard')->with('success', 'Incidencia reportada correctamente.');
     }
 
     public function resolve(Request $request, Incident $incident)
@@ -70,6 +70,6 @@ class IncidentController extends Controller
             'status' => 'resolved',
         ]);
 
-        return redirect()->back()->with('status', 'Incidencia resuelta correctamente.');
+        return redirect()->back()->with('success', 'Incidencia resuelta correctamente.');
     }
 }

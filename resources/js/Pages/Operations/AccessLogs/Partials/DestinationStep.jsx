@@ -107,14 +107,14 @@ export default function DestinationStep({
                         <div className="space-y-3">
                             <InputLabel value="Área de Destino" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                             <select
-                                className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all font-bold"
+                                className="block w-full bg-gray-50 border-none rounded-2xl py-5 px-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all"
                                 value={data.work_area}
                                 onChange={(e) => setData("work_area", e.target.value)}
                             >
                                 <option value="">Seleccione área...</option>
                                 {areas.map((area) => (
                                     <option key={area.id} value={area.name}>
-                                        {area.name} ({area.plant})
+                                        {area.name}
                                     </option>
                                 ))}
                             </select>
