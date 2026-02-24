@@ -11,6 +11,7 @@ export default function ModuleSearch({ value, onChange }) {
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder="BUSCAR REGISTRO A LLENAR..."
+                aria-label="Buscar módulo de registro"
                 className="block w-full bg-white border-none py-7 pl-16 pr-6 rounded-[2.5rem] text-[11px] font-black tracking-[0.2em] text-gray-900 shadow-2xl shadow-gray-200/60 focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-gray-300 group uppercase"
             />
         </div>

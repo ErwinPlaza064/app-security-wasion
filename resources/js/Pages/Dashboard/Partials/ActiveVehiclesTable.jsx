@@ -46,6 +46,7 @@ export default function ActiveVehiclesTable({ vehicles, onExit, tabToggle }) {
                         <select 
                             value={operationFilter}
                             onChange={(e) => setOperationFilter(e.target.value)}
+                            aria-label="Filtrar por operación"
                             className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest px-6 py-3 focus:ring-primary/10 transition-all cursor-pointer shadow-sm"
                         >
                             <option value="">Todas las Operaciones</option>
@@ -61,9 +62,10 @@ export default function ActiveVehiclesTable({ vehicles, onExit, tabToggle }) {
                                 value={tableSearch}
                                 onChange={(e) => setTableSearch(e.target.value)}
                                 placeholder="BUSCAR VEHÍCULO..."
+                                aria-label="Buscar en la tabla de vehículos"
                                 className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest pl-10 pr-6 py-3 focus:ring-primary/10 transition-all shadow-sm w-full sm:w-[250px]"
                             />
-                            <svg className="w-3.5 h-3.5 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <svg className="w-3.5 h-3.5 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                     </div>
                     {tabToggle}

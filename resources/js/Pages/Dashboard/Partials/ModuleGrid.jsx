@@ -21,7 +21,7 @@ export default function ModuleGrid({ modules, searchTerm }) {
                         >
                             <div className={`absolute -right-10 -bottom-10 w-32 h-32 ${item.bg} rounded-full opacity-20 group-hover:scale-150 transition-all duration-700`}></div>
                             <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 shadow-sm`}>
-                                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
                                     {item.icon}
                                 </svg>
                             </div>
@@ -31,7 +31,7 @@ export default function ModuleGrid({ modules, searchTerm }) {
                                 </h3>
                                 <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
                                     <span className="text-[9px] text-primary font-black uppercase tracking-widest">Abrir Registro</span>
-                                    <svg className="w-2.5 h-2.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                    <svg className="w-2.5 h-2.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                 </div>
                             </div>
                         </Link>

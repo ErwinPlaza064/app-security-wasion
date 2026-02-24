@@ -18,9 +18,12 @@ export default function DashboardHeader({ operatorName, activePersonsPercent, ac
                     <div className="w-20 h-1 bg-primary/20 mt-3 rounded-full"></div>
                 </div>
                 
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex flex-wrap justify-center gap-4" role="tablist">
                     <button 
                         onClick={() => onTabChange('persons')}
+                        role="tab"
+                        aria-selected={activeTab === 'persons'}
+                        aria-label={`Ver tabla de personas (${activePersons} activas)`}
                         className={`px-6 py-3 rounded-2xl border transition-all flex items-center space-x-4 active:scale-95 shadow-sm hover:shadow-md ${
                             activeTab === 'persons' 
                                 ? 'bg-white border-primary/20 ring-1 ring-primary/5' 
@@ -37,6 +40,9 @@ export default function DashboardHeader({ operatorName, activePersonsPercent, ac
 
                     <button 
                         onClick={() => onTabChange('vehicles')}
+                        role="tab"
+                        aria-selected={activeTab === 'vehicles'}
+                        aria-label={`Ver tabla de vehículos (${activeVehicles} activos)`}
                         className={`px-6 py-3 rounded-2xl border transition-all flex items-center space-x-4 active:scale-95 shadow-sm hover:shadow-md ${
                             activeTab === 'vehicles' 
                                 ? 'bg-white border-primary/20 ring-1 ring-primary/5' 
@@ -53,6 +59,9 @@ export default function DashboardHeader({ operatorName, activePersonsPercent, ac
 
                     <button 
                         onClick={() => onTabChange('resignations')}
+                        role="tab"
+                        aria-selected={activeTab === 'resignations'}
+                        aria-label={`Ver tabla de renuncias (${activeResignations} activas)`}
                         className={`px-6 py-3 rounded-2xl border transition-all flex items-center space-x-4 active:scale-95 shadow-sm hover:shadow-md ${
                             activeTab === 'resignations' 
                                 ? 'bg-white border-primary/20 ring-1 ring-primary/5' 

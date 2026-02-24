@@ -14,7 +14,9 @@ nixPkgs = [
     "php84Extensions.openssl",
     "php84Packages.composer",
     "nodejs_20",
-    "git"
+    "git",
+    "nginx",
+    "iproute2"
 ]
 
 [phases.install]
@@ -33,4 +35,4 @@ cmds = [
 ]
 
 [start]
-cmd = "sleep 5 && php artisan migrate --force && php artisan db:seed --force && php artisan storage:link --force && (php artisan queue:work --tries=3 --timeout=90 &) && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "chmod +x docker/start.sh && ./docker/start.sh"

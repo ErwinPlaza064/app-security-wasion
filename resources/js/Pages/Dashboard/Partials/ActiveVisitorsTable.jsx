@@ -38,6 +38,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                         <select
                             value={companyFilter}
                             onChange={(e) => setCompanyFilter(e.target.value)}
+                            aria-label="Filtrar por empresa"
                             className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest px-6 py-3 focus:ring-primary/10 transition-all cursor-pointer shadow-sm"
                         >
                             <option value="">Todas las Empresas</option>
@@ -54,6 +55,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                                 value={tableSearch}
                                 onChange={(e) => setTableSearch(e.target.value)}
                                 placeholder="BUSCAR EN TABLA..."
+                                aria-label="Buscar en la tabla de personal"
                                 className="bg-white border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest pl-10 pr-6 py-3 focus:ring-primary/10 transition-all shadow-sm w-full sm:w-[250px]"
                             />
                             <svg
@@ -61,6 +63,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
+                                aria-hidden="true"
                             >
                                 <path
                                     strokeLinecap="round"

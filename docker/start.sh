@@ -4,12 +4,13 @@ set -e
 echo "=== Starting Laravel on Railway ==="
 
 # Asegurarse de estar en el directorio correcto
-cd /var/www
+ROOT_DIR=$(pwd)
+echo "=== Working directory: $ROOT_DIR ==="
 
 # Verificar que artisan existe
-if [ ! -f artisan ]; then
-    echo "ERROR: artisan file not found in /var/www"
-    ls -la /var/www
+if [ ! -f "$ROOT_DIR/artisan" ]; then
+    echo "ERROR: artisan file not found in $ROOT_DIR"
+    ls -la $ROOT_DIR
     exit 1
 fi
 
@@ -17,12 +18,12 @@ fi
 NGINX_PORT=${PORT:-8080}
 echo "=== Port configured: $NGINX_PORT ==="
 
-# Determinar variables de BD con fallbacks
-FINAL_DB_HOST=${DB_HOST:-${MYSQLHOST:-127.0.0.1}}
-FINAL_DB_PORT=${DB_PORT:-${MYSQLPORT:-3306}}
-FINAL_DB_USER=${DB_USERNAME:-${MYSQLUSER:-root}}
-FINAL_DB_PASS=${DB_PASSWORD:-${MYSQLPASSWORD:-}}
-FINAL_DB_NAME=${DB_DATABASE:-${MYSQL_DATABASE:-${MYSQLDATABASE:-laravel}}}
+# Determinar variables de BD con fallbacks (soporte para MySQL y PostgreSQL de Railway)
+FINAL_DB_HOST=${DB_HOST:-${PGHOST:-${MYSQLHOST:-127.0.0.1}}}
+FINAL_DB_PORT=${DB_PORT:-${PGPORT:-${MYSQLPORT:-5432}}}
+FINAL_DB_USER=${DB_USERNAME:-${PGUSER:-${MYSQLUSER:-postgres}}}
+FINAL_DB_PASS=${DB_PASSWORD:-${PGPASSWORD:-${MYSQLPASSWORD:-}}}
+FINAL_DB_NAME=${DB_DATABASE:-${PGDATABASE:-${MYSQL_DATABASE:-${MYSQLDATABASE:-laravel}}}}
 
 # Crear .env desde variables de entorno
 cat > .env << EOF
@@ -35,13 +36,13 @@ APP_URL=${APP_URL:-http://localhost}
 LOG_CHANNEL=stderr
 LOG_LEVEL=debug
 
-CACHE_DRIVER=file
+CACHE_DRIVER=database
 FILESYSTEM_DISK=local
-QUEUE_CONNECTION=sync
-SESSION_DRIVER=file
+QUEUE_CONNECTION=database
+SESSION_DRIVER=database
 SESSION_LIFETIME=120
 
-DB_CONNECTION=mysql
+DB_CONNECTION=${DB_CONNECTION:-pgsql}
 DB_HOST=${FINAL_DB_HOST}
 DB_PORT=${FINAL_DB_PORT}
 DB_DATABASE=${FINAL_DB_NAME}
@@ -112,8 +113,9 @@ http {
     server {
         listen $NGINX_PORT default_server;
         server_name _;
-        root /var/www/public;
+        root $ROOT_DIR/public;
         index index.php index.html;
+        server_tokens off;
 
         client_max_body_size 50M;
         
@@ -179,7 +181,14 @@ fi
 # Verificar configuración de Nginx
 nginx -t
 
-echo "✓ Starting Nginx on port 8080..."
+# Enlazar storage
+php artisan storage:link --force || echo "⚠ Storage link already exists"
+
+# Iniciar Queue Worker en background
+echo "✓ Starting Queue Worker..."
+php artisan queue:work --tries=3 --timeout=90 &
+
+echo "✓ Starting Nginx on port $NGINX_PORT..."
 
 # Nginx en foreground para mantener el contenedor vivo
 exec nginx -g 'daemon off;'
