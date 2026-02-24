@@ -54,6 +54,12 @@ const Icons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
     ),
+    Eye: () => (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+    ),
 };
 
 export default function Create({ category: initialCategory, areas }) {
@@ -74,6 +80,7 @@ export default function Create({ category: initialCategory, areas }) {
         payroll_number: '',
         company: 'WASION',
         evidence_image: null,
+        no_involved_persons: false,
     });
 
     const steps = [
@@ -84,9 +91,10 @@ export default function Create({ category: initialCategory, areas }) {
     ];
 
     const incidentCategories = [
-        { id: 'general', label: 'General', icon: <Icons.Shield />, desc: 'Incidencias ordinarias' },
         { id: 'conduct', label: 'Conductual', icon: <Icons.UserCircle />, desc: 'Comportamiento personal' },
-        { id: 'damage', label: 'Daño', icon: <Icons.Wrench />, desc: 'Afectación a instalaciones' },
+        { id: 'damage', label: 'Daño / Falla', icon: <Icons.Wrench />, desc: 'Afectación a instalaciones' },
+        { id: 'observation', label: 'Observación', icon: <Icons.Eye />, desc: 'Entorno o planta' },
+        { id: 'general', label: 'General', icon: <Icons.Shield />, desc: 'Otros sucesos' },
     ];
 
     const handleFileChange = (e) => {
@@ -140,6 +148,15 @@ export default function Create({ category: initialCategory, areas }) {
         }
     };
 
+    useEffect(() => {
+        if (data.category === 'damage' || data.category === 'observation') {
+             // Sugerir marcar como sin involucrados para estas categorías
+             if (!data.involved_person) {
+                // No forzar, solo permitir
+             }
+        }
+    }, [data.category]);
+
     const nextStep = () => {
         clearErrors();
         let hasErrors = false;
@@ -150,13 +167,15 @@ export default function Create({ category: initialCategory, areas }) {
                 hasErrors = true;
             }
         } else if (currentStep === 2) {
-            if (!data.involved_person) {
-                setError('involved_person', 'Debe indicar quién está involucrado');
+            const needsInvolved = data.category === 'conduct';
+            if (needsInvolved && !data.involved_person && !data.no_involved_persons) {
+                setError('involved_person', 'Debe indicar quién está involucrado para una incidencia conductual');
                 hasErrors = true;
+            } else if (!needsInvolved && !data.involved_person && !data.no_involved_persons) {
             }
         } else if (currentStep === 3) {
             if (!data.description) {
-                setError('description', 'Debe describir los hechos');
+                setError('description', 'Debe describir los hechos o la falla observada');
                 hasErrors = true;
             }
         }
@@ -230,28 +249,28 @@ export default function Create({ category: initialCategory, areas }) {
                                             <div className="w-1.5 h-8 bg-rose-500 rounded-full"></div>
                                             <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Tipo de Incidencia</h2>
                                         </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                             {incidentCategories.map((cat) => (
                                                 <div 
                                                     key={cat.id}
                                                     onClick={() => setData('category', cat.id)}
-                                                    className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center text-center cursor-pointer ${
+                                                    className={`p-4 rounded-3xl border-2 transition-all flex flex-col items-center text-center cursor-pointer ${
                                                         data.category === cat.id 
                                                             ? 'border-rose-500 bg-rose-50/50 shadow-inner' 
                                                             : 'border-gray-50 bg-gray-50/30 hover:border-gray-200'
                                                     }`}
                                                 >
-                                                    <div className={`p-3 rounded-2xl mb-3 ${
+                                                    <div className={`p-2.5 rounded-2xl mb-2 ${
                                                         data.category === cat.id ? 'bg-rose-500 text-white' : 'bg-white text-gray-400 border border-gray-100'
                                                     }`}>
                                                         {cat.icon}
                                                     </div>
-                                                    <div className={`font-black text-xs uppercase tracking-widest ${
+                                                    <div className={`font-black text-[10px] uppercase tracking-widest ${
                                                         data.category === cat.id ? 'text-rose-600' : 'text-gray-900'
                                                     }`}>
                                                         {cat.label}
                                                     </div>
-                                                    <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">{cat.desc}</div>
+                                                    <div className="text-[8px] text-gray-400 mt-1 leading-tight">{cat.desc}</div>
                                                 </div>
                                             ))}
                                         </div>
@@ -286,42 +305,70 @@ export default function Create({ category: initialCategory, areas }) {
                                         <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Involucrados</h2>
                                     </div>
                                     
-                                    <div className="space-y-2">
-                                        <InputLabel value="Nombre de la persona" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                        <div className="relative">
-                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300">
-                                                <Icons.Users />
+                                    <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100">
+                                        <div className="flex items-center justify-between">
+                                            <div className="space-y-1">
+                                                <div className="text-xs font-black text-gray-900 uppercase tracking-widest">¿Sin personas involucradas?</div>
+                                                <div className="text-[10px] text-gray-400">Marque esta opción si es un daño a instalaciones o falla de entorno.</div>
                                             </div>
-                                            <TextInput
-                                                className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 pl-14 pr-6"
-                                                value={data.involved_person}
-                                                onChange={(e) => setData('involved_person', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
-                                                placeholder="Nombre completo..."
-                                            />
-                                            <InputError message={errors.involved_person} className="mt-2" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setData(d => ({
+                                                        ...d,
+                                                        no_involved_persons: !d.no_involved_persons,
+                                                        involved_person: !d.no_involved_persons ? 'N/A (Falla/Instalación)' : '',
+                                                        payroll_number: !d.no_involved_persons ? '' : d.payroll_number,
+                                                        company: !d.no_involved_persons ? 'N/A' : (d.company === 'N/A' ? 'WASION' : d.company)
+                                                    }));
+                                                }}
+                                                className={`w-12 h-6 rounded-full transition-all relative ${data.no_involved_persons ? 'bg-rose-500' : 'bg-gray-200'}`}
+                                            >
+                                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.no_involved_persons ? 'left-7' : 'left-1'}`}></div>
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <InputLabel value="Número de Nómina" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                            <TextInput
-                                                className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
-                                                value={data.payroll_number}
-                                                onChange={(e) => setData('payroll_number', e.target.value)}
-                                                placeholder="Ej. 123456"
-                                            />
+                                    {!data.no_involved_persons && (
+                                        <div className="space-y-6 animate-in fade-in duration-300">
+                                            <div className="space-y-2">
+                                                <InputLabel value="Nombre de la persona" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                <div className="relative">
+                                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300">
+                                                        <Icons.Users />
+                                                    </div>
+                                                    <TextInput
+                                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 pl-14 pr-6"
+                                                        value={data.involved_person}
+                                                        onChange={(e) => setData('involved_person', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
+                                                        placeholder="Nombre completo..."
+                                                    />
+                                                    <InputError message={errors.involved_person} className="mt-2" />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <InputLabel value="Número de Nómina" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                    <TextInput
+                                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
+                                                        value={data.payroll_number}
+                                                        onChange={(e) => setData('payroll_number', e.target.value)}
+                                                        placeholder="Ej. 123456"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                    <TextInput
+                                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
+                                                        value={data.company}
+                                                        onChange={(e) => setData('company', e.target.value)}
+                                                        placeholder="WASION, Contratista..."
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                            <TextInput
-                                                className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
-                                                value={data.company}
-                                                onChange={(e) => setData('company', e.target.value)}
-                                                placeholder="WASION, Contratista..."
-                                            />
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
 

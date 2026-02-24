@@ -38,8 +38,9 @@ class IncidentResource extends Resource
                             ->label('Categoría')
                             ->options([
                                 'general' => 'Incidencia General',
-                                'damage' => 'Daño a Instalación',
+                                'damage' => 'Daño / Falla Instalación',
                                 'conduct' => 'Conductual',
+                                'observation' => 'Observación de Entorno',
                                 'theft' => 'Robo/Extravío',
                                 'safety' => 'Seguridad Industrial',
                             ])
@@ -130,6 +131,7 @@ class IncidentResource extends Resource
                         'general' => 'heroicon-m-information-circle',
                         'damage' => 'heroicon-m-wrench-screwdriver',
                         'conduct' => 'heroicon-m-user-minus',
+                        'observation' => 'heroicon-m-eye',
                         'theft' => 'heroicon-m-archive-box-x-mark',
                         'safety' => 'heroicon-m-shield-check',
                         default => 'heroicon-m-question-mark-circle',
@@ -137,8 +139,9 @@ class IncidentResource extends Resource
                     ->iconColor('primary')
                     ->formatStateUsing(fn($state) => [
                         'general' => 'General',
-                        'damage' => 'Daño',
+                        'damage' => 'Daño/Falla',
                         'conduct' => 'Conducta',
+                        'observation' => 'Observación',
                         'theft' => 'Robo',
                         'safety' => 'Segur. Ind.',
                     ][$state] ?? $state),
@@ -171,8 +174,10 @@ class IncidentResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('category')
                     ->options([
-                        'damage' => 'Daños',
+                        'damage' => 'Daños/Fallas',
                         'conduct' => 'Conducta',
+                        'observation' => 'Observaciones',
+                        'general' => 'General',
                     ]),
                 Tables\Filters\SelectFilter::make('plant')
                     ->label('Planta')
