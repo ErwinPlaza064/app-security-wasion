@@ -54,8 +54,8 @@ EOF
 echo "=== Generated .env (DB section) ==="
 grep "^DB_" .env | grep -v "DB_PASSWORD"
 
-# Permisos
-chown -R www-data:www-data storage bootstrap/cache
+# Permisos (Nixpacks maneja esto, evitamos chown si no somos root)
+# chown -R www-data:www-data storage bootstrap/cache
 
 # Limpiar configuración
 echo "Clearing configuration cache..."
@@ -77,11 +77,38 @@ fi
 
 echo "✓ Laravel configured"
 
-# Generar configuración de Nginx con el puerto correcto
-cat > /etc/nginx/nginx.conf << NGINX_EOF
-user www-data;
+
+
+# Crear directorios temporales para Nginx
+mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi
+
+# Generar configuración de Nginx LOCAL (rootless)
+NGINX_CONF="$ROOT_DIR/nginx_local.conf"
+MIME_TYPES="$ROOT_DIR/mime.types"
+
+# Generar mime.types básico si no existe en el sistema
+cat > "$MIME_TYPES" << EOF
+types {
+    text/html                             html htm shtml;
+    text/css                              css;
+    text/xml                              xml;
+    image/gif                             gif;
+    image/jpeg                            jpeg jpg;
+    application/javascript                js;
+    application/atom+xml                  atom;
+    application/rss+xml                   rss;
+    font/woff                             woff;
+    font/woff2                            woff2;
+    image/png                             png;
+    image/svg+xml                         svg svgz;
+    image/webp                            webp;
+    application/pdf                       pdf;
+}
+EOF
+
+cat > "$NGINX_CONF" << NGINX_EOF
 worker_processes auto;
-pid /run/nginx.pid;
+pid /tmp/nginx.pid;
 error_log /dev/stderr warn;
 
 events {
@@ -89,61 +116,62 @@ events {
 }
 
 http {
-    include /etc/nginx/mime.types;
+    include $MIME_TYPES;
     default_type application/octet-stream;
-
     access_log /dev/stdout;
-    error_log /dev/stderr warn;
-
     sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
     keepalive_timeout 65;
-    types_hash_max_size 2048;
-
     gzip on;
     gzip_vary on;
     gzip_proxied any;
     gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss;
+
+    client_body_temp_path /tmp/nginx_client_body;
+    proxy_temp_path /tmp/nginx_proxy;
+    fastcgi_temp_path /tmp/nginx_fastcgi;
+    uwsgi_temp_path /tmp/nginx_uwsgi;
+    scgi_temp_path /tmp/nginx_scgi;
 
     upstream php-fpm {
         server 127.0.0.1:9000;
     }
 
     server {
-        listen $NGINX_PORT default_server;
+        listen $NGINX_PORT;
         server_name _;
         root $ROOT_DIR/public;
         index index.php index.html;
         server_tokens off;
 
         client_max_body_size 50M;
-        
-        # Timeouts aumentados
-        fastcgi_read_timeout 300;
-        fastcgi_send_timeout 300;
-        proxy_read_timeout 300;
-        proxy_send_timeout 300;
 
         location / {
             try_files \$uri \$uri/ /index.php?\$query_string;
         }
 
         location ~ \.php$ {
-            try_files \$uri =404;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_pass php-fpm;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-            fastcgi_param PATH_INFO \$fastcgi_path_info;
-            include fastcgi_params;
-            
-            # Headers adicionales
-            fastcgi_param HTTP_PROXY "";
-            fastcgi_intercept_errors off;
-            fastcgi_buffer_size 32k;
-            fastcgi_buffers 8 32k;
-            fastcgi_busy_buffers_size 64k;
+            # FastCGI Params Inline
+            fastcgi_param  QUERY_STRING       \$query_string;
+            fastcgi_param  REQUEST_METHOD     \$request_method;
+            fastcgi_param  CONTENT_TYPE       \$content_type;
+            fastcgi_param  CONTENT_LENGTH     \$content_length;
+            fastcgi_param  SCRIPT_NAME        \$fastcgi_script_name;
+            fastcgi_param  REQUEST_URI        \$request_uri;
+            fastcgi_param  DOCUMENT_URI       \$document_uri;
+            fastcgi_param  DOCUMENT_ROOT      \$document_root;
+            fastcgi_param  SERVER_PROTOCOL    \$server_protocol;
+            fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+            fastcgi_param  SERVER_SOFTWARE    nginx/\$nginx_version;
+            fastcgi_param  REMOTE_ADDR        \$remote_addr;
+            fastcgi_param  REMOTE_PORT        \$remote_port;
+            fastcgi_param  SERVER_ADDR        \$server_addr;
+            fastcgi_param  SERVER_PORT        \$server_port;
+            fastcgi_param  SERVER_NAME        \$server_name;
+            fastcgi_param  HTTPS              \$https if_not_empty;
+            fastcgi_param  REDIRECT_STATUS    200;
         }
 
         location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
@@ -151,44 +179,32 @@ http {
             add_header Cache-Control "public, immutable";
             access_log off;
         }
-
-        location ~ /\.(?!well-known).* {
-            deny all;
-        }
     }
 }
 NGINX_EOF
 
-echo "✓ Nginx config generated for port $NGINX_PORT"
+echo "✓ Local Nginx config generated"
 
-# Iniciar PHP-FPM en foreground pero en background del script
-echo "✓ Starting PHP-FPM..."
-php-fpm &
+# Intentar encontrar PHP-FPM
+FPM_BIN=$(which php-fpm || which php84-fpm || which php-fpm8.4 || find /nix/store -name "php-fpm" -type f -executable -print -quit 2>/dev/null)
+
+if [ -z "$FPM_BIN" ]; then
+    echo "ERROR: php-fpm binary not found"
+    exit 1
+fi
+
+echo "✓ Found PHP-FPM at: $FPM_BIN"
+
+# Iniciar PHP-FPM (rootless)
+# Creamos un pool local si es necesario, pero intentamos con el default
+$FPM_BIN -d "listen=127.0.0.1:9000" -d "daemonize=no" &
 
 # Esperar a que PHP-FPM esté listo
 sleep 3
 
-# Verificar que PHP-FPM está escuchando en el puerto 9000
-if ss -tuln | grep -q ':9000'; then
-    echo "✓ PHP-FPM is running on port 9000"
-else
-    echo "ERROR: PHP-FPM is not listening on port 9000"
-    echo "Open ports:"
-    ss -tuln
-    exit 1
-fi
-
-# Verificar configuración de Nginx
-nginx -t
-
-# Enlazar storage
+# Enlazar storage y worker
 php artisan storage:link --force || echo "⚠ Storage link already exists"
-
-# Iniciar Queue Worker en background
-echo "✓ Starting Queue Worker..."
 php artisan queue:work --tries=3 --timeout=90 &
 
-echo "✓ Starting Nginx on port $NGINX_PORT..."
-
-# Nginx en foreground para mantener el contenedor vivo
-exec nginx -g 'daemon off;'
+echo "✓ Starting Nginx (rootless)..."
+exec nginx -c "$NGINX_CONF" -g "daemon off;"
