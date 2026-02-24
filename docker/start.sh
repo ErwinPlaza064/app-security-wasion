@@ -221,8 +221,8 @@ fi
 
 echo "✓ Found PHP-FPM at: $FPM_BIN"
 
-# Iniciar PHP-FPM con config local
-$FPM_BIN -y "$FPM_CONF" &
+# Iniciar PHP-FPM con config local (-R permite correr como root)
+$FPM_BIN -y "$FPM_CONF" -R &
 
 # Esperar a que PHP-FPM esté listo
 sleep 3
