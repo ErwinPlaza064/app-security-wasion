@@ -86,7 +86,7 @@ mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_u
 NGINX_CONF="$ROOT_DIR/nginx_local.conf"
 MIME_TYPES="$ROOT_DIR/mime.types"
 
-# Generar mime.types básico
+# Generar mime.types completo (Evita errores de Lighthouse)
 cat > "$MIME_TYPES" << EOF
 types {
     text/html                             html htm shtml;
@@ -103,6 +103,9 @@ types {
     image/svg+xml                         svg svgz;
     image/webp                            webp;
     application/pdf                       pdf;
+    application/json                      json;
+    image/x-icon                          ico;
+    text/plain                            txt;
 }
 EOF
 
@@ -112,19 +115,25 @@ pid /tmp/nginx.pid;
 error_log stderr warn;
 
 events {
-    worker_connections 1024;
+    worker_connections 2048;
+    multi_accept on;
 }
 
 http {
     include $MIME_TYPES;
     default_type application/octet-stream;
-    access_log /dev/stdout;
+    access_log off;
     sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
     keepalive_timeout 65;
+    
+    # Gzip agresivo
     gzip on;
     gzip_vary on;
     gzip_proxied any;
-    gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/xml image/svg+xml;
 
     client_body_temp_path /tmp/nginx_client_body;
     proxy_temp_path /tmp/nginx_proxy;
@@ -140,7 +149,7 @@ http {
         listen $NGINX_PORT;
         server_name _;
         root $ROOT_DIR/public;
-        index index.php index.html;
+        index index.php;
         server_tokens off;
 
         client_max_body_size 50M;
@@ -153,7 +162,8 @@ http {
             fastcgi_pass php-fpm;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-            # FastCGI Params Inline
+            
+            # Parámetros FastCGI 100% Locales (Evita fallos de /etc/nginx)
             fastcgi_param  QUERY_STRING       \$query_string;
             fastcgi_param  REQUEST_METHOD     \$request_method;
             fastcgi_param  CONTENT_TYPE       \$content_type;
@@ -172,10 +182,15 @@ http {
             fastcgi_param  SERVER_NAME        \$server_name;
             fastcgi_param  HTTPS              \$https if_not_empty;
             fastcgi_param  REDIRECT_STATUS    200;
+            
+            fastcgi_buffer_size 128k;
+            fastcgi_buffers 4 256k;
+            fastcgi_busy_buffers_size 256k;
         }
 
-        location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
-            expires 1y;
+        # Cache eterno para assets de Vite
+        location ~* \/build\/assets\/.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+            expires max;
             add_header Cache-Control "public, immutable";
             access_log off;
         }
@@ -200,16 +215,13 @@ pid = /tmp/php-fpm.pid
 user = $CURRENT_USER
 group = $CURRENT_USER
 listen = 127.0.0.1:9000
-pm = dynamic
-pm.max_children = 5
-pm.start_servers = 2
-pm.min_spare_servers = 1
-pm.max_spare_servers = 3
-pm.max_requests = 500
+pm = static
+pm.max_children = 10
 clear_env = no
+catch_workers_output = yes
 EOF
 
-echo "✓ Local Nginx and PHP-FPM configs generated"
+echo "✓ Configs generated"
 
 # Intentar encontrar PHP-FPM
 FPM_BIN=$(which php-fpm || which php84-fpm || which php-fpm8.4 || find /nix/store -name "php-fpm" -type f -executable -print -quit 2>/dev/null)
@@ -221,16 +233,29 @@ fi
 
 echo "✓ Found PHP-FPM at: $FPM_BIN"
 
-# Iniciar PHP-FPM con config local (-R permite correr como root)
-$FPM_BIN -y "$FPM_CONF" -R &
+# Iniciar PHP-FPM con OPcache tuneado para producción
+# -d opcache.enable=1: Activa OPcache
+# -d opcache.enable_cli=1: Activa OPcache para CLI (útil para artisan)
+# -d opcache.memory_consumption=128: Memoria para cache (en MB)
+# -d opcache.interned_strings_buffer=8: Optimización de textos (en MB)
+# -d opcache.max_accelerated_files=10000: Límite de archivos en cache
+# -d opcache.validate_timestamps=0: Rendimiento máximo (no revisa cambios en archivos)
+$FPM_BIN -y "$FPM_CONF" -R \
+    -d opcache.enable=1 \
+    -d opcache.enable_cli=1 \
+    -d opcache.memory_consumption=128 \
+    -d opcache.interned_strings_buffer=8 \
+    -d opcache.max_accelerated_files=10000 \
+    -d opcache.validate_timestamps=0 \
+    -d zend_extension=opcache &
 
 # Esperar a que PHP-FPM esté listo
-sleep 3
+sleep 2
 
 # Enlazar storage y worker
-php artisan storage:link --force || echo "⚠ Storage link already exists"
+php artisan storage:link --force || echo "⚠ Storage link exists"
 php artisan queue:work --tries=3 --timeout=90 &
 
-echo "✓ Starting Nginx (rootless)..."
+echo "✓ Ready. Starting Nginx..."
 # Usamos -e stderr para evitar error de logs por defecto
 exec nginx -c "$NGINX_CONF" -e stderr -g "daemon off;"

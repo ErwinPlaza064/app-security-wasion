@@ -12,6 +12,7 @@ nixPkgs = [
     "php84Extensions.bcmath",
     "php84Extensions.mbstring",
     "php84Extensions.openssl",
+    "php84Extensions.opcache",
     "php84Packages.composer",
     "nodejs_20",
     "git",
