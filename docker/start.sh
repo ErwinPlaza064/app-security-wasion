@@ -185,16 +185,26 @@ NGINX_EOF
 
 # Generar configuración de PHP-FPM LOCAL
 FPM_CONF="$ROOT_DIR/php-fpm_local.conf"
+
+# Detectar el usuario actual para la configuración de FPM
+CURRENT_USER=$(whoami)
+echo "=== Running as user: $CURRENT_USER ==="
+
 cat > "$FPM_CONF" << EOF
 [global]
 error_log = /dev/stderr
 daemonize = no
+pid = /tmp/php-fpm.pid
 
 [www]
+user = $CURRENT_USER
+group = $CURRENT_USER
 listen = 127.0.0.1:9000
-pm = ondemand
+pm = dynamic
 pm.max_children = 5
-pm.process_idle_timeout = 10s
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
 pm.max_requests = 500
 clear_env = no
 EOF
