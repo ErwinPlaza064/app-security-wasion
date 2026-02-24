@@ -79,14 +79,14 @@ echo "✓ Laravel configured"
 
 
 
-# Crear directorios temporales para Nginx
-mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi
+# Crear directorios temporales para Nginx y PHP-FPM
+mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /tmp/php-fpm
 
 # Generar configuración de Nginx LOCAL (rootless)
 NGINX_CONF="$ROOT_DIR/nginx_local.conf"
 MIME_TYPES="$ROOT_DIR/mime.types"
 
-# Generar mime.types básico si no existe en el sistema
+# Generar mime.types básico
 cat > "$MIME_TYPES" << EOF
 types {
     text/html                             html htm shtml;
@@ -109,7 +109,7 @@ EOF
 cat > "$NGINX_CONF" << NGINX_EOF
 worker_processes auto;
 pid /tmp/nginx.pid;
-error_log /dev/stderr warn;
+error_log stderr warn;
 
 events {
     worker_connections 1024;
@@ -183,7 +183,23 @@ http {
 }
 NGINX_EOF
 
-echo "✓ Local Nginx config generated"
+# Generar configuración de PHP-FPM LOCAL
+FPM_CONF="$ROOT_DIR/php-fpm_local.conf"
+cat > "$FPM_CONF" << EOF
+[global]
+error_log = /dev/stderr
+daemonize = no
+
+[www]
+listen = 127.0.0.1:9000
+pm = ondemand
+pm.max_children = 5
+pm.process_idle_timeout = 10s
+pm.max_requests = 500
+clear_env = no
+EOF
+
+echo "✓ Local Nginx and PHP-FPM configs generated"
 
 # Intentar encontrar PHP-FPM
 FPM_BIN=$(which php-fpm || which php84-fpm || which php-fpm8.4 || find /nix/store -name "php-fpm" -type f -executable -print -quit 2>/dev/null)
@@ -195,9 +211,8 @@ fi
 
 echo "✓ Found PHP-FPM at: $FPM_BIN"
 
-# Iniciar PHP-FPM (rootless)
-# Creamos un pool local si es necesario, pero intentamos con el default
-$FPM_BIN -d "listen=127.0.0.1:9000" -d "daemonize=no" &
+# Iniciar PHP-FPM con config local
+$FPM_BIN -y "$FPM_CONF" &
 
 # Esperar a que PHP-FPM esté listo
 sleep 3
@@ -207,4 +222,5 @@ php artisan storage:link --force || echo "⚠ Storage link already exists"
 php artisan queue:work --tries=3 --timeout=90 &
 
 echo "✓ Starting Nginx (rootless)..."
-exec nginx -c "$NGINX_CONF" -g "daemon off;"
+# Usamos -e stderr para evitar error de logs por defecto
+exec nginx -c "$NGINX_CONF" -e stderr -g "daemon off;"
