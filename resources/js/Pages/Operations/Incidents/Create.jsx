@@ -193,12 +193,6 @@ export default function Create({ category: initialCategory, areas }) {
     const submit = (e) => {
         e.preventDefault();
         clearErrors();
-
-        if (!data.evidence_image) {
-            setError('evidence_image', 'Debe capturar o subir evidencia fotográfica');
-            return;
-        }
-
         post(route('incidents.store'));
     };
 

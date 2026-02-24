@@ -24,7 +24,7 @@ class ExitVoucherResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     protected static ?string $navigationLabel = 'Vales de Salida';
