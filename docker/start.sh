@@ -18,7 +18,7 @@ fi
 NGINX_PORT=${PORT:-8080}
 echo "=== Port configured: $NGINX_PORT ==="
 
-# Determinar variables de BD con fallbacks (soporte para MySQL y PostgreSQL de Railway)
+# Determinar variables de BD con fallbacks
 FINAL_DB_HOST=${DB_HOST:-${PGHOST:-${MYSQLHOST:-127.0.0.1}}}
 FINAL_DB_PORT=${DB_PORT:-${PGPORT:-${MYSQLPORT:-5432}}}
 FINAL_DB_USER=${DB_USERNAME:-${PGUSER:-${MYSQLUSER:-postgres}}}
@@ -54,9 +54,6 @@ EOF
 echo "=== Generated .env (DB section) ==="
 grep "^DB_" .env | grep -v "DB_PASSWORD"
 
-# Permisos (Nixpacks maneja esto, evitamos chown si no somos root)
-# chown -R www-data:www-data storage bootstrap/cache
-
 # Limpiar configuración
 echo "Clearing configuration cache..."
 php artisan config:clear
@@ -77,16 +74,34 @@ fi
 
 echo "✓ Laravel configured"
 
-
-
-# Crear directorios temporales para Nginx y PHP-FPM
+# Crear directorios necesarios
+echo "Creating temporary directories..."
 mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /tmp/php-fpm
+mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
+mkdir -p /var/log/nginx && chmod 777 /var/log/nginx || echo "⚠ Could not create /var/log/nginx"
+
+# Detectar el usuario actual
+CURRENT_USER=$(whoami)
+echo "=== Running as user: $CURRENT_USER ==="
+
+# Determinar usuario y grupo para el pool de PHP-FPM
+# PHP-FPM prohíbe explícitamente el usuario 'root' en el pool.
+if [ "$CURRENT_USER" = "root" ]; then
+    # En Railway/Nixpacks si somos root, usamos 'nobody' para el pool
+    FPM_USER="nobody"
+    FPM_GROUP="nobody"
+    # Asegurar que el usuario nobody pueda escribir en storage
+    chmod -R 777 storage bootstrap/cache
+else
+    FPM_USER=$CURRENT_USER
+    FPM_GROUP=$CURRENT_USER
+fi
+echo "=== Pool will run as: $FPM_USER:$FPM_GROUP ==="
 
 # Generar configuración de Nginx LOCAL (rootless)
 NGINX_CONF="$ROOT_DIR/nginx_local.conf"
 MIME_TYPES="$ROOT_DIR/mime.types"
 
-# Generar mime.types completo (Evita errores de Lighthouse)
 cat > "$MIME_TYPES" << EOF
 types {
     text/html                             html htm shtml;
@@ -128,7 +143,6 @@ http {
     tcp_nodelay on;
     keepalive_timeout 65;
     
-    # Gzip agresivo
     gzip on;
     gzip_vary on;
     gzip_proxied any;
@@ -163,7 +177,6 @@ http {
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
             
-            # Parámetros FastCGI 100% Locales (Evita fallos de /etc/nginx)
             fastcgi_param  QUERY_STRING       \$query_string;
             fastcgi_param  REQUEST_METHOD     \$request_method;
             fastcgi_param  CONTENT_TYPE       \$content_type;
@@ -188,7 +201,6 @@ http {
             fastcgi_busy_buffers_size 256k;
         }
 
-        # Cache eterno para assets de Vite
         location ~* \/build\/assets\/.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
             expires max;
             add_header Cache-Control "public, immutable";
@@ -201,10 +213,6 @@ NGINX_EOF
 # Generar configuración de PHP-FPM LOCAL
 FPM_CONF="$ROOT_DIR/php-fpm_local.conf"
 
-# Detectar el usuario actual para la configuración de FPM
-CURRENT_USER=$(whoami)
-echo "=== Running as user: $CURRENT_USER ==="
-
 cat > "$FPM_CONF" << EOF
 [global]
 error_log = /dev/stderr
@@ -212,18 +220,21 @@ daemonize = no
 pid = /tmp/php-fpm.pid
 
 [www]
-user = $CURRENT_USER
-group = $CURRENT_USER
+user = $FPM_USER
+group = $FPM_GROUP
 listen = 127.0.0.1:9000
-pm = static
+pm = dynamic
 pm.max_children = 10
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
 clear_env = no
 catch_workers_output = yes
 EOF
 
-echo "✓ Configs generated"
+echo "✓ Local configurations generated"
 
-# Intentar encontrar PHP-FPM
+# Encontrar PHP-FPM
 FPM_BIN=$(which php-fpm || which php84-fpm || which php-fpm8.4 || find /nix/store -name "php-fpm" -type f -executable -print -quit 2>/dev/null)
 
 if [ -z "$FPM_BIN" ]; then
@@ -233,13 +244,7 @@ fi
 
 echo "✓ Found PHP-FPM at: $FPM_BIN"
 
-# Iniciar PHP-FPM con OPcache tuneado para producción
-# -d opcache.enable=1: Activa OPcache
-# -d opcache.enable_cli=1: Activa OPcache para CLI (útil para artisan)
-# -d opcache.memory_consumption=128: Memoria para cache (en MB)
-# -d opcache.interned_strings_buffer=8: Optimización de textos (en MB)
-# -d opcache.max_accelerated_files=10000: Límite de archivos en cache
-# -d opcache.validate_timestamps=0: Rendimiento máximo (no revisa cambios en archivos)
+# Iniciar PHP-FPM
 $FPM_BIN -y "$FPM_CONF" -R \
     -d opcache.enable=1 \
     -d opcache.enable_cli=1 \
@@ -257,5 +262,4 @@ php artisan storage:link --force || echo "⚠ Storage link exists"
 php artisan queue:work --tries=3 --timeout=90 &
 
 echo "✓ Ready. Starting Nginx..."
-# Usamos -e stderr para evitar error de logs por defecto
 exec nginx -c "$NGINX_CONF" -e stderr -g "daemon off;"
