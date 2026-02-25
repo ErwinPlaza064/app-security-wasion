@@ -74,31 +74,65 @@ fi
 
 echo "✓ Laravel configured"
 
+# ============================================================
+# PREPARAR ENTORNO PARA PHP-FPM y NGINX
+# ============================================================
+
 # Crear directorios necesarios
 echo "Creating temporary directories..."
 mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /tmp/php-fpm
 mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
-mkdir -p /var/log/nginx && chmod 777 /var/log/nginx || echo "⚠ Could not create /var/log/nginx"
 
 # Detectar el usuario actual
 CURRENT_USER=$(whoami)
 echo "=== Running as user: $CURRENT_USER ==="
 
-# Determinar usuario y grupo para el pool de PHP-FPM
-# PHP-FPM prohíbe explícitamente el usuario 'root' en el pool.
+# ============================================================
+# GARANTIZAR QUE EXISTA UN USUARIO VÁLIDO PARA PHP-FPM
+# Nixpacks/Railway a veces NO incluye nobody/nogroup en
+# /etc/passwd y /etc/group. Los creamos si no existen.
+# ============================================================
 if [ "$CURRENT_USER" = "root" ]; then
-    # En Railway/Nixpacks si somos root, usamos 'nobody' para el pool
-    FPM_USER="nobody"
-    FPM_GROUP="nobody"
-    # Asegurar que el usuario nobody pueda escribir en storage
+    echo "Ensuring 'www-data' user and group exist for PHP-FPM..."
+
+    # Crear grupo www-data si no existe
+    if ! grep -q "^www-data:" /etc/group 2>/dev/null; then
+        echo "www-data:x:33:" >> /etc/group
+        echo "  → Created group www-data (gid 33)"
+    else
+        echo "  → Group www-data already exists"
+    fi
+
+    # Crear usuario www-data si no existe
+    if ! grep -q "^www-data:" /etc/passwd 2>/dev/null; then
+        echo "www-data:x:33:33:www-data:/nonexistent:/usr/sbin/nologin" >> /etc/passwd
+        echo "  → Created user www-data (uid 33)"
+    else
+        echo "  → User www-data already exists"
+    fi
+
+    FPM_USER="www-data"
+    FPM_GROUP="www-data"
+
+    # Permisos para que www-data pueda escribir
     chmod -R 777 storage bootstrap/cache
 else
-    FPM_USER=$CURRENT_USER
-    FPM_GROUP=$CURRENT_USER
+    FPM_USER="$CURRENT_USER"
+    FPM_GROUP="$CURRENT_USER"
 fi
-echo "=== Pool will run as: $FPM_USER:$FPM_GROUP ==="
 
-# Generar configuración de Nginx LOCAL (rootless)
+echo "=== PHP-FPM pool will run as: $FPM_USER:$FPM_GROUP ==="
+
+# Verificar que el usuario y grupo se resolverán correctamente
+echo "=== Verifying user resolution ==="
+echo "  /etc/passwd entries for $FPM_USER:"
+grep "^${FPM_USER}:" /etc/passwd 2>/dev/null || echo "  ⚠ WARNING: user $FPM_USER NOT in /etc/passwd"
+echo "  /etc/group entries for $FPM_GROUP:"
+grep "^${FPM_GROUP}:" /etc/group 2>/dev/null || echo "  ⚠ WARNING: group $FPM_GROUP NOT in /etc/group"
+
+# ============================================================
+# GENERAR CONFIGURACIÓN DE NGINX (100% LOCAL, SIN /etc/nginx)
+# ============================================================
 NGINX_CONF="$ROOT_DIR/nginx_local.conf"
 MIME_TYPES="$ROOT_DIR/mime.types"
 
@@ -137,12 +171,12 @@ events {
 http {
     include $MIME_TYPES;
     default_type application/octet-stream;
-    access_log off;
+    access_log /dev/stdout;
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
     keepalive_timeout 65;
-    
+
     gzip on;
     gzip_vary on;
     gzip_proxied any;
@@ -176,7 +210,7 @@ http {
             fastcgi_pass php-fpm;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-            
+
             fastcgi_param  QUERY_STRING       \$query_string;
             fastcgi_param  REQUEST_METHOD     \$request_method;
             fastcgi_param  CONTENT_TYPE       \$content_type;
@@ -195,7 +229,7 @@ http {
             fastcgi_param  SERVER_NAME        \$server_name;
             fastcgi_param  HTTPS              \$https if_not_empty;
             fastcgi_param  REDIRECT_STATUS    200;
-            
+
             fastcgi_buffer_size 128k;
             fastcgi_buffers 4 256k;
             fastcgi_busy_buffers_size 256k;
@@ -210,7 +244,9 @@ http {
 }
 NGINX_EOF
 
-# Generar configuración de PHP-FPM LOCAL
+# ============================================================
+# GENERAR CONFIGURACIÓN DE PHP-FPM (100% LOCAL)
+# ============================================================
 FPM_CONF="$ROOT_DIR/php-fpm_local.conf"
 
 cat > "$FPM_CONF" << EOF
@@ -232,19 +268,21 @@ clear_env = no
 catch_workers_output = yes
 EOF
 
-echo "✓ Local configurations generated"
+echo "✓ Nginx and PHP-FPM configurations generated"
 
-# Encontrar PHP-FPM
+# ============================================================
+# INICIAR PHP-FPM CON VERIFICACIÓN
+# ============================================================
 FPM_BIN=$(which php-fpm || which php84-fpm || which php-fpm8.4 || find /nix/store -name "php-fpm" -type f -executable -print -quit 2>/dev/null)
 
 if [ -z "$FPM_BIN" ]; then
-    echo "ERROR: php-fpm binary not found"
+    echo "ERROR: php-fpm binary not found!"
     exit 1
 fi
 
 echo "✓ Found PHP-FPM at: $FPM_BIN"
+echo "Starting PHP-FPM..."
 
-# Iniciar PHP-FPM
 $FPM_BIN -y "$FPM_CONF" -R \
     -d opcache.enable=1 \
     -d opcache.enable_cli=1 \
@@ -254,12 +292,63 @@ $FPM_BIN -y "$FPM_CONF" -R \
     -d opcache.validate_timestamps=0 \
     -d zend_extension=opcache &
 
-# Esperar a que PHP-FPM esté listo
-sleep 2
+FPM_PID=$!
 
-# Enlazar storage y worker
-php artisan storage:link --force || echo "⚠ Storage link exists"
+# Esperar a que PHP-FPM esté escuchando en el puerto 9000
+echo "Waiting for PHP-FPM to be ready on port 9000..."
+MAX_RETRIES=15
+RETRY=0
+while [ $RETRY -lt $MAX_RETRIES ]; do
+    # Verificar que el proceso sigue vivo
+    if ! kill -0 $FPM_PID 2>/dev/null; then
+        echo "✗ ERROR: PHP-FPM process died (PID $FPM_PID)"
+        echo "=== Dumping PHP-FPM config for debugging ==="
+        cat "$FPM_CONF"
+        echo "=== Checking /etc/passwd ==="
+        cat /etc/passwd
+        echo "=== Checking /etc/group ==="
+        cat /etc/group
+        exit 1
+    fi
+
+    # Verificar si el puerto 9000 está abierto
+    if command -v ss >/dev/null 2>&1; then
+        if ss -tlnp 2>/dev/null | grep -q ":9000"; then
+            echo "✓ PHP-FPM is listening on port 9000"
+            break
+        fi
+    elif command -v netstat >/dev/null 2>&1; then
+        if netstat -tlnp 2>/dev/null | grep -q ":9000"; then
+            echo "✓ PHP-FPM is listening on port 9000"
+            break
+        fi
+    else
+        # Si no hay ss ni netstat, simplemente esperamos y confiamos en que el proceso está vivo
+        sleep 1
+        if kill -0 $FPM_PID 2>/dev/null; then
+            echo "✓ PHP-FPM appears to be running (PID $FPM_PID)"
+            break
+        fi
+    fi
+
+    RETRY=$((RETRY + 1))
+    echo "  Retry $RETRY/$MAX_RETRIES - waiting 1s..."
+    sleep 1
+done
+
+if [ $RETRY -ge $MAX_RETRIES ]; then
+    echo "✗ ERROR: PHP-FPM failed to start after $MAX_RETRIES attempts"
+    exit 1
+fi
+
+# ============================================================
+# TAREAS FINALES DE LARAVEL
+# ============================================================
+php artisan storage:link --force || echo "⚠ Storage link already exists"
 php artisan queue:work --tries=3 --timeout=90 &
 
-echo "✓ Ready. Starting Nginx..."
+# ============================================================
+# INICIAR NGINX (foreground para que Railway mantenga el contenedor vivo)
+# ============================================================
+echo "✓ All services ready. Starting Nginx on port $NGINX_PORT..."
 exec nginx -c "$NGINX_CONF" -e stderr -g "daemon off;"
