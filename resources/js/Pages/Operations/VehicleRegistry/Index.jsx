@@ -35,24 +35,42 @@ export default function Index({ vehicles = [] }) {
                     .includes(searchTerm.toLowerCase())),
     );
 
-    const getValidityBadge = (validity) => {
+    const getValidityBadge = (validity, size = "sm") => {
         const v = validity || "Vigente";
-        const color = v === "Expirado"
-            ? "bg-red-50 text-red-600 border-red-100"
-            : "bg-emerald-50 text-emerald-600 border-emerald-100";
-        return <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black tracking-widest ${color}`}>{v.toUpperCase()}</span>;
+        const isActive = v === "Vigente";
+        const baseClass = size === "lg"
+            ? "px-4 py-1.5 text-[10px]"
+            : "px-2.5 py-1 text-[9px]";
+        return (
+            <span className={`${baseClass} rounded-full font-black tracking-widest inline-flex items-center gap-1.5 ${
+                isActive
+                    ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                    : "bg-red-50 text-red-500 border border-red-200"
+            }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-400"}`} />
+                {v.toUpperCase()}
+            </span>
+        );
     };
 
-    const getStatusBadge = (status) => {
+    const getStatusBadge = (status, size = "sm") => {
         const colors = {
-            'Completa': "bg-emerald-50 text-emerald-600 border-emerald-100",
-            'Pendiente': "bg-amber-50 text-amber-600 border-amber-100",
-            'Vencida': "bg-red-50 text-red-600 border-red-100",
-            'En Revisión': "bg-blue-50 text-blue-600 border-blue-100",
-            'No Entregada': "bg-rose-50 text-rose-600 border-rose-100",
+            'Completa': { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", dot: "bg-emerald-500" },
+            'Pendiente': { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200", dot: "bg-amber-500" },
+            'Vencida': { bg: "bg-red-50", text: "text-red-500", border: "border-red-200", dot: "bg-red-400" },
+            'En Revisión': { bg: "bg-primary-50", text: "text-primary-700", border: "border-primary-200", dot: "bg-primary-500" },
+            'No Entregada': { bg: "bg-rose-50", text: "text-rose-500", border: "border-rose-200", dot: "bg-rose-400" },
         };
-        const color = colors[status] || "bg-gray-100 text-gray-400 border-gray-200";
-        return <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black tracking-widest ${color}`}>{(status || "SIN DATOS").toUpperCase()}</span>;
+        const c = colors[status] || { bg: "bg-gray-100", text: "text-gray-400", border: "border-gray-200", dot: "bg-gray-400" };
+        const baseClass = size === "lg"
+            ? "px-4 py-1.5 text-[10px]"
+            : "px-2.5 py-1 text-[9px]";
+        return (
+            <span className={`${baseClass} rounded-full font-black tracking-widest inline-flex items-center gap-1.5 ${c.bg} ${c.text} border ${c.border}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
+                {(status || "SIN DATOS").toUpperCase()}
+            </span>
+        );
     };
 
     return (
@@ -87,7 +105,7 @@ export default function Index({ vehicles = [] }) {
                         <div className="flex items-center space-x-3">
                             <Link
                                 href={route("employee-vehicles.create")}
-                                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95"
+                                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-800 transition-all active:scale-95"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
@@ -100,13 +118,13 @@ export default function Index({ vehicles = [] }) {
                     {/* Search Bar */}
                     <div className="mb-8 relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg className="h-5 w-5 text-gray-300 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5 text-gray-300 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <input
                             type="text"
-                            className="block w-full bg-white border-2 border-gray-50 focus:border-blue-500 focus:ring-0 rounded-2xl py-4 pl-12 pr-4 transition-all text-sm font-bold text-gray-900 shadow-sm placeholder:text-gray-300 uppercase tracking-widest"
+                            className="block w-full bg-white border-2 border-gray-50 focus:border-primary focus:ring-0 rounded-2xl py-4 pl-12 pr-4 transition-all text-sm font-bold text-gray-900 shadow-sm placeholder:text-gray-300 uppercase tracking-widest"
                             placeholder="Buscar por nombre, marbete o placas..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -134,11 +152,11 @@ export default function Index({ vehicles = [] }) {
                                         filteredVehicles.map((vehicle) => (
                                             <tr
                                                 key={vehicle.id}
-                                                className="hover:bg-blue-50/30 transition-colors group cursor-pointer"
+                                                className="hover:bg-cream/60 transition-colors group cursor-pointer"
                                                 onClick={() => openDetail(vehicle)}
                                             >
                                                 <td className="px-8 py-6">
-                                                    <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-widest border border-blue-100">
+                                                    <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-primary-50 text-primary text-[10px] font-black uppercase tracking-widest border border-primary-100">
                                                         {vehicle.marbete_number}
                                                     </span>
                                                 </td>
@@ -191,18 +209,16 @@ export default function Index({ vehicles = [] }) {
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
-                                                    <div className="flex items-center justify-end space-x-2">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); openDetail(vehicle); }}
-                                                            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
-                                                            title="Ver detalle"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); openDetail(vehicle); }}
+                                                        className="p-2.5 rounded-xl bg-primary-50 text-primary hover:bg-primary hover:text-white transition-all duration-200 group-hover:shadow-lg group-hover:shadow-primary/10"
+                                                        title="Ver detalle"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
@@ -229,59 +245,76 @@ export default function Index({ vehicles = [] }) {
                 </div>
             </div>
 
-            {/* Detail Modal */}
-            <Modal show={showDetailModal} onClose={closeDetail} maxWidth="2xl">
+            {/* ─── Detail Modal ─── */}
+            <Modal show={showDetailModal} onClose={closeDetail} maxWidth="lg">
                 {selectedVehicle && (
-                    <div className="relative">
-                        {/* Modal Header */}
-                        <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-8 translate-x-8" />
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-8 -translate-x-8" />
-                            <div className="relative">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-blue-200 text-[10px] font-black uppercase tracking-[0.3em] mb-1">
-                                            Detalle del Registro
+                    <div className="overflow-hidden">
+                        {/* ── Header ── */}
+                        <div className="bg-primary relative overflow-hidden">
+                            {/* Decorative circles */}
+                            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5" />
+                            <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-white/5" />
+                            <div className="absolute top-1/2 right-1/3 w-16 h-16 rounded-full bg-white/[0.03]" />
+
+                            <div className="relative px-8 py-7">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-primary-200 text-[9px] font-black uppercase tracking-[0.35em] mb-2">
+                                            Ficha del Colaborador
                                         </p>
-                                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter">
+                                        <h2 className="text-[22px] font-black text-white uppercase tracking-tight leading-tight truncate">
                                             {selectedVehicle.employee_name}
                                         </h2>
-                                        <p className="text-blue-200 text-xs font-bold uppercase tracking-widest mt-1">
-                                            {selectedVehicle.area}
-                                        </p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
+                                                {selectedVehicle.area}
+                                            </span>
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
+                                                {selectedVehicle.plant}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className="inline-flex items-center px-4 py-2 rounded-xl bg-white/20 text-white text-sm font-black uppercase tracking-widest border border-white/20 backdrop-blur-sm">
-                                            #{selectedVehicle.marbete_number}
-                                        </span>
+                                    <div className="ml-4 flex-shrink-0">
+                                        <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex flex-col items-center justify-center">
+                                            <span className="text-white/50 text-[8px] font-black tracking-widest uppercase leading-none">No.</span>
+                                            <span className="text-white text-lg font-black leading-none mt-0.5">
+                                                {selectedVehicle.marbete_number}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Modal Body */}
-                        <div className="px-8 py-6 space-y-6">
+                        {/* ── Body ── */}
+                        <div className="bg-cream px-8 py-6 space-y-5">
+
                             {/* Vehículo 1 */}
                             <div>
-                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-3 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7h8m-8 5h8M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                                    </svg>
-                                    Vehículo Principal
-                                </h3>
-                                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Marca</p>
-                                            <p className="text-sm font-black text-gray-900 uppercase">{selectedVehicle.vehicle_brand}</p>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0h4m-4 0H9m4 0a1 1 0 011 1v.01M14 16h2l3-6h-4" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+                                        Vehículo Principal
+                                    </h3>
+                                </div>
+                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+                                    <div className="grid grid-cols-3 divide-x divide-gray-50">
+                                        <div className="px-5 py-4">
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">Marca</p>
+                                            <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">{selectedVehicle.vehicle_brand}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Submarca</p>
-                                            <p className="text-sm font-black text-gray-900 uppercase">{selectedVehicle.vehicle_model}</p>
+                                        <div className="px-5 py-4">
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">Submarca</p>
+                                            <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">{selectedVehicle.vehicle_model}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Placas</p>
-                                            <span className="inline-block font-mono font-black text-gray-900 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm text-sm">
+                                        <div className="px-5 py-4">
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">Placas</p>
+                                            <span className="inline-block font-mono font-black text-primary bg-primary-50 px-3 py-1 rounded-lg border border-primary-100 text-[13px]">
                                                 {selectedVehicle.vehicle_plates}
                                             </span>
                                         </div>
@@ -292,25 +325,30 @@ export default function Index({ vehicles = [] }) {
                             {/* Vehículo 2 */}
                             {selectedVehicle.vehicle_brand_2 && (
                                 <div>
-                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-3 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-2 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7h8m-8 5h8M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                                        </svg>
-                                        Vehículo Alternativo
-                                    </h3>
-                                    <div className="bg-amber-50/50 rounded-2xl p-5 border border-amber-100">
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <div>
-                                                <p className="text-[9px] font-bold text-amber-500 uppercase tracking-widest mb-1">Marca</p>
-                                                <p className="text-sm font-black text-gray-900 uppercase">{selectedVehicle.vehicle_brand_2}</p>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-6 h-6 rounded-lg bg-amber-100 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0h4m-4 0H9m4 0a1 1 0 011 1v.01M14 16h2l3-6h-4" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+                                            Vehículo Alternativo
+                                        </h3>
+                                    </div>
+                                    <div className="bg-white rounded-2xl border border-amber-100 shadow-sm">
+                                        <div className="grid grid-cols-3 divide-x divide-amber-50">
+                                            <div className="px-5 py-4">
+                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">Marca</p>
+                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">{selectedVehicle.vehicle_brand_2}</p>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-bold text-amber-500 uppercase tracking-widest mb-1">Submarca</p>
-                                                <p className="text-sm font-black text-gray-900 uppercase">{selectedVehicle.vehicle_model_2}</p>
+                                            <div className="px-5 py-4">
+                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">Submarca</p>
+                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">{selectedVehicle.vehicle_model_2}</p>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-bold text-amber-500 uppercase tracking-widest mb-1">Placas</p>
-                                                <span className="inline-block font-mono font-black text-amber-700 bg-white px-3 py-1.5 rounded-lg border border-amber-200 shadow-sm text-sm">
+                                            <div className="px-5 py-4">
+                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">Placas</p>
+                                                <span className="inline-block font-mono font-black text-amber-700 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200 text-[13px]">
                                                     {selectedVehicle.vehicle_plates_2}
                                                 </span>
                                             </div>
@@ -320,45 +358,48 @@ export default function Index({ vehicles = [] }) {
                             )}
 
                             {/* Status Row */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Vigencia del Marbete</p>
-                                    {getValidityBadge(selectedVehicle.validity_status)}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">Vigencia del Marbete</p>
+                                    {getValidityBadge(selectedVehicle.validity_status, "lg")}
                                 </div>
-                                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Estatus de Documentación</p>
-                                    {getStatusBadge(selectedVehicle.documentation_status)}
+                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">Estatus de Documentación</p>
+                                    {getStatusBadge(selectedVehicle.documentation_status, "lg")}
                                 </div>
                             </div>
 
-                            {/* Footer Info */}
-                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
+                            {/* Footer - Quien Registró */}
+                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-black text-gray-900 uppercase tracking-tight leading-tight">
+                                                {selectedVehicle.user?.name || "Sin datos"}
+                                            </p>
+                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                                {new Date(selectedVehicle.created_at).toLocaleDateString("es-MX", { day: "2-digit", month: "long", year: "numeric" })}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-gray-900 uppercase tracking-tight">
-                                            {selectedVehicle.user?.name || "Sin datos"}
-                                        </p>
-                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                            Registrado el {new Date(selectedVehicle.created_at).toLocaleDateString("es-MX", { day: "2-digit", month: "long", year: "numeric" })}
-                                        </p>
+                                    <div className="text-right">
+                                        <p className="text-[8px] font-bold text-gray-300 uppercase tracking-[0.3em]">ID</p>
+                                        <p className="text-xs font-black text-gray-400">#{selectedVehicle.id}</p>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">
-                                    {selectedVehicle.plant}
-                                </span>
                             </div>
                         </div>
 
-                        {/* Close Button */}
-                        <div className="px-8 pb-6">
+                        {/* ── Close Button ── */}
+                        <div className="bg-cream px-8 pb-7 pt-1">
                             <button
                                 onClick={closeDetail}
-                                className="w-full py-3.5 rounded-xl border-2 border-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 hover:text-gray-600 transition-all"
+                                className="w-full py-3.5 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-primary-800 transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
                             >
                                 Cerrar
                             </button>
