@@ -17,6 +17,16 @@ class AccessLogResource extends Resource
     {
         return false;
     }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $navigationGroup = 'Control de Accesos';
     protected static ?string $modelLabel = 'Registro de Acceso';
@@ -211,8 +221,9 @@ class AccessLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
+            ->bulkActions([])
             ->poll('5s');
     }
 
@@ -220,7 +231,6 @@ class AccessLogResource extends Resource
     {
         return [
             'index' => Pages\ListAccessLogs::route('/'),
-            'edit' => Pages\EditAccessLog::route('/{record}/edit'),
         ];
     }
 }

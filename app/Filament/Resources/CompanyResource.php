@@ -13,6 +13,21 @@ use Filament\Tables\Table;
 class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'Directorio';
     protected static ?string $modelLabel = 'Empresa';
@@ -66,16 +81,15 @@ class CompanyResource extends Resource
                     ->label('Activas únicamente'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ]);
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->bulkActions([]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListCompanies::route('/'),
-            'create' => Pages\CreateCompany::route('/create'),
-            'edit' => Pages\EditCompany::route('/{record}/edit'),
         ];
     }
 }

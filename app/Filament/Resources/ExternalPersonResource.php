@@ -13,6 +13,21 @@ use Filament\Tables\Table;
 class ExternalPersonResource extends Resource
 {
     protected static ?string $model = ExternalPerson::class;
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Directorio';
     protected static ?string $modelLabel = 'Persona Externa';
@@ -68,16 +83,15 @@ class ExternalPersonResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ]);
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->bulkActions([]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListExternalPeople::route('/'),
-            'create' => Pages\CreateExternalPerson::route('/create'),
-            'edit' => Pages\EditExternalPerson::route('/{record}/edit'),
         ];
     }
 }

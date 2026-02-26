@@ -27,6 +27,21 @@ class ExitVoucherResource extends Resource
         return true;
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
     protected static ?string $navigationLabel = 'Vales de Salida';
 
     protected static ?string $modelLabel = 'Vale de Salida';
@@ -201,20 +216,14 @@ class ExitVoucherResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListExitVouchers::route('/'),
-            'edit' => Pages\EditExitVoucher::route('/{record}/edit'),
         ];
     }
 }

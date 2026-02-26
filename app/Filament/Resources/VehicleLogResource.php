@@ -17,6 +17,16 @@ class VehicleLogResource extends Resource
     {
         return false;
     }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-truck';
     protected static ?string $navigationGroup = 'Control de Accesos';
     protected static ?string $modelLabel = 'Transportista / Vehículo';
@@ -149,8 +159,9 @@ class VehicleLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -158,7 +169,6 @@ class VehicleLogResource extends Resource
     {
         return [
             'index' => Pages\ListVehicleLogs::route('/'),
-            'edit' => Pages\EditVehicleLog::route('/{record}/edit'),
         ];
     }
 }

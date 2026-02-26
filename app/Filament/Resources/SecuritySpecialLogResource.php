@@ -18,6 +18,16 @@ class SecuritySpecialLogResource extends Resource
     {
         return false;
     }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
     protected static ?string $navigationGroup = 'Operaciones';
     protected static ?string $modelLabel = 'Pase / Baja / Especial';
@@ -156,8 +166,9 @@ class SecuritySpecialLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -165,7 +176,6 @@ class SecuritySpecialLogResource extends Resource
     {
         return [
             'index' => Pages\ListSecuritySpecialLogs::route('/'),
-            'edit' => Pages\EditSecuritySpecialLog::route('/{record}/edit'),
         ];
     }
 }

@@ -18,6 +18,16 @@ class IncidentResource extends Resource
     {
         return false;
     }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
     protected static ?string $navigationGroup = 'Seguridad Corporativa';
     protected static ?string $modelLabel = 'Reporte de Incidencia';
@@ -190,8 +200,9 @@ class IncidentResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -199,7 +210,6 @@ class IncidentResource extends Resource
     {
         return [
             'index' => Pages\ListIncidents::route('/'),
-            'edit' => Pages\EditIncident::route('/{record}/edit'),
         ];
     }
 }

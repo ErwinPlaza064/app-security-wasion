@@ -26,6 +26,16 @@ class NoBadgeLogResource extends Resource
         return false;
     }
 
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('type', 'no_badge');
@@ -105,14 +115,9 @@ class NoBadgeLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -120,7 +125,6 @@ class NoBadgeLogResource extends Resource
     {
         return [
             'index' => Pages\ListNoBadgeLogs::route('/'),
-            'edit' => Pages\EditNoBadgeLog::route('/{record}/edit'),
         ];
     }
 }

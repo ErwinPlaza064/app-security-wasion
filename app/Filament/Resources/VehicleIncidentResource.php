@@ -28,6 +28,16 @@ class VehicleIncidentResource extends Resource
         return false;
     }
 
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -119,14 +129,9 @@ class VehicleIncidentResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -134,7 +139,6 @@ class VehicleIncidentResource extends Resource
     {
         return [
             'index' => Pages\ListVehicleIncidents::route('/'),
-            'edit' => Pages\EditVehicleIncident::route('/{record}/edit'),
         ];
     }
 }

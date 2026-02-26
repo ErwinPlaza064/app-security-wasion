@@ -14,6 +14,21 @@ class PatrolLogResource extends Resource
 {
     protected static ?string $model = PatrolLog::class;
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-map';
 
     protected static ?string $navigationGroup = 'Operaciones';
@@ -141,14 +156,9 @@ class PatrolLogResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(), // Solo Ver, no Editar
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                // Quitamos acciones masivas si quieres máxima seguridad, pero dejamos Delete si es necesario
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+            ->bulkActions([])
             ->poll('3s');
     }
 
@@ -156,7 +166,6 @@ class PatrolLogResource extends Resource
     {
         return [
             'index' => Pages\ListPatrolLogs::route('/'),
-            'edit' => Pages\EditPatrolLog::route('/{record}/edit'),
         ];
     }
 }
