@@ -13,7 +13,11 @@ class EmployeeVehicle extends Model
         'vehicle_brand',
         'vehicle_model',
         'vehicle_plates',
+        'vehicle_brand_2',
+        'vehicle_model_2',
+        'vehicle_plates_2',
         'documentation_status',
+        'validity_status',
         'plant',
         'user_id'
     ];

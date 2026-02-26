@@ -1,14 +1,31 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
+import Modal from '@/Components/Modal';
+import DangerButton from '@/Components/DangerButton';
+import { router } from '@inertiajs/react';
 
 export default function Index({ vehicles = [] }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const deleteVehicle = () => {
+        if (!selectedItem) return;
+        
+        router.delete(route('employee-vehicles.destroy', selectedItem.id), {
+            onSuccess: () => {
+                setConfirmDeleteModal(false);
+                setSelectedItem(null);
+            },
+        });
+    };
 
     const filteredVehicles = vehicles.filter(vehicle => 
         vehicle.employee_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vehicle.marbete_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.vehicle_plates.toLowerCase().includes(searchTerm.toLowerCase())
+        vehicle.vehicle_plates.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (vehicle.vehicle_plates_2 && vehicle.vehicle_plates_2.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -68,9 +85,12 @@ export default function Index({ vehicles = [] }) {
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Colaborador / Área</th>
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Vehículo</th>
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Placas</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Registró</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Vigencia</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estatus</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Registró</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Acciones</th>
                                     </tr>
-                                </thead>
+</thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {filteredVehicles.length > 0 ? (
                                         filteredVehicles.map((vehicle) => (
@@ -91,21 +111,92 @@ export default function Index({ vehicles = [] }) {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-6 font-bold text-gray-600 text-sm uppercase">
-                                                    {vehicle.vehicle_brand} - {vehicle.vehicle_model}
+                                                    <div className="flex flex-col">
+                                                        <span>{vehicle.vehicle_brand} - {vehicle.vehicle_model}</span>
+                                                        {vehicle.vehicle_brand_2 && (
+                                                            <span className="text-[10px] text-amber-600 mt-1">
+                                                                {vehicle.vehicle_brand_2} - {vehicle.vehicle_model_2}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-6">
-                                                    <span className="font-mono font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-md border border-gray-200 shadow-sm">
-                                                        {vehicle.vehicle_plates}
-                                                    </span>
+                                                    <div className="flex flex-col space-y-1">
+                                                        <span className="font-mono font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-md border border-gray-200 shadow-sm w-fit">
+                                                            {vehicle.vehicle_plates}
+                                                        </span>
+                                                        {vehicle.vehicle_plates_2 && (
+                                                            <span className="font-mono font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-100 shadow-sm w-fit text-[10px]">
+                                                                {vehicle.vehicle_plates_2}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
-                                                <td className="px-8 py-6 text-right">
-                                                    <div className="flex flex-col items-end">
+                                                <td className="px-6 py-6">
+                                                    {(() => {
+                                                        const validity = vehicle.validity_status || 'Vigente';
+                                                        let colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100 shadow-emerald-500/5";
+                                                        
+                                                        if (validity === 'Expirado') colorClass = "bg-red-50 text-red-600 border-red-100 shadow-red-500/5";
+
+                                                        return (
+                                                            <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black tracking-widest ${colorClass}`}>
+                                                                {validity.toUpperCase()}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                </td>
+                                                <td className="px-6 py-6">
+                                                    {(() => {
+                                                        const status = vehicle.documentation_status;
+                                                        let colorClass = "bg-gray-100 text-gray-400 border-gray-200";
+                                                        
+                                                        if (status === 'Completa') colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100 shadow-emerald-500/5";
+                                                        if (status === 'Pendiente') colorClass = "bg-amber-50 text-amber-600 border-amber-100 shadow-amber-500/5";
+                                                        if (status === 'Vencida') colorClass = "bg-red-50 text-red-600 border-red-100 shadow-red-500/5";
+                                                        if (status === 'En Revisión') colorClass = "bg-blue-50 text-blue-600 border-blue-100 shadow-blue-500/5";
+                                                        if (status === 'No Entregada') colorClass = "bg-rose-50 text-rose-600 border-rose-100 shadow-rose-500/5";
+
+                                                        return (
+                                                            <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black tracking-widest ${colorClass}`}>
+                                                                {status || 'SIN DATOS'}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                </td>
+                                                <td className="px-6 py-6">
+                                                    <div className="flex flex-col">
                                                         <span className="text-[10px] font-black text-gray-900 uppercase tracking-tight">
                                                             {vehicle.user?.name}
                                                         </span>
                                                         <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                                             {new Date(vehicle.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}
                                                         </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <div className="flex items-center justify-end space-x-2">
+                                                        <Link 
+                                                            href={route('employee-vehicles.edit', vehicle.id)}
+                                                            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                                                            title="Editar Registro"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                        </Link>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setSelectedItem(vehicle);
+                                                                setConfirmDeleteModal(true);
+                                                            }}
+                                                            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                                                            title="Eliminar Registro"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -130,6 +221,32 @@ export default function Index({ vehicles = [] }) {
                     </div>
                 </div>
             </div>
+
+            <Modal show={confirmDeleteModal} onClose={() => setConfirmDeleteModal(false)}>
+                <div className="p-8">
+                    <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">
+                        ¿Eliminar registro?
+                    </h2>
+                    <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-8">
+                        ¿Estás seguro de que deseas eliminar el vehículo <strong>{selectedItem?.marbete_number}</strong> del padrón? Esta acción no se puede deshacer.
+                    </p>
+
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            onClick={() => setConfirmDeleteModal(false)}
+                            className="px-6 py-3 rounded-xl border border-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all"
+                        >
+                            Cancelar
+                        </button>
+                        <DangerButton
+                            onClick={deleteVehicle}
+                            className="px-6 py-3 rounded-xl shadow-xl shadow-red-500/20 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
+                            Eliminar Permanentemente
+                        </DangerButton>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

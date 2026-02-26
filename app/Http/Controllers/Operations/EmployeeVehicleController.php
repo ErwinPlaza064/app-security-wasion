@@ -43,7 +43,11 @@ class EmployeeVehicleController extends Controller
             'vehicle_brand' => 'required|string|max:255',
             'vehicle_model' => 'required|string|max:255',
             'vehicle_plates' => 'required|string|max:20',
-            'documentation_status' => 'nullable|string',
+            'vehicle_brand_2' => 'nullable|string|max:255',
+            'vehicle_model_2' => 'nullable|string|max:255',
+            'vehicle_plates_2' => 'nullable|string|max:20',
+            'documentation_status' => 'required|string',
+            'validity_status' => 'required|string',
         ]);
 
         EmployeeVehicle::create([
@@ -53,11 +57,68 @@ class EmployeeVehicleController extends Controller
             'vehicle_brand' => $validated['vehicle_brand'],
             'vehicle_model' => $validated['vehicle_model'],
             'vehicle_plates' => $validated['vehicle_plates'],
+            'vehicle_brand_2' => $validated['vehicle_brand_2'],
+            'vehicle_model_2' => $validated['vehicle_model_2'],
+            'vehicle_plates_2' => $validated['vehicle_plates_2'],
             'documentation_status' => $validated['documentation_status'],
+            'validity_status' => $validated['validity_status'],
             'plant' => Auth::user()->plant,
             'user_id' => Auth::id(),
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Vehículo registrado en el padrón correctamente.');
+        return redirect()->route('employee-vehicles.index')->with('status', 'Vehículo registrado en el padrón correctamente.');
+    }
+
+    public function edit(EmployeeVehicle $employeeVehicle)
+    {
+        $user = Auth::user();
+        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+            abort(403);
+        }
+
+        $areas = Area::where('plant', $user->plant)->orderBy('name')->get();
+
+        return Inertia::render('Operations/VehicleRegistry/Edit', [
+            'vehicle' => $employeeVehicle,
+            'areas' => $areas,
+        ]);
+    }
+
+    public function update(Request $request, EmployeeVehicle $employeeVehicle)
+    {
+        $user = Auth::user();
+        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'marbete_number' => 'required|string|unique:employee_vehicles,marbete_number,' . $employeeVehicle->id,
+            'employee_name' => 'required|string|max:255',
+            'area' => 'required|string|max:255',
+            'vehicle_brand' => 'required|string|max:255',
+            'vehicle_model' => 'required|string|max:255',
+            'vehicle_plates' => 'required|string|max:20',
+            'vehicle_brand_2' => 'nullable|string|max:255',
+            'vehicle_model_2' => 'nullable|string|max:255',
+            'vehicle_plates_2' => 'nullable|string|max:20',
+            'documentation_status' => 'required|string',
+            'validity_status' => 'required|string',
+        ]);
+
+        $employeeVehicle->update($validated);
+
+        return redirect()->route('employee-vehicles.index')->with('status', 'Vehículo actualizado correctamente.');
+    }
+
+    public function destroy(EmployeeVehicle $employeeVehicle)
+    {
+        $user = Auth::user();
+        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+            abort(403);
+        }
+
+        $employeeVehicle->delete();
+
+        return redirect()->route('employee-vehicles.index')->with('status', 'Vehículo eliminado del padrón.');
     }
 }

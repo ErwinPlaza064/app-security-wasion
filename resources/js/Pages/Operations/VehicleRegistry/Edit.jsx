@@ -4,20 +4,25 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
+import DangerButton from '@/Components/DangerButton';
+import Modal from '@/Components/Modal';
+import { useState } from 'react';
 
-export default function Create({ areas = [] }) {
-    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
-        marbete_number: '',
-        employee_name: '',
-        area: '',
-        vehicle_brand: '',
-        vehicle_model: '',
-        vehicle_plates: '',
-        vehicle_brand_2: '',
-        vehicle_model_2: '',
-        vehicle_plates_2: '',
-        documentation_status: '',
-        validity_status: 'Vigente',
+export default function Edit({ vehicle, areas = [] }) {
+    const [confirmingDeletion, setConfirmingDeletion] = useState(false);
+
+    const { data, setData, put, delete: destroy, processing, errors, setError, clearErrors } = useForm({
+        marbete_number: vehicle.marbete_number || '',
+        employee_name: vehicle.employee_name || '',
+        area: vehicle.area || '',
+        vehicle_brand: vehicle.vehicle_brand || '',
+        vehicle_model: vehicle.vehicle_model || '',
+        vehicle_plates: vehicle.vehicle_plates || '',
+        vehicle_brand_2: vehicle.vehicle_brand_2 || '',
+        vehicle_model_2: vehicle.vehicle_model_2 || '',
+        vehicle_plates_2: vehicle.vehicle_plates_2 || '',
+        documentation_status: vehicle.documentation_status || '',
+        validity_status: vehicle.validity_status || 'Vigente',
     });
 
     const submit = (e) => {
@@ -60,12 +65,18 @@ export default function Create({ areas = [] }) {
 
         if (hasErrors) return;
 
-        post(route('employee-vehicles.store'));
+        put(route('employee-vehicles.update', vehicle.id));
+    };
+
+    const deleteVehicle = () => {
+        destroy(route('employee-vehicles.destroy', vehicle.id), {
+            onSuccess: () => setConfirmingDeletion(false),
+        });
     };
 
     return (
         <AuthenticatedLayout>
-            <Head title="Padrón Vehicular - Registro" />
+            <Head title={`Editar Padrón - ${vehicle.marbete_number}`} />
 
             <div className="py-12 bg-[#fdfcf9] min-h-[calc(100vh-64px)]">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,14 +86,21 @@ export default function Create({ areas = [] }) {
                             <div className="flex items-center space-x-2 mb-2">
                                 <Link href={route('dashboard')} className="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Dashboard</Link>
                                 <span className="text-[10px] text-gray-300">/</span>
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Padrón Vehicular</span>
+                                <Link href={route('employee-vehicles.index')} className="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Padrón Vehicular</Link>
+                                <span className="text-[10px] text-gray-300">/</span>
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Editar Registro</span>
                             </div>
-                            <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Registro al Padrón</h1>
+                            <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Editar Registro</h1>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
+                        <div className="flex space-x-2 text-blue-600">
+                             <button 
+                                onClick={() => setConfirmingDeletion(true)}
+                                className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
@@ -285,7 +303,7 @@ export default function Create({ areas = [] }) {
 
                         <div className="pt-4 flex space-x-4">
                             <Link 
-                                href={route('dashboard')}
+                                href={route('employee-vehicles.index')}
                                 className="flex-1 flex justify-center py-4 rounded-xl border border-gray-100 text-gray-400 font-black uppercase text-xs tracking-widest hover:bg-gray-50 transition-all"
                             >
                                 Cancelar
@@ -294,12 +312,39 @@ export default function Create({ areas = [] }) {
                                 className="flex-[2] justify-center py-4 rounded-xl shadow-xl shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-[0.2em] transition-all"
                                 disabled={processing}
                             >
-                                Registrar en Padrón
+                                Guardar Cambios
                             </PrimaryButton>
                         </div>
                     </form>
                 </div>
             </div>
+
+            <Modal show={confirmingDeletion} onClose={() => setConfirmingDeletion(false)}>
+                <div className="p-8">
+                    <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">
+                        ¿Eliminar registro?
+                    </h2>
+                    <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-8">
+                        Esta acción no se puede deshacer. Se eliminará el vehículo <strong>{vehicle.marbete_number}</strong> del padrón permanentemente.
+                    </p>
+
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            onClick={() => setConfirmingDeletion(false)}
+                            className="px-6 py-3 rounded-xl border border-gray-100 text-gray-400 font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all"
+                        >
+                            Cancelar
+                        </button>
+                        <DangerButton
+                            onClick={deleteVehicle}
+                            className="px-6 py-3 rounded-xl shadow-xl shadow-red-500/20 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                            disabled={processing}
+                        >
+                            Eliminar Permanentemente
+                        </DangerButton>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }
