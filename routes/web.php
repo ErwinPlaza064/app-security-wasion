@@ -33,7 +33,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/employee-vehicles', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'store'])->name('employee-vehicles.store');
         Route::get('/employee-vehicles/{employeeVehicle}/edit', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'edit'])->name('employee-vehicles.edit');
         Route::put('/employee-vehicles/{employeeVehicle}', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'update'])->name('employee-vehicles.update');
-        Route::delete('/employee-vehicles/{employeeVehicle}', [\App\Http\Controllers\Operations\EmployeeVehicleController::class, 'destroy'])->name('employee-vehicles.destroy');
 
         Route::get('/vehicle-incidents/create', [\App\Http\Controllers\Operations\VehicleIncidentController::class, 'create'])->name('vehicle-incidents.create');
         Route::post('/vehicle-incidents', [\App\Http\Controllers\Operations\VehicleIncidentController::class, 'store'])->name('vehicle-incidents.store');
