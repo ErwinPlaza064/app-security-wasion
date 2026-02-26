@@ -21,18 +21,8 @@ class EmployeeVehicleResource extends Resource
     protected static ?string $modelLabel = 'Padrón Vehicular';
     protected static ?string $pluralModelLabel = 'Padrón Vehicular';
 
-    // CRUD deshabilitado - Solo lectura en panel Admin
+    // Solo el Admin no puede crear (los guardias crean desde su panel)
     public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canEdit($record): bool
-    {
-        return false;
-    }
-
-    public static function canDelete($record): bool
     {
         return false;
     }
@@ -213,9 +203,14 @@ class EmployeeVehicleResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array
@@ -229,7 +224,7 @@ class EmployeeVehicleResource extends Resource
     {
         return [
             'index' => Pages\ListEmployeeVehicles::route('/'),
-            'view' => Pages\ViewEmployeeVehicle::route('/{record}'),
+            'edit' => Pages\EditEmployeeVehicle::route('/{record}/edit'),
         ];
     }
 }
