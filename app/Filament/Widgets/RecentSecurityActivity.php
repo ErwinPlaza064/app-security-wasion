@@ -65,8 +65,7 @@ class RecentSecurityActivity extends BaseWidget
                 // Esto habilita los botones de la cabecera (filtros, columnas, buscador)
             ])
             ->actions([
-                Tables\Actions\Action::make('Ver')
-                    ->url(fn(AccessLog $record): string => \App\Filament\Resources\AccessLogResource::getUrl('edit', ['record' => $record]))
+                Tables\Actions\ViewAction::make()
                     ->icon('heroicon-m-eye')
                     ->color('gray')
                     ->button()

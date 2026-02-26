@@ -49,28 +49,47 @@ class CompanyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Empresa')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
                 Tables\Columns\TextColumn::make('legal_name')
                     ->label('Razón Social')
                     ->searchable()
+                    ->placeholder('Sin registrar')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tax_id')
-                    ->label('ID Fiscal')
-                    ->searchable(),
+                    ->label('RFC')
+                    ->searchable()
+                    ->placeholder('Sin registrar'),
+                Tables\Columns\TextColumn::make('external_people_count')
+                    ->label('Personas')
+                    ->counts('externalPeople')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('vehicle_logs_count')
+                    ->label('Transportes')
+                    ->counts('vehicleLogs')
+                    ->badge()
+                    ->color('success')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Activa')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Alta')
+                    ->label('Registrada')
                     ->dateTime('d/m/Y')
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Estatus')
+                    ->trueLabel('Solo Activas')
+                    ->falseLabel('Solo Inactivas'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

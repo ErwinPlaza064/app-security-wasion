@@ -12,4 +12,9 @@ class Company extends Model
     {
         return $this->hasMany(ExternalPerson::class);
     }
+
+    public function vehicleLogs()
+    {
+        return $this->hasMany(VehicleLog::class);
+    }
 }
