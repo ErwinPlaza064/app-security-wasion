@@ -21,20 +21,8 @@ class EmployeeVehicleResource extends Resource
     protected static ?string $modelLabel = 'Padrón Vehicular';
     protected static ?string $pluralModelLabel = 'Padrón Vehicular';
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
+    // CRUD habilitado
 
-    public static function canEdit($record): bool
-    {
-        return false;
-    }
-
-    public static function canDelete($record): bool
-    {
-        return false;
-    }
 
     public static function form(Form $form): Form
     {
@@ -53,7 +41,7 @@ class EmployeeVehicleResource extends Resource
                             ->label('Área')
                             ->required(),
                     ])->columns(3),
-                Forms\Components\Section::make('Detalles del Vehículo')
+                Forms\Components\Section::make('Detalles del Vehículo 1')
                     ->schema([
                         Forms\Components\TextInput::make('vehicle_brand')
                             ->label('Marca')
@@ -64,22 +52,71 @@ class EmployeeVehicleResource extends Resource
                         Forms\Components\TextInput::make('vehicle_plates')
                             ->label('Placas')
                             ->required(),
-                        Forms\Components\Textarea::make('documentation_status')
-                            ->label('Estatus de Documentación')
-                            ->columnSpanFull(),
                     ])->columns(3),
+                Forms\Components\Section::make('Detalles del Vehículo 2 (Opcional)')
+                    ->schema([
+                        Forms\Components\TextInput::make('vehicle_brand_2')
+                            ->label('Marca'),
+                        Forms\Components\TextInput::make('vehicle_model_2')
+                            ->label('Submarca'),
+                        Forms\Components\TextInput::make('vehicle_plates_2')
+                            ->label('Placas'),
+                    ])->columns(3),
+                Forms\Components\Section::make('Documentación y Otros')
+                    ->schema([
+                        Forms\Components\Select::make('validity_status')
+                            ->label('Vigencia del Marbete')
+                            ->options([
+                                'Vigente' => 'Vigente',
+                                'Expirado' => 'Expirado',
+                            ])
+                            ->required()
+                            ->native(false)
+                            ->default('Vigente'),
+                        Forms\Components\Select::make('documentation_status')
+                            ->label('Estatus de Documentación')
+                            ->options([
+                                'Completa' => 'Completa',
+                                'Pendiente' => 'Pendiente',
+                                'Vencida' => 'Vencida',
+                                'En Revisión' => 'En Revisión',
+                                'No Entregada' => 'No Entregada',
+                            ])
+                            ->required()
+                            ->native(false),
+                    ])->columns(2),
                 Forms\Components\Section::make('Información Administrativa')
                     ->schema([
-                        Forms\Components\TextInput::make('plant')
-                            ->label('Planta'),
+                        Forms\Components\Select::make('plant')
+                            ->label('Planta')
+                            ->options([
+                                'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
+                                'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
+                                'Planta 5' => 'Planta 5',
+                            ])
+                            ->required()
+                            ->disabled(fn() => auth()->user()->role !== 'superadmin'),
                         Forms\Components\Select::make('user_id')
                             ->label('Registrado por')
                             ->relationship('user', 'name')
                             ->disabled()
                             ->dehydrated(false)
-                            ->placeholder('Se asigna automáticamente'),
+                            ->visible(fn($record) => $record !== null),
                     ])->columns(2),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role === 'Admin') {
+            return $query->where('plant', auth()->user()->plant);
+        }
+
+        return $query;
     }
 
     public static function table(Table $table): Table
@@ -99,7 +136,25 @@ class EmployeeVehicleResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('vehicle_plates')
                     ->label('Placas')
-                    ->searchable(),
+                    ->formatStateUsing(fn($record) => $record->vehicle_plates . ($record->vehicle_plates_2 ? ' / ' . $record->vehicle_plates_2 : ''))
+                    ->searchable(['vehicle_plates', 'vehicle_plates_2']),
+                Tables\Columns\TextColumn::make('validity_status')
+                    ->label('Vigencia')
+                    ->badge()
+                    ->colors([
+                        'success' => 'Vigente',
+                        'danger' => 'Expirado',
+                    ]),
+                Tables\Columns\TextColumn::make('documentation_status')
+                    ->label('Estatus')
+                    ->badge()
+                    ->colors([
+                        'success' => 'Completa',
+                        'warning' => 'Pendiente',
+                        'danger' => 'Vencida',
+                        'info' => 'En Revisión',
+                        'rose' => 'No Entregada',
+                    ]),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
                     ->badge()
@@ -113,13 +168,41 @@ class EmployeeVehicleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Filtrar por Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
+                        'Planta 5' => 'Planta 5',
+                    ])
+                    ->visible(fn() => auth()->user()->role === 'superadmin'),
+                Tables\Filters\SelectFilter::make('validity_status')
+                    ->label('Vigencia')
+                    ->options([
+                        'Vigente' => 'Vigente',
+                        'Expirado' => 'Expirado',
+                    ]),
+                Tables\Filters\SelectFilter::make('documentation_status')
+                    ->label('Estatus de Papeles')
+                    ->options([
+                        'Completa' => 'Completa',
+                        'Pendiente' => 'Pendiente',
+                        'Vencida' => 'Vencida',
+                        'En Revisión' => 'En Revisión',
+                        'No Entregada' => 'No Entregada',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                // Sin acciones masivas para reportes
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -135,6 +218,8 @@ class EmployeeVehicleResource extends Resource
         return [
             'index' => Pages\ListEmployeeVehicles::route('/'),
             'view' => Pages\ViewEmployeeVehicle::route('/{record}'),
+            'create' => Pages\CreateEmployeeVehicle::route('/create'),
+            'edit' => Pages\EditEmployeeVehicle::route('/{record}/edit'),
         ];
     }
 }
