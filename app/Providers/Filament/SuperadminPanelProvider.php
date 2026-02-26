@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\VehicleIncidentResource;
+
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -59,9 +59,7 @@ class SuperadminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Superadmin/Widgets'), for: 'App\\Filament\\Superadmin\\Widgets')
-            ->resources([
-                VehicleIncidentResource::class,
-            ])
+            ->resources([])
             ->widgets([
                 Widgets\AccountWidget::class,
             ])
