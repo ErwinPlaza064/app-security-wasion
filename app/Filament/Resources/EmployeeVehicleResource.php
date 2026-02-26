@@ -97,7 +97,7 @@ class EmployeeVehicleResource extends Resource
                                 'Planta 5' => 'Planta 5',
                             ])
                             ->required()
-                            ->disabled(fn() => auth()->user()->role !== 'superadmin'),
+                            ->disabled(fn() => !auth()->user()->isSuperAdmin()),
                         Forms\Components\Select::make('user_id')
                             ->label('Registrado por')
                             ->relationship('user', 'name')
@@ -111,9 +111,14 @@ class EmployeeVehicleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
+        $user = auth()->user();
 
-        if (auth()->user()->role === 'Admin') {
-            return $query->where('plant', auth()->user()->plant);
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        if ($user->isAdmin()) {
+            return $query->where('plant', $user->plant);
         }
 
         return $query;
@@ -177,7 +182,7 @@ class EmployeeVehicleResource extends Resource
                         'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ])
-                    ->visible(fn() => auth()->user()->role === 'superadmin'),
+                    ->visible(fn() => auth()->user()->isSuperAdmin()),
                 Tables\Filters\SelectFilter::make('validity_status')
                     ->label('Vigencia')
                     ->options([
