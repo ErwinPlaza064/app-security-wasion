@@ -113,15 +113,14 @@ class EmployeeVehicleResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        if ($user->isSuperAdmin()) {
+        // SuperAdmin y Admin ven todos los registros en el panel de administración
+        // El filtro de planta se puede aplicar manualmente desde los filtros de la tabla
+        if ($user && ($user->isSuperAdmin() || $user->isAdmin())) {
             return $query;
         }
 
-        if ($user->isAdmin()) {
-            return $query->where('plant', $user->plant);
-        }
-
-        return $query;
+        // Cualquier otro rol: filtrar por planta
+        return $query->where('plant', $user->plant ?? '');
     }
 
     public static function table(Table $table): Table
@@ -182,7 +181,7 @@ class EmployeeVehicleResource extends Resource
                         'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ])
-                    ->visible(fn() => auth()->user()->isSuperAdmin()),
+                    ->visible(fn() => auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()),
                 Tables\Filters\SelectFilter::make('validity_status')
                     ->label('Vigencia')
                     ->options([
