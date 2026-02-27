@@ -5,7 +5,9 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function Create({ areas = [] }) {
+const EMPTY_AREAS = [];
+
+export default function Create({ areas = EMPTY_AREAS }) {
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         marbete_number: '',
         employee_name: '',

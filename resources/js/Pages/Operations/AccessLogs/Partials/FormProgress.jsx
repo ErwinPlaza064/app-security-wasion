@@ -7,7 +7,7 @@ export default function FormProgress({ currentStep, peopleCount }) {
                 ></span>
                 {[...Array(peopleCount)].map((_, i) => (
                     <span
-                        key={i}
+                        key={`step-${i}`}
                         className={`h-1.5 rounded-full transition-all duration-500 ${currentStep === i + 1 ? "bg-primary w-12" : currentStep > i + 1 ? "bg-emerald-400 w-4" : "bg-gray-200 w-4"}`}
                     ></span>
                 ))}

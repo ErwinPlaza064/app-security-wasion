@@ -6,7 +6,11 @@ import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
+
 export default function Login({ status, canResetPassword }) {
+    const { props } = usePage();
+    const flashError = props.flash?.error;
+
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -90,9 +94,9 @@ export default function Login({ status, canResetPassword }) {
                         </div>
                     )}
 
-                    {usePage().props.flash?.error && (
+                    {flashError && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-xs font-bold text-red-600">
-                            {usePage().props.flash.error}
+                            {flashError}
                         </div>
                     )}
 

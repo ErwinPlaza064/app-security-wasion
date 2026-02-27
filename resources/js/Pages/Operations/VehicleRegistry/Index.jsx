@@ -3,7 +3,9 @@ import { Head, Link } from "@inertiajs/react";
 import { useState } from "react";
 import Modal from "@/Components/Modal";
 
-export default function Index({ vehicles = [] }) {
+const EMPTY_VEHICLES = [];
+
+export default function Index({ vehicles = EMPTY_VEHICLES }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);

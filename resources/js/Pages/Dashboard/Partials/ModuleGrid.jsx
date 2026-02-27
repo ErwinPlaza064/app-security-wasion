@@ -13,9 +13,9 @@ export default function ModuleGrid({ modules, searchTerm }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredModules.length > 0 ? (
-                    filteredModules.map((item, idx) => (
+                    filteredModules.map((item) => (
                         <Link
-                            key={idx}
+                            key={item.name}
                             href={route(item.route, item.params || {})}
                             className="group bg-white p-7 rounded-[2.5rem] border border-gray-100/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgb(12,24,105,0.06)] transition-all duration-500 flex flex-col items-start min-h-[180px] justify-between overflow-hidden relative"
                         >

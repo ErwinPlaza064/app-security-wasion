@@ -128,14 +128,14 @@ export default function Create({ type, companies, areas }) {
         }
 
         if (currentStep <= data.people_count) {
-            setCurrentStep(currentStep + 1);
+            setCurrentStep(prev => prev + 1);
         }
     };
 
     const prevStep = () => {
         clearErrors();
         if (currentStep > 0) {
-            setCurrentStep(currentStep - 1);
+            setCurrentStep(prev => prev - 1);
         }
     };
 
@@ -183,7 +183,7 @@ export default function Create({ type, companies, areas }) {
                             data.visitors.map((visitor, index) => (
                                 index + 1 === currentStep && (
                                     <VisitorStep 
-                                        key={index}
+                                        key={`visitor-${index}`}
                                         visitor={visitor}
                                         index={index}
                                         currentStep={currentStep}

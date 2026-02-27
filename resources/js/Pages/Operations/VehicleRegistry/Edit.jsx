@@ -8,7 +8,9 @@ import DangerButton from '@/Components/DangerButton';
 import Modal from '@/Components/Modal';
 import { useState } from 'react';
 
-export default function Edit({ vehicle, areas = [] }) {
+const EMPTY_AREAS = [];
+
+export default function Edit({ vehicle, areas = EMPTY_AREAS }) {
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
 
     const { data, setData, put, delete: destroy, processing, errors, setError, clearErrors } = useForm({

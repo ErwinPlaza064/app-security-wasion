@@ -182,12 +182,12 @@ export default function Create({ category: initialCategory, areas }) {
 
         if (hasErrors) return;
 
-        if (currentStep < 4) setCurrentStep(currentStep + 1);
+        if (currentStep < 4) setCurrentStep(prev => prev + 1);
     };
 
     const prevStep = () => {
         clearErrors();
-        if (currentStep > 1) setCurrentStep(currentStep - 1);
+        if (currentStep > 1) setCurrentStep(prev => prev - 1);
     };
 
     const submit = (e) => {

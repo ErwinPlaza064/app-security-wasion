@@ -5,7 +5,9 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function Create({ type, areas = [] }) {
+const EMPTY_AREAS = [];
+
+export default function Create({ type, areas = EMPTY_AREAS }) {
     const getLocalDateTime = () => {
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());

@@ -10,7 +10,11 @@ import DashboardTabToggle from './Dashboard/Partials/DashboardTabToggle';
 import ExitConfirmationModal from './Dashboard/Partials/ExitConfirmationModal';
 import { modules } from '@/Constants/modules';
 
-export default function Dashboard({ activeVisitors = [], activeVehicles = [], openIncidents = [] }) {
+const EMPTY_VISITORS = [];
+const EMPTY_VEHICLES = [];
+const EMPTY_INCIDENTS = [];
+
+export default function Dashboard({ activeVisitors = EMPTY_VISITORS, activeVehicles = EMPTY_VEHICLES, openIncidents = EMPTY_INCIDENTS }) {
     const { auth } = usePage().props;
     const [processing, setProcessing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
