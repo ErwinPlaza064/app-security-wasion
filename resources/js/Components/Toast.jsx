@@ -65,7 +65,7 @@ export default function Toast() {
                 
                 {/* Progress Bar Fill */}
                 <div 
-                    className={`absolute bottom-0 left-0 h-1.5 progress-bar
+                    className={`absolute bottom-0 left-0 h-1.5 toast-progress-bar
                         ${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'}
                     `}
                 ></div>
@@ -103,16 +103,6 @@ export default function Toast() {
                     </svg>
                 </button>
             </div>
-            
-            <style dangerouslySetInnerHTML={{ __html: `
-                @keyframes progress {
-                    from { width: 100%; }
-                    to { width: 0%; }
-                }
-                .progress-bar {
-                    animation: progress 5s linear forwards;
-                }
-            `}} />
         </div>
     );
 }

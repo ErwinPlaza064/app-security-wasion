@@ -273,9 +273,10 @@ export default function Create({ category: initialCategory, areas }) {
                                     <div className="space-y-4 pt-4 border-t border-gray-50">
                                         <div className="flex items-center space-x-2 ms-1">
                                             <Icons.MapPin />
-                                            <InputLabel value="Ubicación / Área" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
+                                            <InputLabel htmlFor="location" value="Ubicación / Área" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
                                         </div>
                                         <select
+                                            id="location"
                                             value={data.location}
                                             onChange={(e) => setData('location', e.target.value)}
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 transition-all text-sm appearance-none cursor-pointer"
@@ -316,6 +317,7 @@ export default function Create({ category: initialCategory, areas }) {
                                                         company: !d.no_involved_persons ? 'N/A' : (d.company === 'N/A' ? 'WASION' : d.company)
                                                     }));
                                                 }}
+                                                aria-label="Sin personas involucradas"
                                                 className={`w-12 h-6 rounded-full transition-all relative ${data.no_involved_persons ? 'bg-rose-500' : 'bg-gray-200'}`}
                                             >
                                                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.no_involved_persons ? 'left-7' : 'left-1'}`}></div>
@@ -326,12 +328,13 @@ export default function Create({ category: initialCategory, areas }) {
                                     {!data.no_involved_persons && (
                                         <div className="space-y-6 animate-in fade-in duration-300">
                                             <div className="space-y-2">
-                                                <InputLabel value="Nombre de la persona" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                <InputLabel htmlFor="involved_person" value="Nombre de la persona" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                                 <div className="relative">
                                                     <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300">
                                                         <Icons.Users />
                                                     </div>
                                                     <TextInput
+                                                        id="involved_person"
                                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 pl-14 pr-6"
                                                         value={data.involved_person}
                                                         onChange={(e) => setData('involved_person', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
@@ -343,8 +346,9 @@ export default function Create({ category: initialCategory, areas }) {
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                                 <div className="space-y-2">
-                                                    <InputLabel value="Número de Nómina" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                    <InputLabel htmlFor="payroll_number" value="Número de Nómina" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                                     <TextInput
+                                                        id="payroll_number"
                                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
                                                         value={data.payroll_number}
                                                         onChange={(e) => setData('payroll_number', e.target.value)}
@@ -352,8 +356,9 @@ export default function Create({ category: initialCategory, areas }) {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                                    <InputLabel htmlFor="company" value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                                     <TextInput
+                                                        id="company"
                                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6"
                                                         value={data.company}
                                                         onChange={(e) => setData('company', e.target.value)}
@@ -374,8 +379,9 @@ export default function Create({ category: initialCategory, areas }) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <InputLabel value="Fecha y Hora del Evento" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                        <InputLabel htmlFor="happened_at" value="Fecha y Hora del Evento" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                         <input
+                                            id="happened_at"
                                             type="datetime-local"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 text-sm"
                                             value={data.happened_at}
@@ -385,8 +391,9 @@ export default function Create({ category: initialCategory, areas }) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <InputLabel value="Descripción de los hechos" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                        <InputLabel htmlFor="description" value="Descripción de los hechos" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                         <textarea
+                                            id="description"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-3xl py-4 px-6 min-h-[180px] text-sm leading-relaxed"
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}

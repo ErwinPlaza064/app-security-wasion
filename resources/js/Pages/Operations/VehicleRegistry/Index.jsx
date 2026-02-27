@@ -1,7 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import { useState } from "react";
-import Modal from "@/Components/Modal";
+import { ValidityBadge, StatusBadge } from "./Partials/VehicleBadges";
+import VehicleDetailModal from "./Partials/VehicleDetailModal";
 
 const EMPTY_VEHICLES = [];
 
@@ -36,82 +37,6 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase())),
     );
-
-    const getValidityBadge = (validity, size = "sm") => {
-        const v = validity || "Vigente";
-        const isActive = v === "Vigente";
-        const baseClass =
-            size === "lg"
-                ? "px-4 py-1.5 text-[10px]"
-                : "px-2.5 py-1 text-[9px]";
-        return (
-            <span
-                className={`${baseClass} rounded-full font-black tracking-widest inline-flex items-center gap-1.5 ${
-                    isActive
-                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                        : "bg-red-50 text-red-500 border border-red-200"
-                }`}
-            >
-                <span
-                    className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-400"}`}
-                />
-                {v.toUpperCase()}
-            </span>
-        );
-    };
-
-    const getStatusBadge = (status, size = "sm") => {
-        const colors = {
-            Completa: {
-                bg: "bg-emerald-50",
-                text: "text-emerald-600",
-                border: "border-emerald-200",
-                dot: "bg-emerald-500",
-            },
-            Pendiente: {
-                bg: "bg-amber-50",
-                text: "text-amber-600",
-                border: "border-amber-200",
-                dot: "bg-amber-500",
-            },
-            Vencida: {
-                bg: "bg-red-50",
-                text: "text-red-500",
-                border: "border-red-200",
-                dot: "bg-red-400",
-            },
-            "En Revisión": {
-                bg: "bg-primary-50",
-                text: "text-primary-700",
-                border: "border-primary-200",
-                dot: "bg-primary-500",
-            },
-            "No Entregada": {
-                bg: "bg-rose-50",
-                text: "text-rose-500",
-                border: "border-rose-200",
-                dot: "bg-rose-400",
-            },
-        };
-        const c = colors[status] || {
-            bg: "bg-gray-100",
-            text: "text-gray-400",
-            border: "border-gray-200",
-            dot: "bg-gray-400",
-        };
-        const baseClass =
-            size === "lg"
-                ? "px-4 py-1.5 text-[10px]"
-                : "px-2.5 py-1 text-[9px]";
-        return (
-            <span
-                className={`${baseClass} rounded-full font-black tracking-widest inline-flex items-center gap-1.5 ${c.bg} ${c.text} border ${c.border}`}
-            >
-                <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-                {(status || "SIN DATOS").toUpperCase()}
-            </span>
-        );
-    };
 
     return (
         <AuthenticatedLayout>
@@ -294,14 +219,14 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-6">
-                                                    {getValidityBadge(
-                                                        vehicle.validity_status,
-                                                    )}
+                                                    <ValidityBadge
+                                                        validity={vehicle.validity_status}
+                                                    />
                                                 </td>
                                                 <td className="px-6 py-6">
-                                                    {getStatusBadge(
-                                                        vehicle.documentation_status,
-                                                    )}
+                                                    <StatusBadge
+                                                        status={vehicle.documentation_status}
+                                                    />
                                                 </td>
                                                 <td className="px-6 py-6">
                                                     <div className="flex flex-col">
@@ -427,257 +352,11 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                 </div>
             </div>
 
-            {/* ─── Detail Modal ─── */}
-            <Modal show={showDetailModal} onClose={closeDetail} maxWidth="lg">
-                {selectedVehicle && (
-                    <div className="overflow-hidden">
-                        {/* ── Header ── */}
-                        <div className="bg-primary relative overflow-hidden">
-                            {/* Decorative circles */}
-                            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5" />
-                            <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-white/5" />
-                            <div className="absolute top-1/2 right-1/3 w-16 h-16 rounded-full bg-white/[0.03]" />
-
-                            <div className="relative px-8 py-7">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-primary-200 text-[9px] font-black uppercase tracking-[0.35em] mb-2">
-                                            Ficha del Colaborador
-                                        </p>
-                                        <h2 className="text-[22px] font-black text-white uppercase tracking-tight leading-tight truncate">
-                                            {selectedVehicle.employee_name}
-                                        </h2>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
-                                                {selectedVehicle.area}
-                                            </span>
-                                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
-                                                {selectedVehicle.plant}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="ml-4 flex-shrink-0">
-                                        <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex flex-col items-center justify-center">
-                                            <span className="text-white/50 text-[8px] font-black tracking-widest uppercase leading-none">
-                                                No.
-                                            </span>
-                                            <span className="text-white text-lg font-black leading-none mt-0.5">
-                                                {selectedVehicle.marbete_number}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ── Body ── */}
-                        <div className="bg-cream px-8 py-6 space-y-5">
-                            {/* Vehículo 1 */}
-                            <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-3.5 w-3.5 text-primary"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            strokeWidth={2.5}
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                                            />
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0h4m-4 0H9m4 0a1 1 0 011 1v.01M14 16h2l3-6h-4"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                                        Vehículo Principal
-                                    </h3>
-                                </div>
-                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-                                    <div className="grid grid-cols-3 divide-x divide-gray-50">
-                                        <div className="px-5 py-4">
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">
-                                                Marca
-                                            </p>
-                                            <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                                                {selectedVehicle.vehicle_brand}
-                                            </p>
-                                        </div>
-                                        <div className="px-5 py-4">
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">
-                                                Submarca
-                                            </p>
-                                            <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                                                {selectedVehicle.vehicle_model}
-                                            </p>
-                                        </div>
-                                        <div className="px-5 py-4">
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-1.5">
-                                                Placas
-                                            </p>
-                                            <span className="inline-block font-mono font-black text-primary bg-primary-50 px-3 py-1 rounded-lg border border-primary-100 text-[13px]">
-                                                {selectedVehicle.vehicle_plates}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Vehículo 2 */}
-                            {selectedVehicle.vehicle_brand_2 && (
-                                <div>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-6 h-6 rounded-lg bg-amber-100 flex items-center justify-center">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-3.5 w-3.5 text-amber-600"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={2.5}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                                                />
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0h4m-4 0H9m4 0a1 1 0 011 1v.01M14 16h2l3-6h-4"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                                            Vehículo Alternativo
-                                        </h3>
-                                    </div>
-                                    <div className="bg-white rounded-2xl border border-amber-100 shadow-sm">
-                                        <div className="grid grid-cols-3 divide-x divide-amber-50">
-                                            <div className="px-5 py-4">
-                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">
-                                                    Marca
-                                                </p>
-                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                                                    {
-                                                        selectedVehicle.vehicle_brand_2
-                                                    }
-                                                </p>
-                                            </div>
-                                            <div className="px-5 py-4">
-                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">
-                                                    Submarca
-                                                </p>
-                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                                                    {
-                                                        selectedVehicle.vehicle_model_2
-                                                    }
-                                                </p>
-                                            </div>
-                                            <div className="px-5 py-4">
-                                                <p className="text-[8px] font-bold text-amber-500 uppercase tracking-[0.3em] mb-1.5">
-                                                    Placas
-                                                </p>
-                                                <span className="inline-block font-mono font-black text-amber-700 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200 text-[13px]">
-                                                    {
-                                                        selectedVehicle.vehicle_plates_2
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Status Row */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">
-                                        Vigencia del Marbete
-                                    </p>
-                                    {getValidityBadge(
-                                        selectedVehicle.validity_status,
-                                        "lg",
-                                    )}
-                                </div>
-                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">
-                                        Estatus de Documentación
-                                    </p>
-                                    {getStatusBadge(
-                                        selectedVehicle.documentation_status,
-                                        "lg",
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Footer - Quien Registró */}
-                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-4 w-4 text-primary"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={2}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p className="text-[11px] font-black text-gray-900 uppercase tracking-tight leading-tight">
-                                                {selectedVehicle.user?.name ||
-                                                    "Sin datos"}
-                                            </p>
-                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                                {new Date(
-                                                    selectedVehicle.created_at,
-                                                ).toLocaleDateString("es-MX", {
-                                                    day: "2-digit",
-                                                    month: "long",
-                                                    year: "numeric",
-                                                })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[8px] font-bold text-gray-300 uppercase tracking-[0.3em]">
-                                            ID
-                                        </p>
-                                        <p className="text-xs font-black text-gray-400">
-                                            #{selectedVehicle.id}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ── Close Button ── */}
-                        <div className="bg-cream px-8 pb-7 pt-1">
-                            <button
-                                onClick={closeDetail}
-                                className="w-full py-3.5 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-primary-800 transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
-                            >
-                                Cerrar
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </Modal>
+            <VehicleDetailModal
+                show={showDetailModal}
+                vehicle={selectedVehicle}
+                onClose={closeDetail}
+            />
         </AuthenticatedLayout>
     );
 }

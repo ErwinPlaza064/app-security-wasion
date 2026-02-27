@@ -180,6 +180,34 @@
     .animate-beam {
         animation: rotate-beam 3s linear infinite;
     }
+
+    /* Toast progress bar animation */
+    @keyframes toast-progress {
+        from {
+            width: 100%;
+        }
+        to {
+            width: 0%;
+        }
+    }
+    .toast-progress-bar {
+        animation: toast-progress 5s linear forwards;
+    }
+
+    /* Loading progress bar animation */
+    @keyframes loading-progress {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    /* Fade-in-up animation class */
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out forwards;
+    }
 }
 
 /* Global Color Variables */

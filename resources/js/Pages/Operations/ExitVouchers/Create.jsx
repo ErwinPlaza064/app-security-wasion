@@ -60,10 +60,11 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                             {/* Folio y Referencia */}
                             <div className="flex flex-col md:flex-row gap-6 md:gap-8 pb-8 md:pb-10 border-b border-gray-50">
                                 <div className="space-y-3 flex-1">
-                                    <InputLabel value="Folio de Control" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <InputLabel htmlFor="folio" value="Folio de Control" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
                                     <div className="relative group">
                                         <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-lg text-gray-300 font-serif italic z-10">№</span>
                                         <TextInput
+                                            id="folio"
                                             value={data.folio}
                                             className={`block w-full bg-gray-50 border-none rounded-2xl md:rounded-[2rem] py-5 md:py-6 pl-12 md:pl-16 pr-6 md:px-8 text-2xl md:text-3xl font-black text-[#0A192F] tracking-tighter focus:ring-4 transition-all ${errors.folio ? 'ring-4 ring-red-100' : 'focus:ring-gray-100'}`}
                                             onChange={(e) => setData("folio", e.target.value)}
@@ -72,8 +73,9 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                                     <InputError message={errors.folio} />
                                 </div>
                                 <div className="space-y-3 flex-[2]">
-                                    <InputLabel value="Referencia Automática" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <InputLabel htmlFor="reference_number" value="Referencia Automática" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-1" />
                                     <TextInput
+                                        id="reference_number"
                                         value={data.reference_number}
                                         className="block w-full bg-gray-50 border-none rounded-2xl md:rounded-[2rem] py-5 md:py-6 px-6 md:px-8 text-base md:text-lg font-bold text-[#0A192F] focus:ring-4 focus:ring-gray-100 transition-all"
                                         onChange={(e) => setData("reference_number", e.target.value)}
@@ -83,8 +85,9 @@ export default function Create({ suggestedFolio, suggestedReference }) {
 
                             {/* Solicitante */}
                             <div className="space-y-3 md:space-y-4">
-                                <InputLabel value="Nombre del Solicitante" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
+                                <InputLabel htmlFor="recipient_name" value="Nombre del Solicitante" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
                                 <TextInput
+                                    id="recipient_name"
                                     value={data.recipient_name}
                                     placeholder="Nombre del solicitante..."
                                     className={`block w-full bg-gray-50 border-none rounded-[1.5rem] md:rounded-[2.5rem] py-5 md:py-7 px-6 md:px-10 text-base md:text-lg font-bold text-[#0A192F] focus:ring-4 transition-all placeholder:text-gray-300 placeholder:italic ${errors.recipient_name ? 'ring-4 ring-red-100' : 'focus:ring-gray-100'}`}
@@ -95,7 +98,7 @@ export default function Create({ suggestedFolio, suggestedReference }) {
 
                             {/* Concepto estilo Botones Visitas */}
                             <div className="space-y-4 md:space-y-6 pt-2">
-                                <InputLabel value="Motivo de la Salida" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
+                                <InputLabel value="Motivo de la Salida" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" id="concept-label" />
                                 <div className="flex flex-wrap gap-2 md:gap-3">
                                     {[
                                         { id: 'loan', label: 'Préstamo' },
@@ -133,6 +136,10 @@ export default function Create({ suggestedFolio, suggestedReference }) {
 
                             {/* Activo Fijo Checkbox Premium */}
                             <div 
+                                role="checkbox"
+                                aria-checked={data.is_fixed_asset}
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setData("is_fixed_asset", !data.is_fixed_asset); } }}
                                 className="flex items-center space-x-3 md:space-x-4 p-5 md:p-6 bg-gray-50/50 rounded-2xl md:rounded-[2.5rem] cursor-pointer hover:bg-gray-50 transition-all border border-gray-100"
                                 onClick={() => setData("is_fixed_asset", !data.is_fixed_asset)}
                             >
@@ -149,8 +156,9 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                             {/* Fechas de Registro */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                                 <div className="space-y-3">
-                                    <InputLabel value="Fecha de Salida" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
+                                    <InputLabel htmlFor="exit_date" value="Fecha de Salida" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
                                     <input
+                                        id="exit_date"
                                         type="date"
                                         value={data.exit_date}
                                         onChange={(e) => setData("exit_date", e.target.value)}
@@ -159,8 +167,9 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                                     <InputError message={errors.exit_date} />
                                 </div>
                                 <div className="space-y-3">
-                                    <InputLabel value="Fecha de Entrega (Retorno)" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
+                                    <InputLabel htmlFor="return_date" value="Fecha de Entrega (Retorno)" className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ms-2" />
                                     <input
+                                        id="return_date"
                                         type="date"
                                         value={data.return_date}
                                         onChange={(e) => setData("return_date", e.target.value)}

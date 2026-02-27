@@ -164,7 +164,7 @@ export default function Create({ operation, companies }) {
 
                                 <div className="space-y-1.5">
                                     <div className="flex justify-between items-center px-1">
-                                        <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
+                                        <InputLabel htmlFor="company" value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest" />
                                         <button 
                                             type="button" 
                                             onClick={() => setIsNewCompany(!isNewCompany)}
@@ -180,6 +180,7 @@ export default function Create({ operation, companies }) {
                                     
                                     {!isNewCompany ? (
                                         <select
+                                            id="company"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all text-sm"
                                             value={data.company_id}
                                             onChange={(e) => {
@@ -201,6 +202,7 @@ export default function Create({ operation, companies }) {
                                         </select>
                                     ) : (
                                         <TextInput
+                                            id="company"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all"
                                             value={data.new_company}
                                             onChange={(e) => setData('new_company', e.target.value)}
@@ -220,6 +222,8 @@ export default function Create({ operation, companies }) {
                                 <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Observaciones</h2>
                             </div>
                             <textarea
+                                id="notes"
+                                aria-label="Observaciones"
                                 className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all text-sm min-h-[120px]"
                                 value={data.notes}
                                 onChange={(e) => setData('notes', e.target.value)}

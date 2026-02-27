@@ -40,7 +40,7 @@ export default function GlobalLoading() {
 
             {/* Top Progress Line - High efficiency GPU acceleration */}
             <div className="fixed top-0 left-0 right-0 h-[3px] bg-primary/5 overflow-hidden z-[10000]">
-                <div className="h-full bg-primary/60 animate-[progress_1.5s_ease-in-out_infinite] will-change-transform shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"></div>
+                <div className="h-full bg-primary/60 animate-[loading-progress_1.5s_ease-in-out_infinite] will-change-transform shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"></div>
             </div>
 
             <div className="relative flex flex-col items-center">
@@ -65,12 +65,6 @@ export default function GlobalLoading() {
                 </div>
             </div>
 
-            <style dangerouslySetInnerHTML={{ __html: `
-                @keyframes progress {
-                    0% { transform: translateX(-100%); }
-                    100% { transform: translateX(100%); }
-                }
-            `}} />
         </div>
     );
 }
