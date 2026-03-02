@@ -6,72 +6,69 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="lg">
-            <div className="overflow-hidden">
+            <div className="overflow-hidden bg-white rounded-2xl">
                 {/* ── Header ── */}
-                <div className="bg-primary relative overflow-hidden">
-                    {/* Decorative circles */}
-                    <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5" />
-                    <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-white/5" />
-                    <div className="absolute top-1/2 right-1/3 w-16 h-16 rounded-full bg-white/[0.03]" />
+                <div className="bg-primary px-6 py-8 sm:px-8 relative overflow-hidden">
+                    {/* Decorative subtle pulse */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-400/20 rounded-full -ml-12 -mb-12 blur-2xl" />
 
-                    <div className="relative px-8 py-7">
-                        <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                                <p className="text-primary-200 text-[9px] font-black uppercase tracking-[0.35em] mb-2">
-                                    Ficha del Colaborador
-                                </p>
-                                <h2 className="text-[22px] font-black text-white uppercase tracking-tight leading-tight truncate">
-                                    {vehicle.employee_name}
-                                </h2>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
-                                        {vehicle.area}
-                                    </span>
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-[9px] font-bold uppercase tracking-widest border border-white/10">
-                                        {vehicle.plant}
-                                    </span>
-                                </div>
+                    <div className="relative flex items-center justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-primary-100 text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">
+                                Ficha del Colaborador
+                            </p>
+                            <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight truncate">
+                                {vehicle.employee_name}
+                            </h2>
+                            <div className="flex flex-wrap items-center gap-2 mt-3">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-white/10 text-white text-[10px] font-medium border border-white/10 backdrop-blur-sm">
+                                    {vehicle.area}
+                                </span>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-white/10 text-white text-[10px] font-medium border border-white/10 backdrop-blur-sm">
+                                    {vehicle.plant}
+                                </span>
                             </div>
-                            <div className="ml-4 flex-shrink-0">
-                                <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex flex-col items-center justify-center">
-                                    <span className="text-white/50 text-[8px] font-black tracking-widest uppercase leading-none">
-                                        No.
-                                    </span>
-                                    <span className="text-white text-lg font-black leading-none mt-0.5">
-                                        {vehicle.marbete_number}
-                                    </span>
-                                </div>
+                        </div>
+                        <div className="flex-shrink-0">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 border border-white/20 flex flex-col items-center justify-center shadow-2xl backdrop-blur-md">
+                                <span className="text-white/60 text-[9px] font-bold uppercase leading-none">
+                                    No.
+                                </span>
+                                <span className="text-white text-lg sm:text-xl font-bold mt-1">
+                                    {vehicle.marbete_number}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* ── Body ── */}
-                <div className="bg-cream px-8 py-6 space-y-5">
-                    {/* Vehículo 1 */}
-                    <VehicleInfoCard
-                        label="Vehículo Principal"
-                        brand={vehicle.vehicle_brand}
-                        model={vehicle.vehicle_model}
-                        plates={vehicle.vehicle_plates}
-                        variant="primary"
-                    />
-
-                    {/* Vehículo 2 */}
-                    {vehicle.vehicle_brand_2 && (
+                <div className="px-6 py-6 sm:px-8 space-y-6 bg-gray-50/50">
+                    {/* Vehicles Section */}
+                    <div className="space-y-4">
                         <VehicleInfoCard
-                            label="Vehículo Alternativo"
-                            brand={vehicle.vehicle_brand_2}
-                            model={vehicle.vehicle_model_2}
-                            plates={vehicle.vehicle_plates_2}
-                            variant="amber"
+                            label="Vehículo Principal"
+                            brand={vehicle.vehicle_brand}
+                            model={vehicle.vehicle_model}
+                            plates={vehicle.vehicle_plates}
+                            primary
                         />
-                    )}
+
+                        {vehicle.vehicle_brand_2 && (
+                            <VehicleInfoCard
+                                label="Vehículo Alternativo"
+                                brand={vehicle.vehicle_brand_2}
+                                model={vehicle.vehicle_model_2}
+                                plates={vehicle.vehicle_plates_2}
+                            />
+                        )}
+                    </div>
 
                     {/* Status Row */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
                                 Vigencia del Marbete
                             </p>
                             <ValidityBadge
@@ -79,9 +76,9 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                                 size="lg"
                             />
                         </div>
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2.5">
-                                Estatus de Documentación
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                Estatus Documentación
                             </p>
                             <StatusBadge
                                 status={vehicle.documentation_status}
@@ -90,46 +87,33 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                         </div>
                     </div>
 
-                    {/* Footer - Quien Registró */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                        <div className="flex items-center justify-between">
+                    {/* Footer Info */}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-4 w-4 text-primary"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
+                                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="text-[11px] font-black text-gray-900 uppercase tracking-tight leading-tight">
-                                        {vehicle.user?.name || "Sin datos"}
+                                    <p className="text-xs font-bold text-gray-900 leading-none mb-1">
+                                        {vehicle.user?.name || "Sistema"}
                                     </p>
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                        {new Date(
-                                            vehicle.created_at,
-                                        ).toLocaleDateString("es-MX", {
-                                            day: "2-digit",
-                                            month: "long",
+                                    <p className="text-[10px] text-gray-500 font-medium">
+                                        Registrado el {new Date(vehicle.created_at).toLocaleDateString("es-MX", {
+                                            day: "numeric",
+                                            month: "short",
                                             year: "numeric",
                                         })}
                                     </p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-[8px] font-bold text-gray-300 uppercase tracking-[0.3em]">
-                                    ID
+                                <p className="text-[9px] font-bold text-gray-300 uppercase tracking-wider mb-0.5">
+                                    Registro ID
                                 </p>
-                                <p className="text-xs font-black text-gray-400">
+                                <p className="text-xs font-bold text-gray-400">
                                     #{vehicle.id}
                                 </p>
                             </div>
@@ -137,13 +121,13 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     </div>
                 </div>
 
-                {/* ── Close Button ── */}
-                <div className="bg-cream px-8 pb-7 pt-1">
+                {/* ── Actions ── */}
+                <div className="px-6 pb-6 pt-2 sm:px-8 bg-gray-50/50">
                     <button
                         onClick={onClose}
-                        className="w-full py-3.5 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-primary-800 transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
+                        className="w-full py-3 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-primary-800 transition-colors shadow-lg active:scale-[0.98]"
                     >
-                        Cerrar
+                        Cerrar Panel
                     </button>
                 </div>
             </div>
@@ -151,63 +135,33 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
     );
 }
 
-function VehicleInfoCard({ label, brand, model, plates, variant = "primary" }) {
-    const isPrimary = variant === "primary";
-    const iconBg = isPrimary ? "bg-primary/10" : "bg-amber-100";
-    const iconColor = isPrimary ? "text-primary" : "text-amber-600";
-    const cardBorder = isPrimary ? "border-gray-100" : "border-amber-100";
-    const dividerColor = isPrimary ? "divide-gray-50" : "divide-amber-50";
-    const labelColor = isPrimary ? "text-gray-400" : "text-amber-500";
-    const platesBg = isPrimary
-        ? "text-primary bg-primary-50 border-primary-100"
-        : "text-amber-700 bg-amber-50 border-amber-200";
-
+function VehicleInfoCard({ label, brand, model, plates, primary = false }) {
     return (
-        <div>
-            <div className="flex items-center gap-2 mb-3">
-                <div className={`w-6 h-6 rounded-lg ${iconBg} flex items-center justify-center`}>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className={`h-3.5 w-3.5 ${iconColor}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0h4m-4 0H9m4 0a1 1 0 011 1v.01M14 16h2l3-6h-4" />
-                    </svg>
-                </div>
-                <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className={`px-4 py-2 border-b border-gray-100 flex items-center justify-between ${primary ? 'bg-gray-50/50' : 'bg-white'}`}>
+                <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                     {label}
                 </h3>
+                {primary && (
+                    <span className="text-[9px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase">
+                        Principal
+                    </span>
+                )}
             </div>
-            <div className={`bg-white rounded-2xl border ${cardBorder} shadow-sm`}>
-                <div className={`grid grid-cols-3 divide-x ${dividerColor}`}>
-                    <div className="px-5 py-4">
-                        <p className={`text-[8px] font-bold ${labelColor} uppercase tracking-[0.3em] mb-1.5`}>
-                            Marca
-                        </p>
-                        <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                            {brand}
-                        </p>
-                    </div>
-                    <div className="px-5 py-4">
-                        <p className={`text-[8px] font-bold ${labelColor} uppercase tracking-[0.3em] mb-1.5`}>
-                            Submarca
-                        </p>
-                        <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight">
-                            {model}
-                        </p>
-                    </div>
-                    <div className="px-5 py-4">
-                        <p className={`text-[8px] font-bold ${labelColor} uppercase tracking-[0.3em] mb-1.5`}>
-                            Placas
-                        </p>
-                        <span className={`inline-block font-mono font-black ${platesBg} px-3 py-1 rounded-lg border text-[13px]`}>
-                            {plates}
-                        </span>
-                    </div>
+            <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div>
+                    <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Marca</dt>
+                    <dd className="text-sm font-bold text-gray-900 uppercase truncate">{brand}</dd>
+                </div>
+                <div>
+                    <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Submarca</dt>
+                    <dd className="text-sm font-bold text-gray-900 uppercase truncate">{model}</dd>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                    <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Placas</dt>
+                    <dd className="inline-flex font-mono font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-md border border-gray-200 text-sm">
+                        {plates}
+                    </dd>
                 </div>
             </div>
         </div>
