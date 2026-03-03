@@ -10,7 +10,7 @@ export default function Create() {
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(() => localStorage.getItem('patrol_running') === 'true');
 
-    const { data, setData, post, processing, errors, transform } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors, transform } = useForm({
         area_name: localStorage.getItem('patrol_area') || 'RECORRIDO GENERAL',
         status: localStorage.getItem('patrol_status') || 'ok',
         notes: localStorage.getItem('patrol_notes') || '',
@@ -97,6 +97,13 @@ export default function Create() {
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        
+        if (!data.notes || data.notes.trim().length < 5) {
+            setError('notes', 'Debe ingresar una nota o hallazgo de al menos 5 caracteres');
+            return;
+        }
+
         post(route("patrols.store"), {
             onSuccess: () => {
                 localStorage.removeItem('patrol_state');

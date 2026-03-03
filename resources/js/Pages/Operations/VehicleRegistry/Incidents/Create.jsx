@@ -54,7 +54,7 @@ const Icons = {
 };
 
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         title: "",
         description: "",
         happened_at: new Date().toISOString().slice(0, 16),
@@ -62,6 +62,20 @@ export default function Create() {
 
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        let hasErrors = false;
+
+        if (!data.title) {
+            setError('title', 'El título o vehículo es obligatorio');
+            hasErrors = true;
+        }
+        if (!data.description) {
+            setError('description', 'La descripción es obligatoria');
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
         post(route("vehicle-incidents.store"));
     };
 
@@ -104,7 +118,6 @@ export default function Create() {
                                         setData("title", e.target.value)
                                     }
                                     placeholder="Ej: Carro Ford Con placas GAY-123"
-                                    required
                                 />
                                 <InputError
                                     message={errors.title}
@@ -127,7 +140,6 @@ export default function Create() {
                                     onChange={(e) =>
                                         setData("description", e.target.value)
                                     }
-                                    required
                                     placeholder="Describe lo sucedido detalladamente..."
                                 />
                                 <InputError

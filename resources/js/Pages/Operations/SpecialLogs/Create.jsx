@@ -52,6 +52,10 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
             setError('suspension_reason', 'El motivo del ingreso es obligatorio');
             hasErrors = true;
         }
+        if (!data.happened_at) {
+            setError('happened_at', 'La fecha y hora son obligatorias');
+            hasErrors = true;
+        }
 
         if (hasErrors) return;
 
@@ -124,7 +128,6 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                     value={data.employee_name}
                                     onChange={(e) => setData('employee_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
-                                    required
                                     placeholder="Nombre completo..."
                                 />
                                 <InputError message={errors.employee_name} />
@@ -150,7 +153,6 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                         value={data.department}
                                         onChange={(e) => setData('department', e.target.value)}
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-primary/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                        required
                                     >
                                         <option value="">Seleccione área...</option>
                                         {areas.map(area => (
@@ -219,7 +221,6 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm"
                                     value={data.happened_at}
                                     onChange={(e) => setData('happened_at', e.target.value)}
-                                    required
                                 />
                                 <InputError message={errors.happened_at} />
                             </div>
@@ -232,7 +233,6 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
                                         value={data.suspension_reason}
                                         onChange={(e) => setData('suspension_reason', e.target.value)}
-                                        required
                                     >
                                         <option value="">Seleccione motivo...</option>
                                         <option value="Olvido">Olvido</option>

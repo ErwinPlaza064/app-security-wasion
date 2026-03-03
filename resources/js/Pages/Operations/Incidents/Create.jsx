@@ -190,9 +190,45 @@ export default function Create({ category: initialCategory, areas }) {
         if (currentStep > 1) setCurrentStep(prev => prev - 1);
     };
 
+    const validateAllSteps = () => {
+        let hasErrors = false;
+        
+        // Step 1
+        if (!data.location) {
+            setError('location', 'Debe seleccionar una ubicación');
+            hasErrors = true;
+        }
+
+        // Step 2
+        const needsInvolved = data.category === 'conduct';
+        if (needsInvolved && !data.involved_person && !data.no_involved_persons) {
+            setError('involved_person', 'Debe indicar quién está involucrado para una incidencia conductual');
+            hasErrors = true;
+        }
+
+        // Step 3
+        if (!data.description) {
+            setError('description', 'Debe describir los hechos o la falla observada');
+            hasErrors = true;
+        }
+        if (!data.happened_at) {
+            setError('happened_at', 'La fecha y hora son obligatorias');
+            hasErrors = true;
+        }
+
+        return !hasErrors;
+    };
+
     const submit = (e) => {
         e.preventDefault();
         clearErrors();
+        if (!validateAllSteps()) {
+            // Ir al primer paso con error si el usuario intentó forzar envío
+            if (errors.location) setCurrentStep(1);
+            else if (errors.involved_person) setCurrentStep(2);
+            else if (errors.description || errors.happened_at) setCurrentStep(3);
+            return;
+        }
         post(route('incidents.store'));
     };
 
@@ -280,7 +316,6 @@ export default function Create({ category: initialCategory, areas }) {
                                             value={data.location}
                                             onChange={(e) => setData('location', e.target.value)}
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 transition-all text-sm appearance-none cursor-pointer"
-                                            required
                                         >
                                             <option value="">Selecciona el área...</option>
                                             {areas?.map((a) => (
@@ -386,8 +421,8 @@ export default function Create({ category: initialCategory, areas }) {
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 text-sm"
                                             value={data.happened_at}
                                             onChange={(e) => setData('happened_at', e.target.value)}
-                                            required
                                         />
+                                        <InputError message={errors.happened_at} className="mt-2" />
                                     </div>
 
                                     <div className="space-y-2">
@@ -397,7 +432,6 @@ export default function Create({ category: initialCategory, areas }) {
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-3xl py-4 px-6 min-h-[180px] text-sm leading-relaxed"
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}
-                                            required
                                             placeholder="¿Qué sucedió? Describe los hechos de manera clara y objetiva..."
                                         />
                                         <InputError message={errors.description} className="mt-2" />

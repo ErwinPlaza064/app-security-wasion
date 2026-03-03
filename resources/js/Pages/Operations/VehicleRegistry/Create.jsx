@@ -104,7 +104,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all font-black text-blue-600"
                                         value={data.marbete_number}
                                         onChange={(e) => setData('marbete_number', e.target.value)}
-                                        required
                                         placeholder="Ingrese número de identificación..."
                                     />
                                     <InputError message={errors.marbete_number} />
@@ -117,7 +116,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.employee_name}
                                         onChange={(e) => setData('employee_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
-                                        required
                                         placeholder="Nombre completo..."
                                     />
                                     <InputError message={errors.employee_name} />
@@ -131,7 +129,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                     value={data.area}
                                     onChange={(e) => setData('area', e.target.value)}
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                    required
                                 >
                                     <option value="">Seleccione área...</option>
                                     {areas.map(area => (
@@ -157,7 +154,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.vehicle_brand}
                                         onChange={(e) => setData('vehicle_brand', e.target.value)}
-                                        required
                                         placeholder="Ej. Nissan, VW..."
                                     />
                                     <InputError message={errors.vehicle_brand} />
@@ -170,7 +166,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.vehicle_model}
                                         onChange={(e) => setData('vehicle_model', e.target.value)}
-                                        required
                                         placeholder="Ej. Sentra, Jetta..."
                                     />
                                     <InputError message={errors.vehicle_model} />
@@ -185,7 +180,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all font-mono"
                                         value={data.vehicle_plates}
                                         onChange={(e) => setData('vehicle_plates', e.target.value)}
-                                        required
                                         placeholder="AAA-00-00"
                                     />
                                     <InputError message={errors.vehicle_plates} />
@@ -256,7 +250,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         value={data.validity_status}
                                         onChange={(e) => setData('validity_status', e.target.value)}
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                        required
                                     >
                                         <option value="Vigente">Vigente</option>
                                         <option value="Expirado">Expirado</option>
@@ -271,7 +264,6 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         value={data.documentation_status}
                                         onChange={(e) => setData('documentation_status', e.target.value)}
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                        required
                                     >
                                         <option value="">Seleccione estatus...</option>
                                         <option value="Completa">Completa</option>

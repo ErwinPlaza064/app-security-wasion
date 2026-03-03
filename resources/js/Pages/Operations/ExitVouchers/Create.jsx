@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput";
 import { useState } from "react";
 
 export default function Create({ suggestedFolio, suggestedReference }) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         folio: suggestedFolio,
         recipient_name: "",
         reference_number: suggestedReference,
@@ -18,8 +18,31 @@ export default function Create({ suggestedFolio, suggestedReference }) {
         return_date: "",
     });
 
+    const validateForm = () => {
+        let hasErrors = false;
+        if (!data.folio) {
+            setError("folio", "El folio es obligatorio");
+            hasErrors = true;
+        }
+        if (!data.recipient_name) {
+            setError("recipient_name", "El nombre del solicitante es obligatorio");
+            hasErrors = true;
+        }
+        if (data.concept === 'others' && !data.other_concept_details) {
+            setError("other_concept_details", "Especifique el motivo 'Otros'");
+            hasErrors = true;
+        }
+        if (!data.exit_date) {
+            setError("exit_date", "La fecha de salida es obligatoria");
+            hasErrors = true;
+        }
+        return !hasErrors;
+    };
+
     const submit = (e) => {
         e.preventDefault();
+        clearErrors();
+        if (!validateForm()) return;
         post(route("exit-vouchers.store"));
     };
 

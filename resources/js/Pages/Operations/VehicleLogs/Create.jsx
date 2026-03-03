@@ -47,6 +47,12 @@ export default function Create({ operation, companies }) {
         if (isNewCompany && !data.new_company) {
             setError('new_company', 'Ingrese el nombre de la empresa');
             hasErrors = true;
+        } else if (isNewCompany && data.new_company) {
+            const exists = companies.some(c => c.name.trim().toLowerCase() === data.new_company.trim().toLowerCase());
+            if (exists) {
+                setError('new_company', 'Esta empresa ya existe en la lista, por favor selecciónela arriba');
+                hasErrors = true;
+            }
         }
 
         if (hasErrors) return;
@@ -94,7 +100,6 @@ export default function Create({ operation, companies }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all font-mono uppercase"
                                         value={data.plates}
                                         onChange={(e) => setData('plates', e.target.value.toUpperCase())}
-                                        required
                                         placeholder="ABC-1234"
                                     />
                                     <InputError message={errors.plates} />
@@ -138,7 +143,6 @@ export default function Create({ operation, companies }) {
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all"
                                     value={data.driver_name}
                                     onChange={(e) => setData('driver_name', e.target.value.replace(/\b\w/g, l => l.toUpperCase()))}
-                                    required
                                     placeholder="Nombre completo del conductor"
                                 />
                                 <InputError message={errors.driver_name} />
@@ -152,7 +156,6 @@ export default function Create({ operation, companies }) {
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-emerald-500/10 rounded-xl py-3 px-4 transition-all text-sm"
                                         value={data.operation}
                                         onChange={(e) => setData('operation', e.target.value)}
-                                        required
                                     >
                                         <option value="transport">Transporte / Logística</option>
                                         <option value="load">Carga</option>
@@ -190,7 +193,6 @@ export default function Create({ operation, companies }) {
                                                     setData('company_id', e.target.value);
                                                 }
                                             }}
-                                            required={!isNewCompany}
                                         >
                                             <option value="">Seleccione empresa...</option>
                                             {companies.map(c => (
@@ -207,7 +209,6 @@ export default function Create({ operation, companies }) {
                                             value={data.new_company}
                                             onChange={(e) => setData('new_company', e.target.value)}
                                             placeholder="Nombre de empresa"
-                                            required={isNewCompany}
                                         />
                                     )}
                                     <InputError message={errors.company_id || errors.new_company} />
