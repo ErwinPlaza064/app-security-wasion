@@ -124,6 +124,13 @@ class NoBadgeLogResource extends Resource
                         'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ]),
+                Tables\Filters\SelectFilter::make('suspension_reason')
+                    ->label('Motivo del Ingreso')
+                    ->options([
+                        'Olvido' => 'Olvido',
+                        'Extravió' => 'Extravió',
+                        'No entregado' => 'No entregado',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
