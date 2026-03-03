@@ -71,7 +71,9 @@ class SpecialLogController extends Controller
                 'entry_at' => $validated['happened_at'],
                 'visiting_person' => $validated['employee_name'],
                 'work_area' => ($validated['department'] ?? '') . ($validated['position'] ? ' / ' . $validated['position'] : ''),
-                'notes' => "Registro automático desde {$typeLabel}. " . ($validated['notes'] ?? ''),
+                'notes' => "Registro automático desde {$typeLabel}. " . 
+                           ($validated['suspension_reason'] ? "Motivo: {$validated['suspension_reason']}. " : "") . 
+                           ($validated['notes'] ?? ''),
             ]);
         }
 

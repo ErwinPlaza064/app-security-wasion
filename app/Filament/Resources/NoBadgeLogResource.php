@@ -58,6 +58,8 @@ class NoBadgeLogResource extends Resource
                             ->label('Nº de Nómina / ID'),
                         Forms\Components\TextInput::make('department')
                             ->label('Departamento'),
+                        Forms\Components\TextInput::make('suspension_reason')
+                            ->label('Motivo'),
                         Forms\Components\DateTimePicker::make('happened_at')
                             ->label('Fecha/Hora')
                             ->required(),
@@ -92,6 +94,15 @@ class NoBadgeLogResource extends Resource
                     ->label('ID / Nómina'),
                 Tables\Columns\TextColumn::make('department')
                     ->label('Depto.'),
+                Tables\Columns\TextColumn::make('suspension_reason')
+                    ->label('Motivo')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Olvido' => 'warning',
+                        'Extravió' => 'danger',
+                        'No entregado' => 'gray',
+                        default => 'info',
+                    }),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
                     ->badge()

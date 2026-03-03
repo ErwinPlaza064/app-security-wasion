@@ -48,6 +48,10 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
             setError('department', 'El departamento es obligatorio');
             hasErrors = true;
         }
+        if (data.type === 'no_badge' && !data.suspension_reason) {
+            setError('suspension_reason', 'El motivo del ingreso es obligatorio');
+            hasErrors = true;
+        }
 
         if (hasErrors) return;
 
@@ -220,14 +224,38 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                 <InputError message={errors.happened_at} />
                             </div>
 
+                            {data.type === 'no_badge' && (
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="suspension_reason" value="Motivo del Ingreso" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <select
+                                        id="suspension_reason"
+                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
+                                        value={data.suspension_reason}
+                                        onChange={(e) => setData('suspension_reason', e.target.value)}
+                                        required
+                                    >
+                                        <option value="">Seleccione motivo...</option>
+                                        <option value="Olvido">Olvido</option>
+                                        <option value="Extravió">Extravió</option>
+                                        <option value="No entregado">No entregado</option>
+                                    </select>
+                                    <InputError message={errors.suspension_reason} />
+                                </div>
+                            )}
+
                             <div className="space-y-1.5">
-                                <InputLabel htmlFor="notes" value="Observaciones Adicionales" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                <InputLabel htmlFor="notes" value="Notas Adicionales" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                 <textarea
                                     id="notes"
                                     className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all text-sm min-h-[120px]"
                                     value={data.notes}
                                     onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder={data.type === 'resignation' ? "Detalles adicionales de la baja..." : "Motivo del ingreso sin gafete, detalles del pase, etc..."}
+                                    placeholder={
+                                        data.type === 'resignation' ? "Detalles adicionales de la baja..." : 
+                                        data.type === 'settlement' ? "Detalles del finiquito..." :
+                                        data.type === 'no_badge' ? "Observaciones adicionales sobre el ingreso sin gafete..." :
+                                        "Detalles adicionales..."
+                                    }
                                 />
                                 <InputError message={errors.notes} />
                             </div>
