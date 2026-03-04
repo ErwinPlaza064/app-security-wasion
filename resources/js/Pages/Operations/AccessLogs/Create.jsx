@@ -129,11 +129,6 @@ export default function Create({ type, companies, areas }) {
                     hasErrors = true;
                     break;
                 }
-                if (prev.id_number.trim().toLowerCase() === visitor.id_number.trim().toLowerCase()) {
-                    setError(`visitors.${index}.id_number`, "Esta identificación ya fue registrada en este grupo");
-                    hasErrors = true;
-                    break;
-                }
             }
         }
 
