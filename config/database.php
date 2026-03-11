@@ -96,6 +96,9 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
+            'dump' => [
+                'dump_binary_path' => env('PG_DUMP_PATH', 'C:\\Program Files\\PostgreSQL\\18\\bin'),
+            ],
         ],
 
         'sqlsrv' => [

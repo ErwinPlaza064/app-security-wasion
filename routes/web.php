@@ -2,11 +2,39 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+// Backup trigger endpoint (Protected: Solo superadmin)
+Route::get('/trigger-backup', function () {
+    if (!Auth::check() || !Auth::user()->isSuperAdmin()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Acceso denegado. Solo el super administrador puede ejecutar respaldos.'
+        ], 403);
+    }
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('backup:run', ['--disable-notifications' => true]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Backup completed successfully',
+            'output' => $output
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Backup failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
 
 Route::get('/dashboard', [\App\Http\Controllers\AccessLogController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
