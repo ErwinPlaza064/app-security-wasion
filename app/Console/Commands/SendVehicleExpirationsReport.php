@@ -89,6 +89,7 @@ class SendVehicleExpirationsReport extends Command
             Mail::to($admin->email)->send(new ExpiringVehiclesNotification($reportData));
         }
 
-        $this->info('Reporte de vencimientos enviado a ' . $admins->count() . ' administradores.');
+        $mailer = config('mail.default');
+        $this->info('Reporte de vencimientos enviado a ' . $admins->count() . ' administradores. (Sistema de correo utilizado: ' . $mailer . ')');
     }
 }
