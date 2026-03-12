@@ -162,7 +162,11 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                         filteredVehicles.map((vehicle) => (
                                             <tr
                                                 key={vehicle.id}
-                                                className="hover:bg-cream/60 transition-colors group cursor-pointer"
+                                                className={`transition-all group cursor-pointer border-b border-gray-50 last:border-0 ${
+                                                    isExpiringSoonLocal(vehicle.driver_license_expires_at) || isExpiringSoonLocal(vehicle.insurance_expires_at)
+                                                    ? 'bg-rose-50/70 hover:bg-rose-100/70 border-rose-100 shadow-[inset_0_0_0_1px_rgba(244,63,94,0.1)]'
+                                                    : 'hover:bg-cream/60'
+                                                }`}
                                                 onClick={() =>
                                                     openDetail(vehicle)
                                                 }
@@ -249,18 +253,6 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
                                                     <div className="flex items-center justify-end space-x-1.5 min-w-[120px]">
-                                                        {/* Expiration Indicators */}
-                                                        {(isExpiringSoonLocal(vehicle.driver_license_expires_at) || isExpiringSoonLocal(vehicle.insurance_expires_at)) && (
-                                                            <div className="mr-2 flex items-center gap-1 group/exp relative">
-                                                                <span className="flex h-2 w-2 relative">
-                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                                                                </span>
-                                                                <div className="absolute bottom-full right-0 mb-2 hidden group-hover/exp:block bg-gray-900 text-white text-[8px] font-black uppercase tracking-tighter py-1 px-2 rounded backdrop-blur shadow-xl whitespace-nowrap z-50">
-                                                                    Doc. por vencer
-                                                                </div>
-                                                            </div>
-                                                        )}
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();

@@ -239,6 +239,11 @@ class EmployeeVehicleResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
+            ->recordClasses(fn (EmployeeVehicle $record): ?string => match (true) {
+                ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()->addDays(30)) ||
+                ($record->insurance_expires_at && $record->insurance_expires_at <= now()->addDays(30)) => 'bg-rose-50/50',
+                default => null,
+            })
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
