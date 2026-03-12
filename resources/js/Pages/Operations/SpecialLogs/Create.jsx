@@ -191,15 +191,15 @@ export default function Create({ type, areas = EMPTY_AREAS }) {
                                 )}
                             </div>
 
-                            {isResignationOrSettlement && (
+                            {data.type === 'settlement' && (
                                 <div className="space-y-1.5">
-                                    <InputLabel htmlFor="suspension_reason" value={data.type === 'resignation' ? "Motivo de la Renuncia" : "Motivo del Finiquito"} className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                    <InputLabel htmlFor="suspension_reason" value="Motivo del Finiquito" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                                     <TextInput
                                         id="suspension_reason"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-amber-500/10 rounded-xl py-3 px-4 transition-all"
                                         value={data.suspension_reason}
                                         onChange={(e) => setData('suspension_reason', e.target.value)}
-                                        placeholder={data.type === 'resignation' ? "Razón por la que renuncia..." : "Razón del finiquito..."}
+                                        placeholder="Razón del finiquito..."
                                     />
                                     <InputError message={errors.suspension_reason} />
                                 </div>

@@ -88,9 +88,10 @@ class SecuritySpecialLogResource extends Resource
                             ->label('Jefe Directo')
                             ->placeholder('Nombre del supervisor responsable'),
                         Forms\Components\TextInput::make('suspension_reason')
-                            ->label('Motivo de Suspensión')
+                            ->label('Motivo / Razón')
                             ->columnSpanFull()
-                            ->placeholder('Razón de la baja o finiquito'),
+                            ->hidden(fn ($get) => $get('type') === 'resignation')
+                            ->placeholder('Razón del finiquito o ingreso especial'),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Notas Adicionales')
