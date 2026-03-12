@@ -25,7 +25,7 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     <section className="space-y-4">
                         <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Información del Conductor</h3>
                         <div className="flex items-center gap-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
-                            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                 </svg>
@@ -73,7 +73,7 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                             </div>
                             <div className="col-span-2 space-y-1">
                                 <p className="text-xs text-gray-500 font-medium ml-1">Número de Placas</p>
-                                <div className="p-2.5 bg-gray-900 text-emerald-400 rounded-lg text-sm font-mono font-bold tracking-widest shadow-inner text-center">
+                                <div className="p-2.5 bg-gray-900 text-blue-400 rounded-lg text-sm font-mono font-bold tracking-widest shadow-inner text-center">
                                     {vehicle.vehicle_plates}
                                 </div>
                             </div>
@@ -143,7 +143,7 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     </button>
                     <button
                         onClick={onClose}
-                        className="px-8 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all active:scale-[0.98]"
+                        className="px-8 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-[0.98]"
                     >
                         Aceptar
                     </button>
@@ -157,7 +157,7 @@ function DocRow({ label, status, expiry, icon }) {
     return (
         <div className="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center shrink-0 group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center shrink-0 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         {icon}
                     </svg>
