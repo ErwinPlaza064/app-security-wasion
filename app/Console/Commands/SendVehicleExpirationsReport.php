@@ -72,7 +72,11 @@ class SendVehicleExpirationsReport extends Command
         })->flatten(1);
 
         // Get all admin and superadmin users
-        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+        $admins = User::whereIn('role', ['admin', 'superadmin', 'Admin', 'SuperAdmin'])
+            ->get()
+            ->filter(function ($user) {
+                return $user->isAdmin();
+            });
 
         if ($admins->isEmpty()) {
             $this->error('No se encontraron administradores para notificar.');
