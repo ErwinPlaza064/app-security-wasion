@@ -170,11 +170,40 @@ class EmployeeVehicleResource extends Resource
                 Tables\Columns\TextColumn::make('validity_status')
                     ->label('Estatus')
                     ->badge()
-                    ->colors([
-                        'success' => 'Vigente',
-                        'danger' => 'Expirado',
-                        'warning' => 'Pendiente',
-                    ]),
+                    ->color(fn ($record): string => match ($record->validity_status) {
+                        'Expirado' => 'danger',
+                        'Pendiente' => 'warning',
+                        'Vigente' => match (true) {
+                            ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()) ||
+                            ($record->insurance_expires_at && $record->insurance_expires_at <= now()) => 'danger',
+                            ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()->addDays(30)) ||
+                            ($record->insurance_expires_at && $record->insurance_expires_at <= now()->addDays(30)) => 'warning',
+                            default => 'success',
+                        },
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('driver_license_expires_at')
+                    ->label('Venc. Licencia')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->color(fn ($record): string => match (true) {
+                        !$record->driver_license_expires_at => 'gray',
+                        $record->driver_license_expires_at <= now() => 'danger',
+                        $record->driver_license_expires_at <= now()->addDays(30) => 'warning',
+                        default => 'success',
+                    })
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('insurance_expires_at')
+                    ->label('Venc. Seguro')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->color(fn ($record): string => match (true) {
+                        !$record->insurance_expires_at => 'gray',
+                        $record->insurance_expires_at <= now() => 'danger',
+                        $record->insurance_expires_at <= now()->addDays(30) => 'warning',
+                        default => 'success',
+                    })
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
                     ->badge()

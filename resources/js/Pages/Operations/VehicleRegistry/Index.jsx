@@ -4,6 +4,15 @@ import { useState } from "react";
 import { ValidityBadge } from "./Partials/VehicleBadges";
 import VehicleDetailModal from "./Partials/VehicleDetailModal";
 
+const isExpiringSoonLocal = (dateString) => {
+    if (!dateString) return false;
+    const expirationDate = new Date(dateString);
+    const today = new Date();
+    const diffTime = expirationDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 30;
+};
+
 const EMPTY_VEHICLES = [];
 
 export default function Index({ vehicles = EMPTY_VEHICLES }) {
@@ -239,7 +248,19 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
-                                                    <div className="flex items-center justify-end space-x-1.5">
+                                                    <div className="flex items-center justify-end space-x-1.5 min-w-[120px]">
+                                                        {/* Expiration Indicators */}
+                                                        {(isExpiringSoonLocal(vehicle.driver_license_expires_at) || isExpiringSoonLocal(vehicle.insurance_expires_at)) && (
+                                                            <div className="mr-2 flex items-center gap-1 group/exp relative">
+                                                                <span className="flex h-2 w-2 relative">
+                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                                                </span>
+                                                                <div className="absolute bottom-full right-0 mb-2 hidden group-hover/exp:block bg-gray-900 text-white text-[8px] font-black uppercase tracking-tighter py-1 px-2 rounded backdrop-blur shadow-xl whitespace-nowrap z-50">
+                                                                    Doc. por vencer
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
