@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command('backup:run')->dailyAt('03:00');
-Schedule::command('app:check-vehicle-expirations')->dailyAt('08:00');
+Schedule::command('app:send-vehicle-expirations-report')->dailyAt('08:00');
