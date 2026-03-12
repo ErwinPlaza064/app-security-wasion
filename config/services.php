@@ -37,4 +37,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'microsoft_graph' => [
+        'tenant_id' => env('AZURE_TENANT_ID'),
+        'client_id' => env('AZURE_CLIENT_ID'),
+        'client_secret' => env('AZURE_CLIENT_SECRET'),
+        'sender_email' => env('AZURE_SENDER_EMAIL'),
+    ],
+
 ];

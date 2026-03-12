@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "3.0",
         "maatwebsite/excel": "^3.1",
+        "microsoft/microsoft-graph": "^2.56",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-backup": "9.0",
         "tightenco/ziggy": "^2.0"
@@ -73,7 +74,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         },
         "platform": {
             "php": "8.4.1"

@@ -10,7 +10,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Backup trigger endpoint (Protected: Solo superadmin)
 Route::get('/trigger-backup', function () {
     if (!Auth::check() || !Auth::user()->isSuperAdmin()) {
         return response()->json([

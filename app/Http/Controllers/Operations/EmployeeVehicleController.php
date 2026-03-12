@@ -48,6 +48,11 @@ class EmployeeVehicleController extends Controller
             'vehicle_plates_2' => 'nullable|string|max:20',
             'documentation_status' => 'required|string',
             'validity_status' => 'required|string',
+            'has_driver_license' => 'boolean',
+            'driver_license_expires_at' => 'nullable|date',
+            'has_circulation_card' => 'boolean',
+            'has_insurance' => 'boolean',
+            'insurance_expires_at' => 'nullable|date',
         ]);
 
         EmployeeVehicle::create([
@@ -62,6 +67,11 @@ class EmployeeVehicleController extends Controller
             'vehicle_plates_2' => $validated['vehicle_plates_2'],
             'documentation_status' => $validated['documentation_status'],
             'validity_status' => $validated['validity_status'],
+            'has_driver_license' => $request->boolean('has_driver_license'),
+            'driver_license_expires_at' => $request->input('driver_license_expires_at'),
+            'has_circulation_card' => $request->boolean('has_circulation_card'),
+            'has_insurance' => $request->boolean('has_insurance'),
+            'insurance_expires_at' => $request->input('insurance_expires_at'),
             'plant' => Auth::user()->plant,
             'user_id' => Auth::id(),
         ]);
@@ -103,6 +113,11 @@ class EmployeeVehicleController extends Controller
             'vehicle_plates_2' => 'nullable|string|max:20',
             'documentation_status' => 'required|string',
             'validity_status' => 'required|string',
+            'has_driver_license' => 'boolean',
+            'driver_license_expires_at' => 'nullable|date',
+            'has_circulation_card' => 'boolean',
+            'has_insurance' => 'boolean',
+            'insurance_expires_at' => 'nullable|date',
         ]);
 
         $employeeVehicle->update($validated);

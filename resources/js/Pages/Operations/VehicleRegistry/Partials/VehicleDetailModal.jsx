@@ -65,6 +65,54 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                         )}
                     </div>
 
+                    {/* Documentation Section */}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="px-4 py-2 border-b border-gray-100 bg-gray-50/50">
+                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                                Documentación
+                            </h3>
+                        </div>
+                        <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Licencia de Conducir</dt>
+                                <dd className="flex items-center gap-2">
+                                    <span className={`inline-flex w-2.5 h-2.5 rounded-full ${vehicle.has_driver_license ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                                    <span className="text-sm font-bold text-gray-900">
+                                        {vehicle.has_driver_license ? 'Sí' : 'No'}
+                                    </span>
+                                </dd>
+                                {vehicle.has_driver_license && vehicle.driver_license_expires_at && (
+                                    <p className="text-[9px] font-bold text-amber-600 mt-1.5 uppercase">
+                                        Vence: {new Date(vehicle.driver_license_expires_at).toLocaleDateString()}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Póliza de Seguro</dt>
+                                <dd className="flex items-center gap-2">
+                                    <span className={`inline-flex w-2.5 h-2.5 rounded-full ${vehicle.has_insurance ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                                    <span className="text-sm font-bold text-gray-900">
+                                        {vehicle.has_insurance ? 'Sí' : 'No'}
+                                    </span>
+                                </dd>
+                                {vehicle.has_insurance && vehicle.insurance_expires_at && (
+                                    <p className="text-[9px] font-bold text-amber-600 mt-1.5 uppercase">
+                                        Vence: {new Date(vehicle.insurance_expires_at).toLocaleDateString()}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <dt className="text-[10px] font-medium text-gray-400 uppercase mb-1">Tarjeta de Circulación</dt>
+                                <dd className="flex items-center gap-2">
+                                    <span className={`inline-flex w-2.5 h-2.5 rounded-full ${vehicle.has_circulation_card ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                                    <span className="text-sm font-bold text-gray-900">
+                                        {vehicle.has_circulation_card ? 'Sí' : 'No'}
+                                    </span>
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Status Row */}
                     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 text-center">
                         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">

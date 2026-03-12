@@ -77,10 +77,39 @@ class EmployeeVehicleResource extends Resource
                             ])
                             ->required()
                             ->native(false)
-                            ->default('Vigente'),
+                            ->default('Vigente')
+                            ->columnSpanFull(),
+                        Forms\Components\Fieldset::make('Licencia de Conducir')
+                            ->schema([
+                                Forms\Components\Toggle::make('has_driver_license')
+                                    ->label('Cuenta con Licencia')
+                                    ->default(false)
+                                    ->live(),
+                                Forms\Components\DatePicker::make('driver_license_expires_at')
+                                    ->label('Vencimiento de Licencia')
+                                    ->displayFormat('d/m/Y')
+                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_driver_license')),
+                            ])->columns(2),
+                        Forms\Components\Fieldset::make('Tarjeta de Circulación')
+                            ->schema([
+                                Forms\Components\Toggle::make('has_circulation_card')
+                                    ->label('Cuenta con Tarjeta de Circulación')
+                                    ->default(false),
+                            ])->columns(1),
+                        Forms\Components\Fieldset::make('Seguro del Vehículo')
+                            ->schema([
+                                Forms\Components\Toggle::make('has_insurance')
+                                    ->label('Cuenta con Póliza de Seguro')
+                                    ->default(false)
+                                    ->live(),
+                                Forms\Components\DatePicker::make('insurance_expires_at')
+                                    ->label('Vencimiento de Póliza')
+                                    ->displayFormat('d/m/Y')
+                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_insurance')),
+                            ])->columns(2),
                         Forms\Components\Hidden::make('documentation_status')
                             ->default('Completa'),
-                    ])->columns(2),
+                    ])->columns(1),
                 Forms\Components\Section::make('Información Administrativa')
                     ->schema([
                         Forms\Components\Select::make('plant')

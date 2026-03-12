@@ -20,6 +20,11 @@ export default function Create({ areas = EMPTY_AREAS }) {
         vehicle_plates_2: '',
         documentation_status: 'Completa',
         validity_status: 'Vigente',
+        has_driver_license: false,
+        driver_license_expires_at: '',
+        has_circulation_card: false,
+        has_insurance: false,
+        insurance_expires_at: '',
     });
 
     const submit = (e) => {
@@ -57,6 +62,14 @@ export default function Create({ areas = EMPTY_AREAS }) {
         }
         if (!data.validity_status) {
             setError('validity_status', 'La vigencia es obligatoria');
+            hasErrors = true;
+        }
+        if (data.has_driver_license && !data.driver_license_expires_at) {
+            setError('driver_license_expires_at', 'La fecha de vencimiento es obligatoria si cuenta con licencia');
+            hasErrors = true;
+        }
+        if (data.has_insurance && !data.insurance_expires_at) {
+            setError('insurance_expires_at', 'La fecha de vencimiento es obligatoria si cuenta con seguro');
             hasErrors = true;
         }
 
@@ -231,6 +244,58 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         placeholder="AAA-00-00"
                                     />
                                     <InputError message={errors.vehicle_plates_2} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sección: Documentación */}
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
+                            <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
+                                <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Documentación</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                <div className="space-y-4 border border-gray-100 rounded-xl p-6 transition-all hover:border-blue-100 hover:shadow-md hover:shadow-blue-500/5">
+                                    <label className="flex items-center space-x-3 cursor-pointer">
+                                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 w-5 h-5 transition-all" 
+                                            checked={data.has_driver_license} onChange={(e) => setData('has_driver_license', e.target.checked)} />
+                                        <span className="text-[11px] font-black text-gray-700 uppercase tracking-widest">Licencia de Conducir</span>
+                                    </label>
+                                    {data.has_driver_license && (
+                                        <div className="space-y-1.5 mt-4 pt-4 border-t border-gray-50">
+                                            <InputLabel htmlFor="driver_license_expires_at" value="Vencimiento de Licencia" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                            <input type="date" id="driver_license_expires_at" 
+                                                className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold text-gray-700"
+                                                value={data.driver_license_expires_at} onChange={(e) => setData('driver_license_expires_at', e.target.value)} />
+                                            <InputError message={errors.driver_license_expires_at} />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4 border border-gray-100 rounded-xl p-6 transition-all hover:border-blue-100 hover:shadow-md hover:shadow-blue-500/5">
+                                    <label className="flex items-center space-x-3 cursor-pointer">
+                                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 w-5 h-5 transition-all" 
+                                            checked={data.has_circulation_card} onChange={(e) => setData('has_circulation_card', e.target.checked)} />
+                                        <span className="text-[11px] font-black text-gray-700 uppercase tracking-widest">Tarjeta de Circulación</span>
+                                    </label>
+                                </div>
+
+                                <div className="space-y-4 border border-gray-100 rounded-xl p-6 transition-all hover:border-blue-100 hover:shadow-md hover:shadow-blue-500/5">
+                                    <label className="flex items-center space-x-3 cursor-pointer">
+                                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 w-5 h-5 transition-all" 
+                                            checked={data.has_insurance} onChange={(e) => setData('has_insurance', e.target.checked)} />
+                                        <span className="text-[11px] font-black text-gray-700 uppercase tracking-widest">Póliza de Seguro</span>
+                                    </label>
+                                    {data.has_insurance && (
+                                        <div className="space-y-1.5 mt-4 pt-4 border-t border-gray-50">
+                                            <InputLabel htmlFor="insurance_expires_at" value="Vencimiento de Póliza" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                            <input type="date" id="insurance_expires_at" 
+                                                className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold text-gray-700"
+                                                value={data.insurance_expires_at} onChange={(e) => setData('insurance_expires_at', e.target.value)} />
+                                            <InputError message={errors.insurance_expires_at} />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
