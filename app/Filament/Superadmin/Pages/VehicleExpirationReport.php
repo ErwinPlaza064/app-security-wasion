@@ -29,12 +29,22 @@ class VehicleExpirationReport extends Page
                 ->modalHeading('¿Enviar reporte ahora?')
                 ->modalDescription('Esto enviará el correo de alerta a todos los usuarios con rol Admin y SuperAdmin.')
                 ->action(function () {
-                    Artisan::call('app:send-vehicle-expirations-report');
+                    try {
+                        Artisan::call('app:send-vehicle-expirations-report');
+                        $output = Artisan::output();
 
-                    Notification::make()
-                        ->title('Reporte enviado con éxito')
-                        ->success()
-                        ->send();
+                        Notification::make()
+                            ->title('Proceso Completado')
+                            ->body($output)
+                            ->success()
+                            ->send();
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title('Error al enviar el reporte')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
                 }),
         ];
     }
