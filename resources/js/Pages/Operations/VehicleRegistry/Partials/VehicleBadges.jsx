@@ -1,19 +1,36 @@
 export function ValidityBadge({ validity, size = "sm" }) {
     const v = validity || "Vigente";
-    const isActive = v === "Vigente";
-    const baseClass =
-        size === "lg" ? "px-3 py-1 text-xs" : "px-2.5 py-0.5 text-[10px]";
+    
+    // Configuración de colores basada en el estado
+    const config = {
+        'Vigente': {
+            bg: "bg-emerald-50",
+            text: "text-emerald-700",
+            border: "border-emerald-100",
+            dot: "bg-emerald-600"
+        },
+        'Expirado': {
+            bg: "bg-red-50",
+            text: "text-red-600",
+            border: "border-red-100",
+            dot: "bg-red-500"
+        },
+        'Pendiente': {
+            bg: "bg-amber-50",
+            text: "text-amber-700",
+            border: "border-amber-100",
+            dot: "bg-amber-600"
+        }
+    };
+
+    const c = config[v] || config['Vigente'];
+    const baseClass = size === "lg" ? "px-3 py-1 text-xs" : "px-2.5 py-0.5 text-[10px]";
+
     return (
         <span
-            className={`${baseClass} rounded-full font-semibold inline-flex items-center gap-1.5 ${
-                isActive
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                    : "bg-red-50 text-red-600 border border-red-100"
-            }`}
+            className={`${baseClass} rounded-full font-semibold inline-flex items-center gap-1.5 ${c.bg} ${c.text} border ${c.border}`}
         >
-            <span
-                className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-600" : "bg-red-500"}`}
-            />
+            <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
             {v}
         </span>
     );

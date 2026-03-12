@@ -1,5 +1,5 @@
 import Modal from "@/Components/Modal";
-import { ValidityBadge, StatusBadge } from "./VehicleBadges";
+import { ValidityBadge } from "./VehicleBadges";
 
 export default function VehicleDetailModal({ show, vehicle, onClose }) {
     if (!vehicle) return null;
@@ -66,25 +66,14 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     </div>
 
                     {/* Status Row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                                Vigencia del Marbete
-                            </p>
-                            <ValidityBadge
-                                validity={vehicle.validity_status}
-                                size="lg"
-                            />
-                        </div>
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                                Estatus Documentación
-                            </p>
-                            <StatusBadge
-                                status={vehicle.documentation_status}
-                                size="lg"
-                            />
-                        </div>
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 text-center">
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                            Estatus del Marbete
+                        </p>
+                        <ValidityBadge
+                            validity={vehicle.validity_status}
+                            size="lg"
+                        />
                     </div>
 
                     {/* Footer Info */}

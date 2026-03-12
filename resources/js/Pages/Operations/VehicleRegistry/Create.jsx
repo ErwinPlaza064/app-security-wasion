@@ -18,7 +18,7 @@ export default function Create({ areas = EMPTY_AREAS }) {
         vehicle_brand_2: '',
         vehicle_model_2: '',
         vehicle_plates_2: '',
-        documentation_status: '',
+        documentation_status: 'Completa',
         validity_status: 'Vigente',
     });
 
@@ -239,41 +239,22 @@ export default function Create({ areas = EMPTY_AREAS }) {
                         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
                             <div className="flex items-center space-x-2 border-b border-gray-50 pb-4 mb-2">
                                 <div className="w-1.5 h-6 bg-gray-400 rounded-full"></div>
-                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Estatus y Vigencia</h2>
+                                <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Estatus de Documentación</h2>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-1.5">
-                                    <InputLabel htmlFor="validity_status" value="Vigencia del Marbete" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <select
-                                        id="validity_status"
-                                        value={data.validity_status}
-                                        onChange={(e) => setData('validity_status', e.target.value)}
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                    >
-                                        <option value="Vigente">Vigente</option>
-                                        <option value="Expirado">Expirado</option>
-                                    </select>
-                                    <InputError message={errors.validity_status} />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <InputLabel htmlFor="documentation_status" value="Estatus de Papeles" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
-                                    <select
-                                        id="documentation_status"
-                                        value={data.documentation_status}
-                                        onChange={(e) => setData('documentation_status', e.target.value)}
-                                        className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
-                                    >
-                                        <option value="">Seleccione estatus...</option>
-                                        <option value="Completa">Completa</option>
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="Vencida">Vencida</option>
-                                        <option value="En Revisión">En Revisión</option>
-                                        <option value="No Entregada">No Entregada</option>
-                                    </select>
-                                    <InputError message={errors.documentation_status} />
-                                </div>
+                            <div className="space-y-1.5">
+                                <InputLabel htmlFor="validity_status" value="Estatus del Marbete" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                <select
+                                    id="validity_status"
+                                    value={data.validity_status}
+                                    onChange={(e) => setData('validity_status', e.target.value)}
+                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
+                                >
+                                    <option value="Vigente">Vigente</option>
+                                    <option value="Expirado">Expirado</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                </select>
+                                <InputError message={errors.validity_status} />
                             </div>
                         </div>
 

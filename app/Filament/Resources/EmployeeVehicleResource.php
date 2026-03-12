@@ -69,25 +69,17 @@ class EmployeeVehicleResource extends Resource
                 Forms\Components\Section::make('Documentación y Otros')
                     ->schema([
                         Forms\Components\Select::make('validity_status')
-                            ->label('Vigencia del Marbete')
+                            ->label('Estatus del Marbete')
                             ->options([
                                 'Vigente' => 'Vigente',
                                 'Expirado' => 'Expirado',
+                                'Pendiente' => 'Pendiente',
                             ])
                             ->required()
                             ->native(false)
                             ->default('Vigente'),
-                        Forms\Components\Select::make('documentation_status')
-                            ->label('Estatus de Documentación')
-                            ->options([
-                                'Completa' => 'Completa',
-                                'Pendiente' => 'Pendiente',
-                                'Vencida' => 'Vencida',
-                                'En Revisión' => 'En Revisión',
-                                'No Entregada' => 'No Entregada',
-                            ])
-                            ->required()
-                            ->native(false),
+                        Forms\Components\Hidden::make('documentation_status')
+                            ->default('Completa'),
                     ])->columns(2),
                 Forms\Components\Section::make('Información Administrativa')
                     ->schema([
@@ -147,21 +139,12 @@ class EmployeeVehicleResource extends Resource
                     ->formatStateUsing(fn($record) => $record->vehicle_plates . ($record->vehicle_plates_2 ? ' / ' . $record->vehicle_plates_2 : ''))
                     ->searchable(['vehicle_plates', 'vehicle_plates_2']),
                 Tables\Columns\TextColumn::make('validity_status')
-                    ->label('Vigencia')
+                    ->label('Estatus')
                     ->badge()
                     ->colors([
                         'success' => 'Vigente',
                         'danger' => 'Expirado',
-                    ]),
-                Tables\Columns\TextColumn::make('documentation_status')
-                    ->label('Estatus')
-                    ->badge()
-                    ->colors([
-                        'success' => 'Completa',
                         'warning' => 'Pendiente',
-                        'danger' => 'Vencida',
-                        'info' => 'En Revisión',
-                        'rose' => 'No Entregada',
                     ]),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
@@ -187,19 +170,11 @@ class EmployeeVehicleResource extends Resource
                     ])
                     ->visible(fn() => auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()),
                 Tables\Filters\SelectFilter::make('validity_status')
-                    ->label('Vigencia')
+                    ->label('Estatus')
                     ->options([
                         'Vigente' => 'Vigente',
                         'Expirado' => 'Expirado',
-                    ]),
-                Tables\Filters\SelectFilter::make('documentation_status')
-                    ->label('Estatus de Papeles')
-                    ->options([
-                        'Completa' => 'Completa',
                         'Pendiente' => 'Pendiente',
-                        'Vencida' => 'Vencida',
-                        'En Revisión' => 'En Revisión',
-                        'No Entregada' => 'No Entregada',
                     ]),
             ])
             ->actions([

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import { useState } from "react";
-import { ValidityBadge, StatusBadge } from "./Partials/VehicleBadges";
+import { ValidityBadge } from "./Partials/VehicleBadges";
 import VehicleDetailModal from "./Partials/VehicleDetailModal";
 
 const EMPTY_VEHICLES = [];
@@ -138,9 +138,6 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                             Placas
                                         </th>
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                            Vigencia
-                                        </th>
-                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                                             Estatus
                                         </th>
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -218,14 +215,9 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-6">
+                                                <td className="px-6 py-6 text-center">
                                                     <ValidityBadge
                                                         validity={vehicle.validity_status}
-                                                    />
-                                                </td>
-                                                <td className="px-6 py-6">
-                                                    <StatusBadge
-                                                        status={vehicle.documentation_status}
                                                     />
                                                 </td>
                                                 <td className="px-6 py-6">
