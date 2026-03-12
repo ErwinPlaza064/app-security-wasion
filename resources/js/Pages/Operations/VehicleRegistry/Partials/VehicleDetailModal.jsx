@@ -8,16 +8,6 @@ const getExpirationStyle = (dateString) => {
     const diffTime = expirationDate - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-import Modal from "@/Components/Modal";
-import { ValidityBadge } from "./VehicleBadges";
-
-const getExpirationStyle = (dateString) => {
-    if (!dateString) return "bg-gray-50 border-gray-100 text-gray-400";
-    const expirationDate = new Date(dateString);
-    const today = new Date();
-    const diffTime = expirationDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffDays <= 0) return "bg-rose-50 border-rose-200 text-rose-600 animate-pulse";
     if (diffDays <= 7) return "bg-rose-50 border-rose-100 text-rose-500 font-black";
     if (diffDays <= 30) return "bg-amber-50 border-amber-100 text-amber-600";
