@@ -12,6 +12,7 @@ class VehicleIncident extends Model
         'title',
         'description',
         'plant',
+        'area',
         'happened_at',
     ];
 

@@ -79,6 +79,11 @@ class VehicleIncidentResource extends Resource
                             ->disabled()
                             ->dehydrated()
                             ->default(fn() => Auth::user()->plant),
+                        Forms\Components\Select::make('area')
+                            ->label('Área')
+                            ->options(fn () => \App\Models\Area::where('plant', Auth::user()->plant)->pluck('name', 'name'))
+                            ->searchable()
+                            ->required(),
                     ])->columns(2),
             ]);
     }
@@ -111,6 +116,11 @@ class VehicleIncidentResource extends Resource
                         'Planta 5' => 'primary',
                         default => 'gray',
                     })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('area')
+                    ->label('Área')
+                    ->badge()
+                    ->color('gray')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('happened_at')
                     ->label('Fecha y Hora')

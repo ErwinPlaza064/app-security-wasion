@@ -26,12 +26,14 @@ class VehicleIncidentController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'area' => 'required|string',
         ]);
 
         VehicleIncident::create([
             'user_id' => Auth::id(),
             'title' => $validated['title'],
             'description' => $validated['description'],
+            'area' => $validated['area'],
             'plant' => Auth::user()->plant,
             'happened_at' => now(),
         ]);
