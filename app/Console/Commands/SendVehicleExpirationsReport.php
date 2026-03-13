@@ -78,6 +78,10 @@ class SendVehicleExpirationsReport extends Command
         $body .= "Revise el reporte para tomar acciones.";
 
         foreach ($admins as $admin) {
+            $url = $admin->isSuperAdmin() 
+                ? url('/superadmin/vehicle-expiration-report') 
+                : url('/admin/employee-vehicles');
+
             Notification::make()
                 ->title($title)
                 ->body($body)
@@ -87,7 +91,7 @@ class SendVehicleExpirationsReport extends Command
                 ->actions([
                     NotificationAction::make('view_report')
                         ->label('Ver Reporte Detallado')
-                        ->url(fn() => $admin->isSuperAdmin() ? '/superadmin/vehicle-expiration-report' : '/admin/employee-vehicles')
+                        ->url($url)
                         ->button()
                         ->markAsRead(),
                 ])
