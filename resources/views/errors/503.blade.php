@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Acceso Restringido | 403</title>
+    <title>Servicio No Disponible | 503</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -27,37 +27,37 @@
         <div class="error-card bg-white rounded-2xl p-8 md:p-12 space-y-8">
             <!-- Error Icon -->
             <div class="flex justify-center">
-                <div class="flex items-center justify-center w-16 h-16 rounded-full bg-purple-50 border-2 border-purple-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <div class="flex items-center justify-center w-16 h-16 rounded-full bg-red-50 border-2 border-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
             </div>
 
             <!-- Content -->
             <div class="text-center space-y-3">
-                <p class="text-sm font-semibold text-purple-600 uppercase tracking-wide">Error 403</p>
-                <h1 class="text-3xl font-bold text-gray-900">Acceso Restringido</h1>
+                <p class="text-sm font-semibold text-red-600 uppercase tracking-wide">Error 503</p>
+                <h1 class="text-3xl font-bold text-gray-900">Servicio No Disponible</h1>
                 <p class="text-base text-gray-600 leading-relaxed">
-                    No tienes los permisos necesarios para acceder a este recurso.
+                    El servidor está en mantenimiento. Por favor, intenta más tarde.
                 </p>
             </div>
 
             <!-- Actions -->
             <div class="flex flex-col gap-3 pt-4">
-                <a href="{{ url('/') }}" class="flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                <button onclick="location.reload()" class="flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    Reintentar
+                </button>
+                <a href="{{ url('/') }}" class="flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Ir al Inicio
                 </a>
-                <button onclick="history.back()" class="flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    ← Ir Atrás
-                </button>
             </div>
         </div>
 
         <!-- Footer -->
         <div class="text-center mt-8">
             <p class="text-sm text-gray-500 font-medium">Wasion Security System</p>
-            <p class="text-xs text-gray-400 mt-2">Si crees que esto es un error, contacta a soporte</p>
+            <p class="text-xs text-gray-400 mt-2">Disculpa las molestias - volveremos pronto</p>
         </div>
     </div>
 </body>
