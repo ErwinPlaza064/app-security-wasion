@@ -18,7 +18,7 @@ class NoBadgeByAreaChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->tableFilters['plant'] ?? null;
+        $plant = $this->filters['plant'] ?? null;
 
         $data = SecuritySpecialLog::query()
             ->where('type', 'no_badge')

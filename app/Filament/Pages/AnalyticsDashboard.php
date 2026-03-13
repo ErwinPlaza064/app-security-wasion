@@ -12,6 +12,8 @@ class AnalyticsDashboard extends BaseDashboard
 {
     use HasFiltersForm;
 
+    protected static string $routePath = 'analytics-dashboard';
+
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
     
     protected static ?string $title = 'Dashboard';

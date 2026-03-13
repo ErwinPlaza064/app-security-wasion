@@ -18,7 +18,7 @@ class BehavioralIncidentsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->tableFilters['plant'] ?? null;
+        $plant = $this->filters['plant'] ?? null;
 
         $data = Incident::query()
             ->where('category', 'conduct')

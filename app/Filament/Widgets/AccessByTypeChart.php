@@ -18,7 +18,7 @@ class AccessByTypeChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->tableFilters['plant'] ?? null;
+        $plant = $this->filters['plant'] ?? null;
 
         $data = AccessLog::query()
             ->when($plant, fn ($query) => $query->where('plant', $plant))

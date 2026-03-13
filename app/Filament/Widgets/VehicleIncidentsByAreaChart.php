@@ -18,7 +18,7 @@ class VehicleIncidentsByAreaChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->tableFilters['plant'] ?? null;
+        $plant = $this->filters['plant'] ?? null;
 
         $data = VehicleIncident::query()
             ->when($plant, fn ($query) => $query->where('plant', $plant))

@@ -19,7 +19,7 @@ class PatrolsByDayChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->tableFilters['plant'] ?? null;
+        $plant = $this->filters['plant'] ?? null;
 
         $data = PatrolLog::query()
             ->when($plant, fn ($query) => $query->where('plant', $plant))
