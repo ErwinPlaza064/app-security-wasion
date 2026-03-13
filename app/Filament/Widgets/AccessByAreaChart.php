@@ -18,10 +18,12 @@ class AccessByAreaChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = AccessLog::query()
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '<=', $date))
             ->select('work_area', DB::raw('count(*) as aggregate'))
             ->groupBy('work_area')
             ->orderByDesc('aggregate')

@@ -19,10 +19,12 @@ class PatrolsByDayChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = PatrolLog::query()
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('happened_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('happened_at', '<=', $date))
             ->select(DB::raw("trim(to_char(happened_at, 'Day')) as day"), DB::raw('count(*) as aggregate'))
             ->groupBy('day')
             ->get()

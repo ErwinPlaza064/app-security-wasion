@@ -18,26 +18,13 @@ class BehavioralIncidentsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = Incident::query()
             ->where('category', 'conduct')
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
-            ->select('involved_person', DB::raw('count(*) as aggregate'))
-            ->groupBy('involved_person')
-            ->orderByDesc('aggregate')
-            ->limit(10)
-            ->get();
-
-        // Note: The screenshot shows labels like "Attempted theft", "Dress Code", etc.
-        // My Incident categories are 'general', 'damage', 'conduct', etc.
-        // But the user screenshot shows these specific labels for "Tipos de incidencias".
-        // It's possible they use 'involved_person' or 'description' for these labels if they aren't standardized.
-        // For now, I'll group by description as it's the most likely place for "Dress Code" etc if conduct is a sub-type.
-        
-        $data = Incident::query()
-            ->where('category', 'conduct')
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
             ->select('description', DB::raw('count(*) as aggregate'))
             ->groupBy('description')
             ->orderByDesc('aggregate')

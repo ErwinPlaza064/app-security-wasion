@@ -18,15 +18,15 @@ class PatrolsByWeekChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
-        // Grouping by week of current month (Postgres compatible)
+        // Grouping by week
         $data = PatrolLog::query()
-            ->whereMonth('happened_at', now()->month)
-            ->whereYear('happened_at', now()->year)
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('happened_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('happened_at', '<=', $date))
             ->select(
-                DB::raw("extract(week from happened_at) - extract(week from date_trunc('month', happened_at)) + 1 as week"),
+                DB::raw("extract(week from happened_at) as week"),
                 DB::raw('count(*) as aggregate')
             )
             ->groupBy('week')
@@ -36,9 +36,19 @@ class PatrolsByWeekChart extends ChartWidget
 
         $finalData = [];
         $labels = [];
-        for ($i = 1; $i <= 4; $i++) {
-            $labels[] = "Semana $i";
-            $finalData[] = $data[$i] ?? 0;
+        
+        // If filters are active, we show the weeks found in the data or a fixed range
+        // For simplicity, we'll keep showing a range or just the keys
+        foreach ($data as $weekNum => $count) {
+            $labels[] = "Semana $weekNum";
+            $finalData[] = $count;
+        }
+
+        if (empty($labels)) {
+            for ($i = 1; $i <= 4; $i++) {
+                $labels[] = "Semana $i";
+                $finalData[] = 0;
+            }
         }
 
         return [

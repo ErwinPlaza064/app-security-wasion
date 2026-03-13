@@ -26,10 +26,10 @@ class AnalyticsDashboard extends BaseDashboard
     {
         return $form
             ->schema([
-                Section::make()
+                Section::make('Filtros')
                     ->schema([
                         Select::make('plant')
-                            ->label('Filtrar por Planta')
+                            ->label('Planta')
                             ->placeholder('Todas las plantas')
                             ->options([
                                 'Planta 1' => 'Planta 1',
@@ -38,8 +38,41 @@ class AnalyticsDashboard extends BaseDashboard
                                 'Planta 4' => 'Planta 4',
                                 'Planta 5' => 'Planta 5',
                             ]),
+                        Select::make('period')
+                            ->label('Periodo')
+                            ->placeholder('Personalizado')
+                            ->options([
+                                'today' => 'Hoy',
+                                'week' => 'Esta semana',
+                                'month' => 'Este mes',
+                                'year' => 'Este año',
+                            ])
+                            ->live()
+                            ->afterStateUpdated(fn ($state, $set) => match ($state) {
+                                'today' => [
+                                    $set('startDate', now()->startOfDay()->toDateString()),
+                                    $set('endDate', now()->endOfDay()->toDateString()),
+                                ],
+                                'week' => [
+                                    $set('startDate', now()->startOfWeek()->toDateString()),
+                                    $set('endDate', now()->endOfWeek()->toDateString()),
+                                ],
+                                'month' => [
+                                    $set('startDate', now()->startOfMonth()->toDateString()),
+                                    $set('endDate', now()->endOfMonth()->toDateString()),
+                                ],
+                                'year' => [
+                                    $set('startDate', now()->startOfYear()->toDateString()),
+                                    $set('endDate', now()->endOfYear()->toDateString()),
+                                ],
+                                default => null,
+                            }),
+                        \Filament\Forms\Components\DatePicker::make('startDate')
+                            ->label('Desde'),
+                        \Filament\Forms\Components\DatePicker::make('endDate')
+                            ->label('Hasta'),
                     ])
-                    ->columns(1),
+                    ->columns(4),
             ]);
     }
 

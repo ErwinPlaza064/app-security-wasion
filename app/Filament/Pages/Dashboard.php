@@ -15,7 +15,6 @@ class Dashboard extends BaseDashboard
             \App\Filament\Widgets\VisitorTypeChart::class,
             \App\Filament\Widgets\AccessByTypeChart::class,
             \App\Filament\Widgets\RecentSecurityActivity::class,
-            \App\Filament\Widgets\GoToDashboardWidget::class,
         ];
     }
 }

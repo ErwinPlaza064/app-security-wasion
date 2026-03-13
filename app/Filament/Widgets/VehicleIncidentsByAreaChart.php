@@ -18,10 +18,12 @@ class VehicleIncidentsByAreaChart extends ChartWidget
 
     protected function getData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = VehicleIncident::query()
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
             ->select('area', DB::raw('count(*) as aggregate'))
             ->groupBy('area')
             ->orderByDesc('aggregate')
