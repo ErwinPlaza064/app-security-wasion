@@ -5,11 +5,9 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\EmployeeVehicle;
 use App\Models\User;
-use App\Mail\ExpiringVehiclesNotification;
-use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
-
-use App\Services\MicrosoftGraphMailer;
+use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action as NotificationAction;
 
 class SendVehicleExpirationsReport extends Command
 {
@@ -21,7 +19,7 @@ class SendVehicleExpirationsReport extends Command
     /**
      * The console command description.
      */
-    protected $description = 'Envía un reporte de documentación vencida o próxima a vencer a los administradores usando Microsoft Graph.';
+    protected $description = 'Envía notificaciones al dashboard de administradores sobre documentación vencida o próxima a vencer.';
 
     /**
      * Execute the console command.
@@ -47,61 +45,55 @@ class SendVehicleExpirationsReport extends Command
             return;
         }
 
-        // Format data for the email
-        $reportData = $expiringVehicles->map(function ($vehicle) use ($today) {
-            $docs = [];
-            if ($vehicle->driver_license_expires_at && $vehicle->driver_license_expires_at <= Carbon::today()->addDays(7)) {
-                $docs[] = [
-                    'name' => $vehicle->employee_name,
-                    'marbete' => $vehicle->marbete_number,
-                    'doc_type' => 'Licencia de Conducir',
-                    'expiry_date' => $vehicle->driver_license_expires_at,
-                    'is_expired' => $vehicle->driver_license_expires_at < $today,
-                    'plant' => $vehicle->plant
-                ];
-            }
-            if ($vehicle->insurance_expires_at && $vehicle->insurance_expires_at <= Carbon::today()->addDays(7)) {
-                $docs[] = [
-                    'name' => $vehicle->employee_name,
-                    'marbete' => $vehicle->marbete_number,
-                    'doc_type' => 'Póliza de Seguro',
-                    'expiry_date' => $vehicle->insurance_expires_at,
-                    'is_expired' => $vehicle->insurance_expires_at < $today,
-                    'plant' => $vehicle->plant
-                ];
-            }
-            return $docs;
-        })->flatten(1);
+        $expiredCount = 0;
+        $expiringSoonCount = 0;
 
-        // Get all admin and superadmin users (ignoring example seeds)
+        foreach ($expiringVehicles as $vehicle) {
+            $isExpired = ($vehicle->driver_license_expires_at && $vehicle->driver_license_expires_at < $today) || 
+                         ($vehicle->insurance_expires_at && $vehicle->insurance_expires_at < $today);
+            
+            if ($isExpired) {
+                $expiredCount++;
+            } else {
+                $expiringSoonCount++;
+            }
+        }
+
+        // Get all admin and superadmin users
         $admins = User::whereIn('role', ['admin', 'superadmin', 'Admin', 'SuperAdmin'])
-            ->where('email', 'not like', '%@example.com')
             ->get()
             ->filter(function ($user) {
                 return $user->isAdmin();
             });
 
         if ($admins->isEmpty()) {
-            $this->error('No se encontraron administradores con correos válidos para notificar.');
+            $this->error('No se encontraron administradores para notificar.');
             return;
         }
 
-        $graphMailer = new MicrosoftGraphMailer();
-        $successCount = 0;
+        $title = '⚠️ Alerta de Vencimientos';
+        $body = "Se detectaron **{$expiringVehicles->count()}** vehículos con problemas de documentación:\n";
+        if ($expiredCount > 0) $body .= "• {$expiredCount} registros VENCIDOS.\n";
+        if ($expiringSoonCount > 0) $body .= "• {$expiringSoonCount} por vencer (7 días).\n";
+        $body .= "Revise el reporte para tomar acciones.";
 
         foreach ($admins as $admin) {
-            try {
-                $mailable = new ExpiringVehiclesNotification($reportData);
-                $htmlBody = $mailable->render();
-                $subject = '⚠️ Alerta: Vehículos con Documentación Vencida o Próxima a Vencer';
-
-                $graphMailer->send($admin->email, $subject, $htmlBody, true);
-                $successCount++;
-            } catch (\Exception $e) {
-                $this->error("Error enviando a {$admin->email}: " . $e->getMessage());
-            }
+            Notification::make()
+                ->title($title)
+                ->body($body)
+                ->icon('heroicon-o-exclamation-triangle')
+                ->iconColor('danger')
+                ->warning()
+                ->actions([
+                    NotificationAction::make('view_report')
+                        ->label('Ver Reporte Detallado')
+                        ->url(fn() => $admin->isSuperAdmin() ? '/superadmin/vehicle-expiration-report' : '/admin/employee-vehicles')
+                        ->button()
+                        ->markAsRead(),
+                ])
+                ->sendToDatabase($admin);
         }
 
-        $this->info("Reporte de vencimientos procesado. Éxitos: $successCount de " . $admins->count() . " administradores. (Sistema: Microsoft Graph API)");
+        $this->info("Notificaciones enviadas a " . $admins->count() . " administradores.");
     }
 }

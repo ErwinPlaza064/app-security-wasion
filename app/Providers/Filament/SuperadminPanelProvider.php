@@ -53,6 +53,8 @@ class SuperadminPanelProvider extends PanelProvider
             ])
             ->font('Outfit')
             ->brandName('Wasion SuperAdmin')
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('3m')
             ->discoverResources(in: app_path('Filament/Superadmin/Resources'), for: 'App\\Filament\\Superadmin\\Resources')
             ->discoverPages(in: app_path('Filament/Superadmin/Pages'), for: 'App\\Filament\\Superadmin\\Pages')
             ->pages([

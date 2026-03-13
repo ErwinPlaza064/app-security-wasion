@@ -22,20 +22,20 @@ class VehicleExpirationReport extends Page
     {
         return [
             Action::make('sendReport')
-                ->label('Enviar Reporte por Correo')
-                ->icon('heroicon-o-paper-airplane')
+                ->label('Notificar al Panel')
+                ->icon('heroicon-o-bell')
                 ->color('primary')
                 ->requiresConfirmation()
-                ->modalHeading('¿Enviar reporte ahora?')
-                ->modalDescription('Esto enviará el correo de alerta a todos los usuarios con rol Admin y SuperAdmin.')
+                ->modalHeading('¿Enviar notificaciones ahora?')
+                ->modalDescription('Esto enviará una alerta al dashboard de todos los usuarios con rol Admin y SuperAdmin.')
                 ->action(function () {
                     try {
                         Artisan::call('app:send-vehicle-expirations-report');
                         $output = Artisan::output();
-
+ 
                         Notification::make()
-                            ->title('Proceso Completado')
-                            ->body($output)
+                            ->title('Notificaciones Enviadas')
+                            ->body('Se han enviado las alertas al dashboard de los administradores.')
                             ->success()
                             ->send();
                     } catch (\Exception $e) {
