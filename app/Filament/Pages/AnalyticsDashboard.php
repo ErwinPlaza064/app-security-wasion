@@ -48,6 +48,11 @@ class AnalyticsDashboard extends BaseDashboard
         return collect(\Filament\Facades\Filament::getWidgets())
             ->reject(fn ($widget) => in_array($widget, [
                 \App\Filament\Widgets\WelcomeWidget::class,
+                \App\Filament\Widgets\SecurityOverview::class,
+                \App\Filament\Widgets\AccessTrendsChart::class,
+                \App\Filament\Widgets\VisitorTypeChart::class,
+                \App\Filament\Widgets\AccessByTypeChart::class,
+                \App\Filament\Widgets\RecentSecurityActivity::class,
                 \App\Filament\Widgets\GoToDashboardWidget::class,
             ]))
             ->values()

@@ -16,6 +16,11 @@ class AccessByTypeChart extends ChartWidget
     protected static ?string $heading = 'Cant. de proveedores, contratistas y visitantes';
     protected static ?string $maxHeight = '300px';
 
+    protected int | string | array $columnSpan = [
+        'md' => 1,
+        'xl' => 1,
+    ];
+
     protected function getData(): array
     {
         $plant = $this->filters['plant'] ?? null;
