@@ -44,20 +44,6 @@ class SuperadminPanelProvider extends PanelProvider
             </style>'),
         );
 
-        FilamentView::registerRenderHook(
-            'panels::body.end',
-            fn(): string => Blade::render('<audio id="noti-sound" src="/sounds/notification.mp3" preload="auto"></audio>
-                <script>
-                    document.addEventListener(\'filament-notifications.received\', () => {
-                        const audio = document.getElementById(\'noti-sound\');
-                        if (audio) {
-                             audio.volume = 0.5;
-                             audio.play().catch(e => console.log(\'Audio error:\', e));
-                        }
-                    });
-                </script>'),
-        );
-
         return $panel
             ->id('superadmin')
             ->path('superadmin')
@@ -67,8 +53,6 @@ class SuperadminPanelProvider extends PanelProvider
             ])
             ->font('Outfit')
             ->brandName('Wasion SuperAdmin')
-            ->databaseNotifications()
-            ->databaseNotificationsPolling('3m')
             ->discoverResources(in: app_path('Filament/Superadmin/Resources'), for: 'App\\Filament\\Superadmin\\Resources')
             ->discoverPages(in: app_path('Filament/Superadmin/Pages'), for: 'App\\Filament\\Superadmin\\Pages')
             ->pages([
