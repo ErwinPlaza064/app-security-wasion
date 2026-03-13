@@ -17,11 +17,11 @@
             </div>
 
             <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-100 dark:border-gray-700">
+                <div class="p-4 bg-gray-50/50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-gray-700">
                     <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">Automatización</span>
                     <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-200">El sistema envía este reporte automáticamente todos los días a las <strong>8:00 AM</strong>.</p>
                 </div>
-                <div class="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-100 dark:border-gray-700">
+                <div class="p-4 bg-gray-50/50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-gray-700">
                     <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">Destinatarios</span>
                     <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-200">Se envía a todos los usuarios con rol de <strong>Admin</strong> y <strong>SuperAdmin</strong>.</p>
                 </div>
