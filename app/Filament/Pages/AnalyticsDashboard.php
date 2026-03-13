@@ -7,6 +7,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Set;
 
 class AnalyticsDashboard extends BaseDashboard
 {
@@ -27,6 +29,19 @@ class AnalyticsDashboard extends BaseDashboard
         return $form
             ->schema([
                 Section::make('Filtros')
+                    ->headerActions([
+                        Action::make('reset')
+                            ->label('Resetear Filtros')
+                            ->icon('heroicon-m-arrow-path')
+                            ->color('gray')
+                            ->size('sm')
+                            ->action(function (Set $set) {
+                                $set('plant', null);
+                                $set('period', null);
+                                $set('startDate', null);
+                                $set('endDate', null);
+                            }),
+                    ])
                     ->schema([
                         Select::make('plant')
                             ->label('Planta')
