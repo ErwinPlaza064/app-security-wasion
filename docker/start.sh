@@ -346,6 +346,7 @@ fi
 # ============================================================
 php artisan storage:link --force || echo "⚠ Storage link already exists"
 php artisan queue:work --tries=3 --timeout=90 &
+php artisan schedule:work &
 
 # ============================================================
 # INICIAR NGINX (foreground para que Railway mantenga el contenedor vivo)
