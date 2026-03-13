@@ -72,9 +72,9 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                                 </div>
                             </div>
                             <div className="col-span-2 space-y-1">
-                                <p className="text-xs text-gray-500 font-medium ml-1">Número de Placas</p>
-                                <div className="p-2.5 bg-gray-900 text-blue-400 rounded-lg text-sm font-mono font-bold tracking-widest shadow-inner text-center">
-                                    {vehicle.vehicle_plates}
+                                <div className="p-2.5 bg-white border-2 border-primary/10 text-primary rounded-lg text-sm font-mono font-black tracking-[0.2em] shadow-sm text-center relative overflow-hidden group">
+                                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #0C1869, #0C1869 1px, transparent 1px, transparent 10px)' }}></div>
+                                    <span className="relative z-10">{vehicle.vehicle_plates}</span>
                                 </div>
                             </div>
                         </div>
@@ -95,8 +95,9 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                                         </div>
                                     </div>
                                     <div className="col-span-2">
-                                        <div className="p-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 font-mono text-center">
-                                            {vehicle.vehicle_plates_2}
+                                        <div className="p-1.5 bg-white border border-primary/5 rounded-lg text-xs text-gray-600 font-mono text-center relative overflow-hidden">
+                                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #0C1869, #0C1869 1px, transparent 1px, transparent 6px)' }}></div>
+                                            <span className="relative z-10">{vehicle.vehicle_plates_2}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +109,15 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     <section className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Estatus de Documentación</h3>
-                            <ValidityBadge validity={vehicle.validity_status} size="sm" />
+                            <ValidityBadge 
+                                validity={
+                                    (vehicle.driver_license_expires_at && new Date(vehicle.driver_license_expires_at) < new Date().setHours(0,0,0,0)) || 
+                                    (vehicle.insurance_expires_at && new Date(vehicle.insurance_expires_at) < new Date().setHours(0,0,0,0))
+                                        ? 'Vencido'
+                                        : vehicle.validity_status
+                                } 
+                                size="sm" 
+                            />
                         </div>
                         
                         <div className="space-y-3">
@@ -143,7 +152,7 @@ export default function VehicleDetailModal({ show, vehicle, onClose }) {
                     </button>
                     <button
                         onClick={onClose}
-                        className="px-8 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-[0.98]"
+                        className="px-8 py-2.5 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/10 hover:bg-primary-800 transition-all active:scale-[0.98]"
                     >
                         Aceptar
                     </button>
@@ -166,12 +175,23 @@ function DocRow({ label, status, expiry, icon }) {
             </div>
             
             <div className="flex items-center gap-6">
-                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${status ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
+                    status 
+                        ? (expiry && new Date(expiry) < new Date().setHours(0,0,0,0) ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700')
+                        : 'bg-rose-100 text-rose-700'
+                }`}>
                     {status ? (
-                        <>
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                            Válido
-                        </>
+                        expiry && new Date(expiry) < new Date().setHours(0,0,0,0) ? (
+                            <>
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+                                Vencido
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                                Válido
+                            </>
+                        )
                     ) : (
                         <>
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>

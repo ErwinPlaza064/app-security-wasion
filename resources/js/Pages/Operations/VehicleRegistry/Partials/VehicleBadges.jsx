@@ -4,19 +4,25 @@ export function ValidityBadge({ validity, size = "sm" }) {
     // Configuración de colores basada en el estado
     const config = {
         'Vigente': {
-            bg: "bg-emerald-50",
+            bg: "bg-emerald-50/50",
             text: "text-emerald-700",
             border: "border-emerald-100",
-            dot: "bg-emerald-600"
+            dot: "bg-emerald-500"
+        },
+        'Vencido': {
+            bg: "bg-rose-50/50",
+            text: "text-rose-700",
+            border: "border-rose-100",
+            dot: "bg-rose-500"
         },
         'Expirado': {
-            bg: "bg-red-50",
-            text: "text-red-600",
-            border: "border-red-100",
-            dot: "bg-red-500"
+            bg: "bg-rose-50/50",
+            text: "text-rose-700",
+            border: "border-rose-100",
+            dot: "bg-rose-500"
         },
         'Pendiente': {
-            bg: "bg-amber-50",
+            bg: "bg-amber-50/50",
             text: "text-amber-700",
             border: "border-amber-100",
             dot: "bg-amber-600"

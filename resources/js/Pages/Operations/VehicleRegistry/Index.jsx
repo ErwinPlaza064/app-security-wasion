@@ -13,6 +13,14 @@ const isExpiringSoonLocal = (dateString) => {
     return diffDays <= 30;
 };
 
+const isExpiredLocal = (dateString) => {
+    if (!dateString) return false;
+    const expirationDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return expirationDate < today;
+};
+
 const EMPTY_VEHICLES = [];
 
 export default function Index({ vehicles = EMPTY_VEHICLES }) {
@@ -214,11 +222,10 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                 </td>
                                                 <td className="px-6 py-6">
                                                     <div className="flex flex-col space-y-1">
-                                                        <span className="font-mono font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-md border border-gray-200 shadow-sm w-fit">
-                                                            {
-                                                                vehicle.vehicle_plates
-                                                            }
-                                                        </span>
+                                                        <div className="font-mono font-black text-primary bg-white px-3 py-1 rounded-md border-2 border-primary/10 shadow-sm w-fit relative overflow-hidden group">
+                                                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #0C1869, #0C1869 1px, transparent 1px, transparent 10px)' }}></div>
+                                                            <span className="relative z-10">{vehicle.vehicle_plates}</span>
+                                                        </div>
                                                         {vehicle.vehicle_plates_2 && (
                                                             <span className="font-mono font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-100 shadow-sm w-fit text-[10px]">
                                                                 {
@@ -230,7 +237,11 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                 </td>
                                                 <td className="px-6 py-6 text-center">
                                                     <ValidityBadge
-                                                        validity={vehicle.validity_status}
+                                                        validity={
+                                                            isExpiredLocal(vehicle.driver_license_expires_at) || isExpiredLocal(vehicle.insurance_expires_at)
+                                                                ? 'Vencido'
+                                                                : vehicle.validity_status
+                                                        }
                                                     />
                                                 </td>
                                                 <td className="px-6 py-6">
