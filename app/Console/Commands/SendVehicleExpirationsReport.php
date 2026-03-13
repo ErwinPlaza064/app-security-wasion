@@ -71,16 +71,25 @@ class SendVehicleExpirationsReport extends Command
             return;
         }
 
+        $totalCount = $expiringVehicles->count();
         $title = '⚠️ Alerta de Vencimientos';
-        $body = "Se detectaron **{$expiringVehicles->count()}** vehículos con problemas de documentación:\n";
+        $body = "Se detectaron **{$totalCount}** vehículos con problemas de documentación:\n";
         if ($expiredCount > 0) $body .= "• {$expiredCount} registros VENCIDOS.\n";
         if ($expiringSoonCount > 0) $body .= "• {$expiringSoonCount} por vencer (7 días).\n";
         $body .= "Revise el reporte para tomar acciones.";
 
         foreach ($admins as $admin) {
-            $url = $admin->isSuperAdmin() 
-                ? url('/superadmin/vehicle-expiration-report') 
-                : url('/admin/employee-vehicles');
+            $url = url('/admin/employee-vehicles'); // Default to list
+
+            if ($totalCount === 1) {
+                // Si solo hay uno, ir directo al registro (edit mode)
+                $url = url("/admin/employee-vehicles/{$expiringVehicles->first()->id}/edit");
+            } else {
+                // Si hay varios, ir al listado con filtro de "Expirado" si hay alguno vencido
+                if ($expiredCount > 0) {
+                    $url = url('/admin/employee-vehicles?tableFilters[validity_status][value]=Expirado');
+                }
+            }
 
             Notification::make()
                 ->title($title)
@@ -90,7 +99,7 @@ class SendVehicleExpirationsReport extends Command
                 ->warning()
                 ->actions([
                     NotificationAction::make('view_report')
-                        ->label('Ver Reporte Detallado')
+                        ->label($totalCount === 1 ? 'Ir al Registro Directo' : 'Ver Reporte Detallado')
                         ->url($url)
                         ->button()
                         ->markAsRead(),

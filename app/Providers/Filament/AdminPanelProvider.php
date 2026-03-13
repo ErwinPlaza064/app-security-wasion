@@ -40,6 +40,20 @@ class AdminPanelProvider extends PanelProvider
             </style>'),
         );
 
+        FilamentView::registerRenderHook(
+            'panels::body.end',
+            fn(): string => Blade::render('<audio id="noti-sound" src="/sounds/notification.mp3" preload="auto"></audio>
+                <script>
+                    document.addEventListener(\'filament-notifications.received\', () => {
+                        const audio = document.getElementById(\'noti-sound\');
+                        if (audio) {
+                             audio.volume = 0.5;
+                             audio.play().catch(e => console.log(\'Audio error:\', e));
+                        }
+                    });
+                </script>'),
+        );
+
         return $panel
             ->default()
             ->id('admin')
