@@ -9,6 +9,8 @@ use App\Mail\ExpiringVehiclesNotification;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
+use App\Services\MicrosoftGraphMailer;
+
 class SendVehicleExpirationsReport extends Command
 {
     /**
@@ -19,7 +21,7 @@ class SendVehicleExpirationsReport extends Command
     /**
      * The console command description.
      */
-    protected $description = 'Envía un reporte de documentación vencida o próxima a vencer a los administradores.';
+    protected $description = 'Envía un reporte de documentación vencida o próxima a vencer a los administradores usando Microsoft Graph.';
 
     /**
      * Execute the console command.
@@ -84,12 +86,22 @@ class SendVehicleExpirationsReport extends Command
             return;
         }
 
-        // Send email to each admin
+        $graphMailer = new MicrosoftGraphMailer();
+        $successCount = 0;
+
         foreach ($admins as $admin) {
-            Mail::to($admin->email)->send(new ExpiringVehiclesNotification($reportData));
+            try {
+                $mailable = new ExpiringVehiclesNotification($reportData);
+                $htmlBody = $mailable->render();
+                $subject = '⚠️ Alerta: Vehículos con Documentación Vencida o Próxima a Vencer';
+
+                $graphMailer->send($admin->email, $subject, $htmlBody, true);
+                $successCount++;
+            } catch (\Exception $e) {
+                $this->error("Error enviando a {$admin->email}: " . $e->getMessage());
+            }
         }
 
-        $mailer = config('mail.default');
-        $this->info('Reporte de vencimientos enviado a ' . $admins->count() . ' administradores. (Sistema de correo utilizado: ' . $mailer . ')');
+        $this->info("Reporte de vencimientos procesado. Éxitos: $successCount de " . $admins->count() . " administradores. (Sistema: Microsoft Graph API)");
     }
 }
