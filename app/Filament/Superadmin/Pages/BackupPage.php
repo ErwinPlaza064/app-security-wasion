@@ -71,6 +71,7 @@ class BackupPage extends Page
                         ->label('Archivo .zip de Respaldo')
                         ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed'])
                         ->required()
+                        ->maxSize(102400) // 100MB
                         ->storeFiles(true)
                         ->disk('local')
                         ->directory('temp-restores'),
@@ -98,30 +99,39 @@ class BackupPage extends Page
                             $port = config('database.connections.pgsql.port', '5432');
                             $database = config('database.connections.pgsql.database');
                             $username = config('database.connections.pgsql.username');
-                            $password = config('database.connections.pgsql.password');
+                            // 2. Preparar el comando base
+                            $isWindows = DIRECTORY_SEPARATOR === '\\';
+                            $psqlBinary = $isWindows ? 'psql.exe' : 'psql';
                             
-                            $psqlPath = config('database.connections.pgsql.dump.dump_binary_path') 
-                                            ? config('database.connections.pgsql.dump.dump_binary_path') . DIRECTORY_SEPARATOR . 'psql'
-                                            : 'psql';
+                            $dumpPath = config('database.connections.pgsql.dump.dump_binary_path');
+                            $psqlPath = !empty($dumpPath) 
+                                            ? '"' . rtrim($dumpPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $psqlBinary . '"'
+                                            : $psqlBinary;
 
-                            $command = [
-                                $psqlPath,
-                                '-h', $host,
-                                '-p', $port,
-                                '-U', $username,
-                                '-d', $database,
-                                '-f', $sqlFile
-                            ];
+                            $host = config('database.connections.pgsql.host', '127.0.0.1');
+                            $port = config('database.connections.pgsql.port', '5432');
+                            $database = config('database.connections.pgsql.database');
+                            $username = config('database.connections.pgsql.username');
+                            $password = config('database.connections.pgsql.password');
 
-                            $process = new Process($command);
-                            $process->setTimeout(600);
-                            $process->setEnv([
-                                'PGPASSWORD' => $password
-                            ]);
-                            $process->run();
+                            // Configurar variable de entorno para la contraseña (Evita pedirla interactivo)
+                            putenv("PGPASSWORD=$password");
 
-                            if (!$process->isSuccessful()) {
-                                throw new \Exception('Error restaurando la BD: ' . $process->getErrorOutput());
+                            // 2.1 LIMPIEZA DE FUERZA BRUTA (Wipe DB)
+                            $dropCmd = "{$psqlPath} -h {$host} -p {$port} -U {$username} -d {$database} -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\" 2>&1";
+                            exec($dropCmd, $outputDrop, $returnDrop);
+
+                            if ($returnDrop !== 0) {
+                                throw new \Exception('Error limpiando BD: ' . implode("\n", $outputDrop));
+                            }
+
+                            // 2.2 RESTAURACIÓN DEL SQL
+                            $sqlFileEscaped = $isWindows ? '"' . $sqlFile . '"' : $sqlFile;
+                            $restoreCmd = "{$psqlPath} -h {$host} -p {$port} -U {$username} -d {$database} -f {$sqlFileEscaped} 2>&1";
+                            exec($restoreCmd, $outputRestore, $returnRestore);
+
+                            if ($returnRestore !== 0) {
+                                throw new \Exception('Error de Restauración: ' . implode("\n", array_slice($outputRestore, 0, 10)));
                             }
                         }
 
