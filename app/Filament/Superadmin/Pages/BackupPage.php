@@ -61,21 +61,26 @@ class BackupPage extends Page
                 ->modalSubmitActionLabel('Comenzar Respaldo')
                 ->action(function () {
                     try {
-                        Artisan::call('backup:run', ['--disable-notifications' => true]);
+                        // Forzar límite de tiempo y memoria para procesos pesados
+                        set_time_limit(300);
+                        
+                        $exitCode = Artisan::call('backup:run', ['--disable-notifications' => true]);
                         $output = Artisan::output();
+
+                        if ($exitCode !== 0) {
+                            throw new \Exception("El comando falló con código {$exitCode}. Salida: " . substr($output, 0, 200));
+                        }
 
                         Notification::make()
                             ->title('¡Respaldo completado!')
-                            ->body('El respaldo se ha completado correctamente y se ha guardado en la nube.')
                             ->success()
-                            ->duration(8000)
                             ->send();
                     } catch (\Exception $e) {
                         Notification::make()
-                            ->title('Error en el respaldo')
-                            ->body('No se pudo completar el respaldo: ' . $e->getMessage())
+                            ->title('Error técnico en el respaldo')
+                            ->body($e->getMessage())
                             ->danger()
-                            ->duration(10000)
+                            ->duration(15000)
                             ->send();
                     }
                 }),
