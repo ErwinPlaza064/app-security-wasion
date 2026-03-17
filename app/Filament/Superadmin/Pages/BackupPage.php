@@ -24,33 +24,6 @@ class BackupPage extends Page
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('debugPostgresPath')
-                ->label('Diagnosticar Servidor (Seguro)')
-                ->icon('heroicon-o-magnifying-glass')
-                ->color('warning')
-                ->action(function () {
-                    try {
-                        $which = shell_exec('which pg_dump 2>&1') ?? 'No encontrado por which';
-                        $find = shell_exec('find /usr -name pg_dump 2>&1 | head -n 1') ?? 'No encontrado en /usr';
-                        $envPath = env('PG_DUMP_PATH_SAFE', 'No definida en entorno');
-                        
-                        $mensaje = "Ruta '.env': {$envPath} | 'which': {$which} | 'find': {$find}";
-                        
-                        Notification::make()
-                            ->title('Diagnóstico del Servidor')
-                            ->body($mensaje)
-                            ->success()
-                            ->duration(15000)
-                            ->send();
-                    } catch (\Exception $e) {
-                         Notification::make()
-                            ->title('Error de Diagnóstico')
-                            ->body($e->getMessage())
-                            ->danger()
-                            ->send();
-                    }
-                }),
-                
             Action::make('createBackup')
                 ->label('Crear Respaldo Ahora')
                 ->icon('heroicon-o-arrow-down-tray')
