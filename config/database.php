@@ -97,7 +97,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
             'dump' => [
-                'dump_binary_path' => env('PG_DUMP_PATH', DIRECTORY_SEPARATOR === '\\' ? 'C:\\Program Files\\PostgreSQL\\18\\bin' : ''),
+                'dump_binary_path' => env('PG_DUMP_PATH', DIRECTORY_SEPARATOR === '\\' ? 'C:\\Program Files\\PostgreSQL\\18\\bin' : dirname(shell_exec('which pg_dump') ?: '/usr/bin/pg_dump')),
             ],
         ],
 
