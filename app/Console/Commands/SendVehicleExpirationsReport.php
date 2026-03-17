@@ -27,9 +27,9 @@ class SendVehicleExpirationsReport extends Command
     public function handle()
     {
         $today = Carbon::today();
-        $warningLimit = Carbon::today()->addDays(7);
+        $warningLimit = Carbon::today()->addDays(30);
 
-        // Get vehicles with documents expired or expiring in the next 7 days
+        // Get vehicles with documents expired or expiring in the next 30 days
         $expiringVehicles = EmployeeVehicle::where(function ($query) use ($warningLimit) {
             $query->where(function ($q) use ($warningLimit) {
                 $q->whereNotNull('driver_license_expires_at')
@@ -41,7 +41,7 @@ class SendVehicleExpirationsReport extends Command
         })->get();
 
         if ($expiringVehicles->isEmpty()) {
-            $this->info('No se detectaron documentos próximos a vencer.');
+            $this->info('No se detectaron documentos próximos a vencer (30 días).');
             return;
         }
 
@@ -72,20 +72,15 @@ class SendVehicleExpirationsReport extends Command
         $title = '⚠️ Alerta de Vencimientos';
         $body = "Se detectaron **{$totalCount}** vehículos con problemas de documentación:\n";
         if ($expiredCount > 0) $body .= "• {$expiredCount} registros VENCIDOS.\n";
-        if ($expiringSoonCount > 0) $body .= "• {$expiringSoonCount} por vencer (7 días).\n";
+        if ($expiringSoonCount > 0) $body .= "• {$expiringSoonCount} por vencer (30 días).\n";
         $body .= "Revise el reporte para tomar acciones.";
 
         foreach ($admins as $admin) {
-            $url = url('/admin/employee-vehicles'); // Default to list
+            $url = url('/admin/employee-vehicles?tableFilters[alerta_vencimiento][isActive]=1');
 
             if ($totalCount === 1) {
                 // Si solo hay uno, ir directo al registro (edit mode)
                 $url = url("/admin/employee-vehicles/{$expiringVehicles->first()->id}/edit");
-            } else {
-                // Si hay varios, ir al listado con filtro de "Expirado" si hay alguno vencido
-                if ($expiredCount > 0) {
-                    $url = url('/admin/employee-vehicles?tableFilters[validity_status][value]=Expirado');
-                }
             }
 
             Notification::make()

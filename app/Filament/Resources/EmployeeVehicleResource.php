@@ -140,12 +140,23 @@ class EmployeeVehicleResource extends Resource
 
         // SuperAdmin y Admin ven todos los registros en el panel de administración
         // El filtro de planta se puede aplicar manualmente desde los filtros de la tabla
-        if ($user && ($user->isSuperAdmin() || $user->isAdmin())) {
-            return $query;
+        if ($user && !($user->isSuperAdmin() || $user->isAdmin())) {
+            $query->where('plant', $user->plant ?? '');
         }
 
-        // Cualquier otro rol: filtrar por planta
-        return $query->where('plant', $user->plant ?? '');
+        $today = now()->toDateString();
+        $thirtyDaysFromNow = now()->addDays(30)->toDateString();
+
+        return $query->orderByRaw("
+            CASE 
+                WHEN (driver_license_expires_at IS NOT NULL AND driver_license_expires_at <= ?) 
+                     OR (insurance_expires_at IS NOT NULL AND insurance_expires_at <= ?) THEN 0
+                WHEN (driver_license_expires_at IS NOT NULL AND driver_license_expires_at <= ?) 
+                     OR (insurance_expires_at IS NOT NULL AND insurance_expires_at <= ?) THEN 1
+                ELSE 2
+            END ASC
+        ", [$today, $today, $thirtyDaysFromNow, $thirtyDaysFromNow])
+        ->orderBy('driver_license_expires_at', 'asc');
     }
 
     public static function table(Table $table): Table
@@ -234,6 +245,15 @@ class EmployeeVehicleResource extends Resource
                         'Expirado' => 'Expirado',
                         'Pendiente' => 'Pendiente',
                     ]),
+                Tables\Filters\Filter::make('alerta_vencimiento')
+                    ->label('Solo Vencidos o Próximos')
+                    ->toggle()
+                    ->query(fn (Builder $query) => $query->where(function ($q) {
+                        $today = now()->toDateString();
+                        $limit = now()->addDays(30)->toDateString();
+                        $q->where(fn ($sub) => $sub->whereNotNull('driver_license_expires_at')->where('driver_license_expires_at', '<=', $limit))
+                          ->orWhere(fn ($sub) => $sub->whereNotNull('insurance_expires_at')->where('insurance_expires_at', '<=', $limit));
+                    })),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
