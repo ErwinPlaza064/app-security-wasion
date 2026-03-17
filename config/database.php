@@ -97,7 +97,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
             'dump' => [
-                'dump_binary_path' => env('PG_DUMP_PATH_SAFE', DIRECTORY_SEPARATOR === '\\' ? 'C:\\Program Files\\PostgreSQL\\18\\bin' : '/bin'),
+                'dump_binary_path' => env('PG_DUMP_PATH_SAFE', DIRECTORY_SEPARATOR === '\\' ? 'C:\\Program Files\\PostgreSQL\\18\\bin' : ''),
             ],
         ],
 
