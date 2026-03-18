@@ -54,10 +54,14 @@ const Icons = {
 };
 
 export default function Create() {
+    const getLocalDatetime = () => {
+        return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    };
+
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         title: "",
         description: "",
-        happened_at: new Date().toISOString().slice(0, 16),
+        happened_at: getLocalDatetime(),
     });
 
     const submit = (e) => {

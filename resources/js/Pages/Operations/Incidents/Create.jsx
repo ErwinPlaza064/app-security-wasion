@@ -71,11 +71,26 @@ export default function Create({ category: initialCategory, areas }) {
     const fileInputRef = useRef(null);
     const [stream, setStream] = useState(null);
 
+    const [timeTouched, setTimeTouched] = useState(false);
+
+    const getLocalDatetime = () => {
+        return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    };
+
+    useEffect(() => {
+        if (!timeTouched) {
+            const timer = setInterval(() => {
+                setData('happened_at', getLocalDatetime());
+            }, 30000); // Update every 30 seconds
+            return () => clearInterval(timer);
+        }
+    }, [timeTouched]);
+
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         category: initialCategory || 'general',
         description: '',
         location: '',
-        happened_at: new Date().toISOString().slice(0, 16),
+        happened_at: getLocalDatetime(),
         involved_person: '',
         payroll_number: '',
         company: 'WASION',
@@ -181,6 +196,10 @@ export default function Create({ category: initialCategory, areas }) {
         }
 
         if (hasErrors) return;
+
+        if (currentStep === 2 && !timeTouched) {
+            setData('happened_at', getLocalDatetime());
+        }
 
         if (currentStep < 4) setCurrentStep(prev => prev + 1);
     };
@@ -420,7 +439,10 @@ export default function Create({ category: initialCategory, areas }) {
                                             type="datetime-local"
                                             className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 text-sm"
                                             value={data.happened_at}
-                                            onChange={(e) => setData('happened_at', e.target.value)}
+                                            onChange={(e) => {
+                                                setData('happened_at', e.target.value);
+                                                setTimeTouched(true);
+                                            }}
                                         />
                                         <InputError message={errors.happened_at} className="mt-2" />
                                     </div>
