@@ -69,7 +69,7 @@ class EmployeeVehicleResource extends Resource
                 Forms\Components\Section::make('Documentación y Otros')
                     ->schema([
                         Forms\Components\Select::make('validity_status')
-                            ->label('Estatus del Marbete')
+                            ->label('Estatus de Documentación')
                             ->options([
                                 'Vigente' => 'Vigente',
                                 'Expirado' => 'Expirado',
@@ -122,7 +122,11 @@ class EmployeeVehicleResource extends Resource
                                 'Planta 5' => 'Planta 5',
                             ])
                             ->required()
-                            ->disabled(fn() => !auth()->user()->isSuperAdmin()),
+                            ->disabled(function () {
+                                /** @var \App\Models\User|null $user */
+                                $user = \Illuminate\Support\Facades\Auth::user();
+                                return $user ? !$user->isSuperAdmin() : true;
+                            }),
                         Forms\Components\Select::make('user_id')
                             ->label('Registrado por')
                             ->relationship('user', 'name')
@@ -136,7 +140,8 @@ class EmployeeVehicleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         // SuperAdmin y Admin ven todos los registros en el panel de administración
         // El filtro de planta se puede aplicar manualmente desde los filtros de la tabla
@@ -237,7 +242,11 @@ class EmployeeVehicleResource extends Resource
                         'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ])
-                    ->visible(fn() => auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()),
+                    ->visible(function () {
+                        /** @var \App\Models\User|null $user */
+                        $user = \Illuminate\Support\Facades\Auth::user();
+                        return $user && ($user->isSuperAdmin() || $user->isAdmin());
+                    }),
                 Tables\Filters\SelectFilter::make('validity_status')
                     ->label('Estatus')
                     ->options([

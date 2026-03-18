@@ -308,7 +308,7 @@ export default function Create({ areas = EMPTY_AREAS }) {
                             </div>
                             
                             <div className="space-y-1.5">
-                                <InputLabel htmlFor="validity_status" value="Estatus del Marbete" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+
                                 <select
                                     id="validity_status"
                                     value={data.validity_status}
