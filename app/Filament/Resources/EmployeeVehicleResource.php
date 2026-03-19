@@ -186,7 +186,12 @@ class EmployeeVehicleResource extends Resource
                 Tables\Columns\TextColumn::make('validity_status')
                     ->label('Estatus')
                     ->badge()
-                    ->color(fn ($record): string => match ($record->validity_status) {
+                    ->formatStateUsing(fn ($record): string => match (true) {
+                        ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()) ||
+                        ($record->insurance_expires_at && $record->insurance_expires_at <= now()) => 'Expirado',
+                        default => $record->validity_status,
+                    })
+                    ->color(fn ($state): string => match ($state) {
                         'Expirado' => 'danger',
                         'Pendiente' => 'warning',
                         'Vigente' => 'success',
