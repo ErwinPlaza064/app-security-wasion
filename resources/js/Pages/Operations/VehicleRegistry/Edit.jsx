@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Modal from '@/Components/Modal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const EMPTY_AREAS = [];
 
@@ -31,6 +31,22 @@ export default function Edit({ vehicle, areas = EMPTY_AREAS }) {
         has_insurance: vehicle.has_insurance || false,
         insurance_expires_at: vehicle.insurance_expires_at ? vehicle.insurance_expires_at.split('T')[0] : '',
     });
+
+    useEffect(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const isLicenseExpired = data.has_driver_license && data.driver_license_expires_at && new Date(data.driver_license_expires_at) < today;
+        const isInsuranceExpired = data.has_insurance && data.insurance_expires_at && new Date(data.insurance_expires_at) < today;
+
+        if (isLicenseExpired || isInsuranceExpired) {
+            if (data.validity_status !== 'Expirado') {
+                setData('validity_status', 'Expirado');
+            }
+        } else if (data.validity_status === 'Expirado') {
+            setData('validity_status', 'Vigente');
+        }
+    }, [data.driver_license_expires_at, data.insurance_expires_at, data.has_driver_license, data.has_insurance]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -328,7 +344,13 @@ export default function Edit({ vehicle, areas = EMPTY_AREAS }) {
                                     id="validity_status"
                                     value={data.validity_status}
                                     onChange={(e) => setData('validity_status', e.target.value)}
-                                    className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all text-sm font-bold appearance-none"
+                                    className={`block w-full border-none focus:ring-2 rounded-xl py-3 px-4 transition-all text-sm font-black appearance-none ${
+                                        data.validity_status === 'Expirado' 
+                                            ? 'bg-rose-50 text-rose-600 focus:ring-rose-500/10' 
+                                            : data.validity_status === 'Vigente'
+                                            ? 'bg-emerald-50 text-emerald-600 focus:ring-emerald-500/10'
+                                            : 'bg-gray-50 text-gray-900 focus:ring-blue-500/10'
+                                    }`}
                                 >
                                     <option value="Vigente">Vigente</option>
                                     <option value="Expirado">Expirado</option>

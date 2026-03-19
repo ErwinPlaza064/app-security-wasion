@@ -78,6 +78,7 @@ class EmployeeVehicleResource extends Resource
                             ->required()
                             ->native(false)
                             ->default('Vigente')
+                            ->live()
                             ->columnSpanFull(),
                         Forms\Components\Fieldset::make('Licencia de Conducir')
                             ->schema([
@@ -88,7 +89,19 @@ class EmployeeVehicleResource extends Resource
                                 Forms\Components\DatePicker::make('driver_license_expires_at')
                                     ->label('Vencimiento de Licencia')
                                     ->displayFormat('d/m/Y')
-                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_driver_license')),
+                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_driver_license'))
+                                    ->live()
+                                    ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                                        if ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
+                                            $set('validity_status', 'Expirado');
+                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && $get('validity_status') === 'Expirado') {
+                                            // Solo revertir a Vigente si no hay otro campo que lo mantenga Expirado
+                                            $insuranceDate = $get('insurance_expires_at');
+                                            if (!$insuranceDate || !\Illuminate\Support\Carbon::parse($insuranceDate)->isBefore(now()->startOfDay())) {
+                                                $set('validity_status', 'Vigente');
+                                            }
+                                        }
+                                    }),
                             ])->columns(2),
                         Forms\Components\Fieldset::make('Tarjeta de Circulación')
                             ->schema([
@@ -105,7 +118,18 @@ class EmployeeVehicleResource extends Resource
                                 Forms\Components\DatePicker::make('insurance_expires_at')
                                     ->label('Vencimiento de Póliza')
                                     ->displayFormat('d/m/Y')
-                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_insurance')),
+                                    ->visible(fn (\Filament\Forms\Get $get) => $get('has_insurance'))
+                                    ->live()
+                                    ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                                        if ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
+                                            $set('validity_status', 'Expirado');
+                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && $get('validity_status') === 'Expirado') {
+                                            $licenseDate = $get('driver_license_expires_at');
+                                            if (!$licenseDate || !\Illuminate\Support\Carbon::parse($licenseDate)->isBefore(now()->startOfDay())) {
+                                                $set('validity_status', 'Vigente');
+                                            }
+                                        }
+                                    }),
                             ])->columns(2),
                         Forms\Components\Hidden::make('documentation_status')
                             ->default('Completa'),
