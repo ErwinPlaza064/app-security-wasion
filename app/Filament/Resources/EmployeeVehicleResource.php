@@ -85,18 +85,27 @@ class EmployeeVehicleResource extends Resource
                                 Forms\Components\Toggle::make('has_driver_license')
                                     ->label('Cuenta con Licencia')
                                     ->default(false)
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                                        if (!$state) {
+                                            $set('driver_license_expires_at', null);
+                                            if (empty($get('insurance_expires_at'))) {
+                                                $set('validity_status', 'Pendiente');
+                                            }
+                                        }
+                                    }),
                                 Forms\Components\DatePicker::make('driver_license_expires_at')
                                     ->label('Vencimiento de Licencia')
                                     ->displayFormat('d/m/Y')
                                     ->visible(fn (\Filament\Forms\Get $get) => $get('has_driver_license'))
                                     ->live()
                                     ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
-                                        if ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
+                                        $insuranceDate = $get('insurance_expires_at');
+                                        if (empty($state) && empty($insuranceDate)) {
+                                            $set('validity_status', 'Pendiente');
+                                        } elseif ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
                                             $set('validity_status', 'Expirado');
-                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && $get('validity_status') === 'Expirado') {
-                                            // Solo revertir a Vigente si no hay otro campo que lo mantenga Expirado
-                                            $insuranceDate = $get('insurance_expires_at');
+                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && in_array($get('validity_status'), ['Expirado', 'Pendiente'])) {
                                             if (!$insuranceDate || !\Illuminate\Support\Carbon::parse($insuranceDate)->isBefore(now()->startOfDay())) {
                                                 $set('validity_status', 'Vigente');
                                             }
@@ -114,17 +123,27 @@ class EmployeeVehicleResource extends Resource
                                 Forms\Components\Toggle::make('has_insurance')
                                     ->label('Cuenta con Póliza de Seguro')
                                     ->default(false)
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                                        if (!$state) {
+                                            $set('insurance_expires_at', null);
+                                            if (empty($get('driver_license_expires_at'))) {
+                                                $set('validity_status', 'Pendiente');
+                                            }
+                                        }
+                                    }),
                                 Forms\Components\DatePicker::make('insurance_expires_at')
                                     ->label('Vencimiento de Póliza')
                                     ->displayFormat('d/m/Y')
                                     ->visible(fn (\Filament\Forms\Get $get) => $get('has_insurance'))
                                     ->live()
                                     ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
-                                        if ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
+                                        $licenseDate = $get('driver_license_expires_at');
+                                        if (empty($state) && empty($licenseDate)) {
+                                            $set('validity_status', 'Pendiente');
+                                        } elseif ($state && \Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay())) {
                                             $set('validity_status', 'Expirado');
-                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && $get('validity_status') === 'Expirado') {
-                                            $licenseDate = $get('driver_license_expires_at');
+                                        } elseif ($state && !\Illuminate\Support\Carbon::parse($state)->isBefore(now()->startOfDay()) && in_array($get('validity_status'), ['Expirado', 'Pendiente'])) {
                                             if (!$licenseDate || !\Illuminate\Support\Carbon::parse($licenseDate)->isBefore(now()->startOfDay())) {
                                                 $set('validity_status', 'Vigente');
                                             }
@@ -211,12 +230,20 @@ class EmployeeVehicleResource extends Resource
                     ->label('Estatus')
                     ->badge()
                     ->formatStateUsing(function ($record) {
+                        if (empty($record->driver_license_expires_at) && empty($record->insurance_expires_at)) {
+                            return 'Pendiente';
+                        }
+
                         $isLicenseExpired = $record->driver_license_expires_at && $record->driver_license_expires_at->startOfDay()->isBefore(now()->startOfDay());
                         $isInsuranceExpired = $record->insurance_expires_at && $record->insurance_expires_at->startOfDay()->isBefore(now()->startOfDay());
                         
                         return ($isLicenseExpired || $isInsuranceExpired) ? 'Expirado' : $record->validity_status;
                     })
                     ->color(function ($record) {
+                        if (empty($record->driver_license_expires_at) && empty($record->insurance_expires_at)) {
+                            return 'warning';
+                        }
+
                         $isLicenseExpired = $record->driver_license_expires_at && $record->driver_license_expires_at->startOfDay()->isBefore(now()->startOfDay());
                         $isInsuranceExpired = $record->insurance_expires_at && $record->insurance_expires_at->startOfDay()->isBefore(now()->startOfDay());
                         

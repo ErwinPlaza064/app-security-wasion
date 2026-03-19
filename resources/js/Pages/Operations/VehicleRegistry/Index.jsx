@@ -244,7 +244,9 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                 <td className="px-6 py-6 text-center">
                                                     <ValidityBadge
                                                         validity={
-                                                            isExpiredLocal(vehicle.driver_license_expires_at) || isExpiredLocal(vehicle.insurance_expires_at)
+                                                            (!vehicle.driver_license_expires_at && !vehicle.insurance_expires_at)
+                                                                ? 'Pendiente'
+                                                                : isExpiredLocal(vehicle.driver_license_expires_at) || isExpiredLocal(vehicle.insurance_expires_at)
                                                                 ? 'Expirado'
                                                                 : vehicle.validity_status
                                                         }

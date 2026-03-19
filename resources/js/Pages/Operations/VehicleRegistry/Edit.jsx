@@ -39,11 +39,15 @@ export default function Edit({ vehicle, areas = EMPTY_AREAS }) {
         const isLicenseExpired = data.has_driver_license && data.driver_license_expires_at && new Date(data.driver_license_expires_at) < today;
         const isInsuranceExpired = data.has_insurance && data.insurance_expires_at && new Date(data.insurance_expires_at) < today;
 
-        if (isLicenseExpired || isInsuranceExpired) {
+        if (!data.driver_license_expires_at && !data.insurance_expires_at) {
+            if (data.validity_status !== 'Pendiente') setData('validity_status', 'Pendiente');
+        } else if (isLicenseExpired || isInsuranceExpired) {
             if (data.validity_status !== 'Expirado') {
                 setData('validity_status', 'Expirado');
             }
-        } else if (data.validity_status === 'Expirado') {
+        } else if (data.validity_status === 'Expirado' || data.validity_status === 'Pendiente') {
+            // Solo revertimos a Vigente si realmente estaba en Expirado o Pendiente
+            // y ahora ya no hay fechas vencidas pero hay al menos una ingresada.
             setData('validity_status', 'Vigente');
         }
     }, [data.driver_license_expires_at, data.insurance_expires_at, data.has_driver_license, data.has_insurance]);
