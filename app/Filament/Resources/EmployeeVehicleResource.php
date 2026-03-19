@@ -79,6 +79,21 @@ class EmployeeVehicleResource extends Resource
                             ->native(false)
                             ->default('Vigente')
                             ->live()
+                            ->afterStateHydrated(function (\Filament\Forms\Components\Select $component, ?\Illuminate\Database\Eloquent\Model $record, \Filament\Forms\Set $set) {
+                                if ($record) {
+                                    if (empty($record->driver_license_expires_at) && empty($record->insurance_expires_at)) {
+                                        $set('validity_status', 'Pendiente');
+                                    } else {
+                                        $isLicenseExpired = $record->driver_license_expires_at && \Illuminate\Support\Carbon::parse($record->driver_license_expires_at)->startOfDay()->isBefore(now()->startOfDay());
+                                        $isInsuranceExpired = $record->insurance_expires_at && \Illuminate\Support\Carbon::parse($record->insurance_expires_at)->startOfDay()->isBefore(now()->startOfDay());
+                                        if ($isLicenseExpired || $isInsuranceExpired) {
+                                            $set('validity_status', 'Expirado');
+                                        } else {
+                                            $set('validity_status', 'Vigente');
+                                        }
+                                    }
+                                }
+                            })
                             ->columnSpanFull(),
                         Forms\Components\Fieldset::make('Licencia de Conducir')
                             ->schema([
