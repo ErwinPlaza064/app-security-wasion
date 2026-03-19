@@ -210,16 +210,24 @@ class EmployeeVehicleResource extends Resource
                 Tables\Columns\TextColumn::make('validity_status')
                     ->label('Estatus')
                     ->badge()
-                    ->formatStateUsing(fn ($record): string => match (true) {
-                        ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()) ||
-                        ($record->insurance_expires_at && $record->insurance_expires_at <= now()) => 'Expirado',
-                        default => $record->validity_status,
+                    ->formatStateUsing(function ($record) {
+                        $isLicenseExpired = $record->driver_license_expires_at && $record->driver_license_expires_at->startOfDay()->isBefore(now()->startOfDay());
+                        $isInsuranceExpired = $record->insurance_expires_at && $record->insurance_expires_at->startOfDay()->isBefore(now()->startOfDay());
+                        
+                        return ($isLicenseExpired || $isInsuranceExpired) ? 'Expirado' : $record->validity_status;
                     })
-                    ->color(fn ($state): string => match ($state) {
-                        'Expirado' => 'danger',
-                        'Pendiente' => 'warning',
-                        'Vigente' => 'success',
-                        default => 'gray',
+                    ->color(function ($record) {
+                        $isLicenseExpired = $record->driver_license_expires_at && $record->driver_license_expires_at->startOfDay()->isBefore(now()->startOfDay());
+                        $isInsuranceExpired = $record->insurance_expires_at && $record->insurance_expires_at->startOfDay()->isBefore(now()->startOfDay());
+                        
+                        $computedStatus = ($isLicenseExpired || $isInsuranceExpired) ? 'Expirado' : $record->validity_status;
+
+                        return match ($computedStatus) {
+                            'Expirado' => 'danger',
+                            'Pendiente' => 'warning',
+                            'Vigente' => 'success',
+                            default => 'gray',
+                        };
                     }),
                 Tables\Columns\TextColumn::make('driver_license_expires_at')
                     ->label('Venc. Licencia')
