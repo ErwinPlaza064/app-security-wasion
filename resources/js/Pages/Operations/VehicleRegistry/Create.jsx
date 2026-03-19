@@ -73,8 +73,18 @@ export default function Create({ areas = EMPTY_AREAS }) {
             setError('vehicle_model', 'La submarca/modelo es obligatoria');
             hasErrors = true;
         }
+        const platesRegex = /^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/;
+
         if (!data.vehicle_plates) {
             setError('vehicle_plates', 'Las placas son obligatorias');
+            hasErrors = true;
+        } else if (!platesRegex.test(data.vehicle_plates)) {
+            setError('vehicle_plates', 'El formato de placas no es válido (Ej. AAA-00-00)');
+            hasErrors = true;
+        }
+        
+        if (data.vehicle_plates_2 && !platesRegex.test(data.vehicle_plates_2)) {
+            setError('vehicle_plates_2', 'El formato de placas no es válido (Ej. AAA-00-00)');
             hasErrors = true;
         }
         if (!data.documentation_status) {
@@ -213,7 +223,7 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         id="vehicle_plates"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all font-mono"
                                         value={data.vehicle_plates}
-                                        onChange={(e) => setData('vehicle_plates', e.target.value)}
+                                        onChange={(e) => setData('vehicle_plates', e.target.value.toUpperCase())}
                                         placeholder="AAA-00-00"
                                     />
                                     <InputError message={errors.vehicle_plates} />
@@ -261,7 +271,7 @@ export default function Create({ areas = EMPTY_AREAS }) {
                                         id="vehicle_plates_2"
                                         className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-blue-500/10 rounded-xl py-3 px-4 transition-all font-mono"
                                         value={data.vehicle_plates_2}
-                                        onChange={(e) => setData('vehicle_plates_2', e.target.value)}
+                                        onChange={(e) => setData('vehicle_plates_2', e.target.value.toUpperCase())}
                                         placeholder="AAA-00-00"
                                     />
                                     <InputError message={errors.vehicle_plates_2} />
