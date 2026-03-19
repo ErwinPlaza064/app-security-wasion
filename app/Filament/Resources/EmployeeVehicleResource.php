@@ -189,13 +189,7 @@ class EmployeeVehicleResource extends Resource
                     ->color(fn ($record): string => match ($record->validity_status) {
                         'Expirado' => 'danger',
                         'Pendiente' => 'warning',
-                        'Vigente' => match (true) {
-                            ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()) ||
-                            ($record->insurance_expires_at && $record->insurance_expires_at <= now()) => 'danger',
-                            ($record->driver_license_expires_at && $record->driver_license_expires_at <= now()->addDays(30)) ||
-                            ($record->insurance_expires_at && $record->insurance_expires_at <= now()->addDays(30)) => 'warning',
-                            default => 'success',
-                        },
+                        'Vigente' => 'success',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('driver_license_expires_at')

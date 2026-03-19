@@ -158,6 +158,12 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                             Estatus
                                         </th>
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                            Venc. Licencia
+                                        </th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                            Venc. Seguro
+                                        </th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                                             Registró
                                         </th>
                                         <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">
@@ -237,12 +243,28 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                 </td>
                                                 <td className="px-6 py-6 text-center">
                                                     <ValidityBadge
-                                                        validity={
-                                                            isExpiredLocal(vehicle.driver_license_expires_at) || isExpiredLocal(vehicle.insurance_expires_at)
-                                                                ? 'Vencido'
-                                                                : vehicle.validity_status
-                                                        }
+                                                        validity={vehicle.validity_status}
                                                     />
+                                                </td>
+                                                <td className="px-6 py-6">
+                                                    <div className={`text-[11px] font-black uppercase tracking-widest ${
+                                                        !vehicle.driver_license_expires_at ? 'text-gray-300' :
+                                                        isExpiredLocal(vehicle.driver_license_expires_at) ? 'text-rose-600' : 
+                                                        isExpiringSoonLocal(vehicle.driver_license_expires_at) ? 'text-amber-500' : 
+                                                        'text-green-600'
+                                                    }`}>
+                                                        {vehicle.driver_license_expires_at ? new Date(vehicle.driver_license_expires_at).toLocaleDateString("es-MX", { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-6">
+                                                    <div className={`text-[11px] font-black uppercase tracking-widest ${
+                                                        !vehicle.insurance_expires_at ? 'text-gray-300' :
+                                                        isExpiredLocal(vehicle.insurance_expires_at) ? 'text-rose-600' : 
+                                                        isExpiringSoonLocal(vehicle.insurance_expires_at) ? 'text-amber-500' : 
+                                                        'text-green-600'
+                                                    }`}>
+                                                        {vehicle.insurance_expires_at ? new Date(vehicle.insurance_expires_at).toLocaleDateString("es-MX", { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-6">
                                                     <div className="flex flex-col">
@@ -334,7 +356,7 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                     ) : (
                                         <tr>
                                             <td
-                                                colSpan="8"
+                                                colSpan="9"
                                                 className="px-8 py-20 text-center"
                                             >
                                                 <div className="flex flex-col items-center">
