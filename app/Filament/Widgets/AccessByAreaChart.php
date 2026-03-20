@@ -13,7 +13,7 @@ class AccessByAreaChart extends ChartWidget
 
     protected static ?int $sort = 6;
 
-    protected static ?string $heading = 'Proveedores, contratistas y visitantes por área';
+    protected static ?string $heading = 'Top 10 Áreas con más visitas';
     protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
@@ -27,6 +27,7 @@ class AccessByAreaChart extends ChartWidget
             ->select(DB::raw("COALESCE(work_area, 'Sin Área Especificada') as label_area"), DB::raw('count(*) as aggregate'))
             ->groupBy('label_area')
             ->orderByDesc('aggregate')
+            ->limit(10)
             ->get();
 
         $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653', '#A8DADC', '#457B9D', '#1D3557', '#F1FAEE', '#8AB17D', '#B5838D', '#E5989B', '#FFB4A2'];
@@ -62,6 +63,8 @@ class AccessByAreaChart extends ChartWidget
                     'beginAtZero' => true,
                     'ticks' => [
                         'stepSize' => 1,
+                        'maxRotation' => 0,
+                        'minRotation' => 0,
                     ],
                 ],
                 'y' => [
