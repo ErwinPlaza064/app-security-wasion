@@ -137,6 +137,7 @@ export default function ActiveVisitorsTable({ visitors, onExit, tabToggle, title
                                             {v.external_person?.company?.name ||
                                                 ([
                                                     "resignation",
+                                                    "settlement",
                                                     "clearance",
                                                     "no_badge",
                                                 ].includes(v.type)

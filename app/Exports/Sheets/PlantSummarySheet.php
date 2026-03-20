@@ -26,7 +26,8 @@ class PlantSummarySheet implements FromArray, WithHeadings, WithStyles, WithTitl
         'laptop_only'     => 'Solo Laptop',
         'employee_laptop' => 'Laptop Colab.',
         'resignation'     => 'Renuncias',
-        'clearance'       => 'Finiquitos',
+        'settlement'      => 'Finiquitos',
+        'clearance'       => 'Pases de Salida',
         'no_badge'        => 'Sin Gafete',
     ];
 

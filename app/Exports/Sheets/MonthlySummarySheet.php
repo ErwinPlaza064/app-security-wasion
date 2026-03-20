@@ -27,7 +27,8 @@ class MonthlySummarySheet implements FromArray, WithHeadings, WithStyles, WithTi
         'laptop_only'     => 'Solo Laptop',
         'employee_laptop' => 'Laptop Colab.',
         'resignation'     => 'Renuncias',
-        'clearance'       => 'Finiquitos',
+        'settlement'      => 'Finiquitos',
+        'clearance'       => 'Pases de Salida',
         'no_badge'        => 'Sin Gafete',
     ];
 

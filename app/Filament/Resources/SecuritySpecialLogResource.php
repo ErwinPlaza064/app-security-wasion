@@ -154,6 +154,7 @@ class SecuritySpecialLogResource extends Resource
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
                         'resignation' => 'Renuncias',
+                        'settlement' => 'Finiquitos',
                         'clearance' => 'Pases de Salida',
                     ]),
                 Tables\Filters\SelectFilter::make('plant')
