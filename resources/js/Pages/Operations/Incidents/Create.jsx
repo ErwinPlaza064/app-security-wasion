@@ -88,6 +88,7 @@ export default function Create({ category: initialCategory, areas }) {
 
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         category: initialCategory || 'general',
+        type: '',
         description: '',
         location: '',
         happened_at: getLocalDatetime(),
@@ -445,6 +446,32 @@ export default function Create({ category: initialCategory, areas }) {
                                             }}
                                         />
                                         <InputError message={errors.happened_at} className="mt-2" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <InputLabel htmlFor="type" value="Clasificación del Incidente" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                                        <select
+                                            id="type"
+                                            className="block w-full bg-gray-50 border-none focus:ring-2 focus:ring-rose-500/10 rounded-2xl py-4 px-6 text-sm appearance-none cursor-pointer"
+                                            value={data.type}
+                                            onChange={(e) => setData('type', e.target.value)}
+                                        >
+                                            <option value="">Selecciona una opción... (Opcional)</option>
+                                            <option value="Sustracción / Intento de sustracción">Sustracción / Intento de sustracción</option>
+                                            <option value="Codigo de vestimenta">Codigo de vestimenta</option>
+                                            <option value="Ingreso de alimentos">Ingreso de alimentos</option>
+                                            <option value="Ingreso de celular no autorizado">Ingreso de celular no autorizado</option>
+                                            <option value="Conducta inapropiada">Conducta inapropiada</option>
+                                            <option value="Atención a emergencias">Atención a emergencias</option>
+                                            <option value="Acto o condición insegura">Acto o condición insegura</option>
+                                            <option value="Agresión verbal">Agresión verbal</option>
+                                            <option value="Agresión fisica">Agresión fisica</option>
+                                            <option value="Resistencia al proceso">Resistencia al proceso</option>
+                                            <option value="Daños">Daños</option>
+                                            <option value="Positivo a alcohol">Positivo a alcohol</option>
+                                            <option value="Positivo a drogas">Positivo a drogas</option>
+                                        </select>
+                                        <InputError message={errors.type} className="mt-2" />
                                     </div>
 
                                     <div className="space-y-2">

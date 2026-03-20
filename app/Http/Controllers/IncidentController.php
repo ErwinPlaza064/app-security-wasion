@@ -28,6 +28,7 @@ class IncidentController extends Controller
     {
         $validated = $request->validate([
             'category' => 'required|string|max:255',
+            'type' => 'nullable|string|max:255',
             'description' => 'required|string',
             'location' => 'required|string|max:255',
             'happened_at' => 'required|date',
@@ -45,6 +46,7 @@ class IncidentController extends Controller
         $incident = Incident::create([
             'user_id' => Auth::id(),
             'category' => $validated['category'],
+            'type' => $validated['type'] ?? null,
             'plant' => Auth::user()->plant,
             'description' => $validated['description'],
             'location' => $validated['location'],
