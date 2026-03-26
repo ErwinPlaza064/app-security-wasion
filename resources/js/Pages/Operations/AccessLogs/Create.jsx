@@ -122,11 +122,6 @@ export default function Create({ type, companies, areas }) {
             hasErrors = true;
         }
 
-        if (!visitor.signature) {
-            setError(`visitors.${index}.signature`, "La firma es obligatoria");
-            hasErrors = true;
-        }
-
         // Check for duplicates in previous visitors
         if (!hasErrors) {
             for (let i = 0; i < index; i++) {

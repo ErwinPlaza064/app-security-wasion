@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
 
-export default function SignaturePad({ index, value, onChange, error, label = "Firma Digital Requerida" }) {
+export default function SignaturePad({ index, value, onChange, error, label = "Firma Digital (Opcional)" }) {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
 
