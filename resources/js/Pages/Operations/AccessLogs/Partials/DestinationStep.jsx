@@ -37,7 +37,10 @@ export default function DestinationStep({
                 <div className="space-y-6">
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <InputLabel value="Empresa" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
+                            <InputLabel 
+                                value={`Empresa ${data.visit_reason?.toLowerCase().includes('entrevista') ? '(OPCIONAL)' : ''}`} 
+                                className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" 
+                            />
                             <button
                                 type="button"
                                 onClick={() => setData("isNewCompany", !data.isNewCompany)}

@@ -78,14 +78,21 @@ export default function Create({ type, companies, areas }) {
 
     const validateDestination = () => {
         let hasErrors = false;
-        if (!data.isNewCompany && !data.company_id) {
-            setError("company_id", "Seleccione una empresa existente");
-            hasErrors = true;
+
+        // La empresa es opcional si el motivo de visita es entrevista
+        const isInterview = data.visit_reason?.toLowerCase().includes('entrevista');
+
+        if (!isInterview) {
+            if (!data.isNewCompany && !data.company_id) {
+                setError("company_id", "Seleccione una empresa existente");
+                hasErrors = true;
+            }
+            if (data.isNewCompany && !data.new_company) {
+                setError("new_company", "Escriba el nombre de la empresa");
+                hasErrors = true;
+            }
         }
-        if (data.isNewCompany && !data.new_company) {
-            setError("new_company", "Escriba el nombre de la empresa");
-            hasErrors = true;
-        }
+
         if (!data.visiting_person) {
             setError("visiting_person", "Indique quién recibe la visita");
             hasErrors = true;
