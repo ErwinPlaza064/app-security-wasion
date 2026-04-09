@@ -44,4 +44,11 @@ class NoBadgeReasonsChart extends ChartWidget
     {
         return 'bar';
     }
+
+    protected function getOptions(): array
+    {
+        return [
+            'indexAxis' => 'y',
+        ];
+    }
 }
