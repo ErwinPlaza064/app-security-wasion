@@ -7,42 +7,87 @@ use App\Models\VehicleLog;
 use App\Models\Incident;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Carbon\Carbon;
 
 class SecurityOverview extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 1;
 
     protected int | string | array $columnSpan = [
         'md' => 2,
         'xl' => 2,
     ];
+
     protected function getStats(): array
     {
+        $filters = $this->filters;
         $today = Carbon::today();
 
-        $visitorsToday = AccessLog::whereDate('entry_at', $today)->count();
-        $visitorsYesterday = AccessLog::whereDate('entry_at', Carbon::yesterday())->count();
+        // Aplicamos los filtros globales si existen
+        $visitorsQuery = AccessLog::query()
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '<=', $date));
 
-        $vehiclesToday = VehicleLog::whereDate('entry_at', $today)->count();
+        $vehiclesQuery = VehicleLog::query()
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '<=', $date));
 
-        $incidentsOpen = Incident::where('status', 'open')->count();
+        $incidentsQuery = Incident::query()
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date));
+
+        $visitorsCount = $visitorsQuery->count();
+        $vehiclesCount = $vehiclesQuery->count();
+        $incidentsCount = $incidentsQuery->count();
+        $incidentsOpen = (clone $incidentsQuery)->where('status', 'open')->count();
+
+        // Datos para comparar si no hay filtros activos (comportamiento original de "Hoy")
+        if (empty($filters['startDate']) && empty($filters['endDate'])) {
+            $visitorsToday = AccessLog::whereDate('entry_at', $today)->count();
+            $visitorsYesterday = AccessLog::whereDate('entry_at', Carbon::yesterday())->count();
+            
+            return [
+                Stat::make('Visitantes Hoy', $visitorsToday)
+                    ->description($visitorsToday >= $visitorsYesterday ? 'Aumento del personal externo' : 'Menos que ayer')
+                    ->descriptionIcon($visitorsToday >= $visitorsYesterday ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+                    ->color($visitorsToday >= $visitorsYesterday ? 'success' : 'warning')
+                    ->url(\App\Filament\Resources\AccessLogResource::getUrl()),
+
+                Stat::make('Accesos Vehiculares Hoy', $vehiclesCount)
+                    ->description('Logística en curso')
+                    ->descriptionIcon('heroicon-m-truck')
+                    ->color('info')
+                    ->url(\App\Filament\Resources\VehicleLogResource::getUrl()),
+
+                Stat::make('Incidentes Abiertos', $incidentsOpen)
+                    ->description('Requieren atención inmediata')
+                    ->descriptionIcon('heroicon-m-exclamation-triangle')
+                    ->color($incidentsOpen > 0 ? 'danger' : 'success')
+                    ->url(\App\Filament\Resources\IncidentResource::getUrl()),
+            ];
+        }
 
         return [
-            Stat::make('Visitantes Hoy', $visitorsToday)
-                ->description($visitorsToday >= $visitorsYesterday ? 'Aumento del personal externo' : 'Menos que ayer')
-                ->descriptionIcon($visitorsToday >= $visitorsYesterday ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($visitorsToday >= $visitorsYesterday ? 'success' : 'warning')
+            Stat::make('Total Visitantes', $visitorsCount)
+                ->description('En el periodo seleccionado')
+                ->descriptionIcon('heroicon-m-users')
+                ->color('primary')
                 ->url(\App\Filament\Resources\AccessLogResource::getUrl()),
 
-            Stat::make('Accesos Vehiculares', $vehiclesToday)
-                ->description('Logística en curso')
+            Stat::make('Total Vehículos', $vehiclesCount)
+                ->description('En el periodo seleccionado')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('info')
                 ->url(\App\Filament\Resources\VehicleLogResource::getUrl()),
 
-            Stat::make('Incidentes Abiertos', $incidentsOpen)
-                ->description('Requieren atención inmediata')
+            Stat::make('Total Incidentes', $incidentsCount)
+                ->description($incidentsOpen . ' aún sin resolver')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($incidentsOpen > 0 ? 'danger' : 'success')
                 ->url(\App\Filament\Resources\IncidentResource::getUrl()),
