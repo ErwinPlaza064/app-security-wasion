@@ -2,6 +2,7 @@ import '../css/app.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
@@ -22,4 +23,11 @@ createInertiaApp({
     progress: {
         color: '#4B5563',
     },
+});
+
+// Cancelar la barra de progreso de Inertia durante reloads silenciosos
+router.on('before', (event) => {
+    if (window.__silentReload) {
+        event.detail.visit.showProgress = false;
+    }
 });

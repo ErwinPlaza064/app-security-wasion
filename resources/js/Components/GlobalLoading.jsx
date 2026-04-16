@@ -8,6 +8,8 @@ export default function GlobalLoading() {
 
     useEffect(() => {
         const unsubscribeStart = router.on('start', () => {
+            // Ignorar reloads silenciosos del polling
+            if (window.__silentReload) return;
             setLoading(true);
             timerRef.current = setTimeout(() => {
                 setVisible(true);

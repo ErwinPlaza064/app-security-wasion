@@ -34,13 +34,17 @@ export default function Dashboard({ activeVisitors = EMPTY_VISITORS, activeVehic
         actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, []);
 
-    // Auto-refresh cada 5 segundos (polling)
+    // Auto-refresh silencioso cada 5 segundos (polling)
     useEffect(() => {
         const interval = setInterval(() => {
+            window.__silentReload = true;
             router.reload({
                 preserveState: true,
                 preserveScroll: true,
                 only: ['activeVisitors', 'activeVehicles', 'openIncidents'],
+                onFinish: () => {
+                    window.__silentReload = false;
+                },
             });
         }, 5000);
 
