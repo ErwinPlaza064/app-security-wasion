@@ -34,6 +34,19 @@ export default function Dashboard({ activeVisitors = EMPTY_VISITORS, activeVehic
         actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, []);
 
+    // Auto-refresh cada 5 segundos (polling)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                preserveState: true,
+                preserveScroll: true,
+                only: ['activeVisitors', 'activeVehicles', 'openIncidents'],
+            });
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const scrollToTable = () => {
         tableRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
