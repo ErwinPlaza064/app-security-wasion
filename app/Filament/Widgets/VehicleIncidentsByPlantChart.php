@@ -27,7 +27,7 @@ class VehicleIncidentsByPlantChart extends Widget
             ->orderByDesc('aggregate')
             ->get();
 
-        $colors = ['#0C1869', '#1E3A8A', '#2563EB', '#3B82F6', '#1D4ED8', '#1E40AF', '#2E4F9E', '#4B6CB7'];
+        $colors = ['#0C1869'];
 
         $items = $data->map(fn ($row) => [
             'label' => $row->plant ?? 'Sin planta',
