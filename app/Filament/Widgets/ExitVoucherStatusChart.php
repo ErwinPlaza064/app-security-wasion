@@ -40,7 +40,7 @@ class ExitVoucherStatusChart extends Widget
             'heading' => 'Estatus vales de salida',
             'items' => $items,
             'maxValue' => max($completedCount, $openCount, 1),
-            'colors' => ['#0C1869', '#2563EB'],
+            'colors' => ['#0C1869'],
         ];
     }
 }

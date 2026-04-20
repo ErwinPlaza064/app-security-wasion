@@ -58,7 +58,7 @@ class PatrolsByWeekChart extends Widget
             'heading' => 'Recorridos por semana',
             'items' => $items,
             'maxValue' => $maxValue ?: 1,
-            'colors' => ['#0C1869', '#1E3A8A', '#1D4ED8', '#2563EB', '#3B82F6', '#1E40AF', '#4B6CB7', '#6B8DD6', '#2E4F9E', '#8AAEE0'],
+            'colors' => ['#0C1869'],
         ];
     }
 }
