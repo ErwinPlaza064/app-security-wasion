@@ -3,25 +3,23 @@
 namespace App\Filament\Widgets;
 
 use App\Models\AccessLog;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class AccessByTypeChart extends ChartWidget
+class AccessByTypeChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 5;
-
-    protected static ?string $heading = 'Cant. de proveedores, contratistas y visitantes';
-    protected static ?string $maxHeight = '300px';
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
     protected int | string | array $columnSpan = [
         'md' => 1,
         'xl' => 1,
     ];
 
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $plant = $this->filters['plant'] ?? null;
 
@@ -38,41 +36,18 @@ class AccessByTypeChart extends ChartWidget
             'provider' => 'Proveedores',
         ];
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Cantidad',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $data->pluck('type')->map(fn($t) => $labelsMap[$t] ?? $t)->toArray(),
-        ];
-    }
+        $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51'];
 
-    protected function getOptions(): array
-    {
-        return [
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-                'datalabels' => [
-                    'display' => true,
-                    'color' => '#ffffff',
-                    'anchor' => 'end',
-                    'align' => 'start',
-                    'font' => [
-                        'weight' => 'bold',
-                        'size' => 12,
-                    ],
-                ],
-            ],
-        ];
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $labelsMap[$row->type] ?? $row->type,
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getType(): string
-    {
-        return 'bar';
+        return [
+            'heading' => 'Cant. de proveedores, contratistas y visitantes',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
+        ];
     }
 }

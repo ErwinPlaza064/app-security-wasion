@@ -3,21 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\PatrolLog;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class PatrolsByDayChart extends ChartWidget
+class PatrolsByDayChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 30;
+    protected static string $view = 'filament.widgets.custom-vertical-bar-chart';
 
-    protected static ?string $heading = 'Recorridos por día';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -43,28 +40,22 @@ class PatrolsByDayChart extends ChartWidget
         // Ensure we follow the order in the screenshot: Miercoles, Jueves, Viernes, Sabado, Domingo, Lunes, Martes
         // Actually, screenshot shows a specific 7-day window. I'll just use a standard week order or the one from screenshot.
         $orderedDays = ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday'];
-        
-        $finalData = [];
-        $labels = [];
+
+        $items = [];
         foreach ($orderedDays as $day) {
-            $labels[] = $dayNames[$day];
-            $finalData[] = $data[$day] ?? 0;
+            $items[] = [
+                'label' => $dayNames[$day],
+                'value' => $data[$day] ?? 0,
+            ];
         }
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Recorridos',
-                    'data' => $finalData,
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $labels,
-        ];
-    }
+        $maxValue = max(array_column($items, 'value') ?: [0]);
 
-    protected function getType(): string
-    {
-        return 'bar';
+        return [
+            'heading' => 'Recorridos por día',
+            'items' => $items,
+            'maxValue' => $maxValue ?: 1,
+            'colors' => ['#0c1869'],
+        ];
     }
 }

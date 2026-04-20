@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\VehicleIncident;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class VehicleIncidentsByPlantChart extends ChartWidget
+class VehicleIncidentsByPlantChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 15;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Incidencias vehiculares por planta';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -29,27 +27,18 @@ class VehicleIncidentsByPlantChart extends ChartWidget
             ->orderByDesc('aggregate')
             ->get();
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Incidencias',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $data->pluck('plant')->toArray(),
-        ];
-    }
+        $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653'];
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $row->plant ?? 'Sin planta',
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
+            'heading' => 'Incidencias vehiculares por planta',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
         ];
     }
 }

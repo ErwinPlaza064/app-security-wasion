@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\VehicleIncident;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class VehicleIncidentsByAreaChart extends ChartWidget
+class VehicleIncidentsByAreaChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 16;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Incidencias vehiculares por área';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -29,27 +27,18 @@ class VehicleIncidentsByAreaChart extends ChartWidget
             ->orderByDesc('aggregate')
             ->get();
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Incidencias',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $data->pluck('area')->toArray(),
-        ];
-    }
+        $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653', '#A8DADC', '#457B9D'];
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $row->area ?? 'Sin área',
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
+            'heading' => 'Incidencias vehiculares por área',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
         ];
     }
 }

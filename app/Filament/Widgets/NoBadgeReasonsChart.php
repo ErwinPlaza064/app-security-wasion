@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\SecuritySpecialLog;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class NoBadgeReasonsChart extends ChartWidget
+class NoBadgeReasonsChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 20;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Motivo de ingreso sin gafete';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $plant = $this->filters['plant'] ?? null;
 
@@ -28,27 +26,18 @@ class NoBadgeReasonsChart extends ChartWidget
             ->orderByDesc('aggregate')
             ->get();
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Ocurrencias',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $data->pluck('suspension_reason')->toArray(),
-        ];
-    }
+        $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653', '#A8DADC', '#457B9D'];
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $row->suspension_reason ?? 'Sin motivo',
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
+            'heading' => 'Motivo de ingreso sin gafete',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
         ];
     }
 }

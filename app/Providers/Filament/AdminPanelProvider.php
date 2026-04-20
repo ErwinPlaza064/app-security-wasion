@@ -37,8 +37,7 @@ class AdminPanelProvider extends PanelProvider
                 .dark {
                     --fi-background: #09090b; /* keep dynamic or user standard dark */
                 }
-            </style>
-            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>'),
+            </style>'),
         );
 
         FilamentView::registerRenderHook(
@@ -52,28 +51,6 @@ class AdminPanelProvider extends PanelProvider
                              audio.play().catch(e => console.log(\'Audio error:\', e));
                         }
                     });
-
-                    // Registrar chartjs-plugin-datalabels con defaults globales
-                    (function waitForChart() {
-                        if (typeof Chart !== \'undefined\' && typeof ChartDataLabels !== \'undefined\') {
-                            Chart.register(ChartDataLabels);
-                            // Defaults globales para todos los charts de barras
-                            Chart.defaults.set(\'plugins.datalabels\', {
-                                display: function(context) {
-                                    return context.dataset.data[context.dataIndex] > 0;
-                                },
-                                color: \'#ffffff\',
-                                anchor: \'end\',
-                                align: \'start\',
-                                font: { weight: \'bold\', size: 11 },
-                                formatter: function(value) {
-                                    return value > 0 ? value : \'\';
-                                }
-                            });
-                        } else {
-                            setTimeout(waitForChart, 200);
-                        }
-                    })();
                 </script>'),
         );
 

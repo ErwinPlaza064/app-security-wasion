@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Incident;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class IncidentsByAreaChart extends ChartWidget
+class IncidentsByAreaChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 11;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Incidencias por área';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -29,42 +27,18 @@ class IncidentsByAreaChart extends ChartWidget
             ->orderByDesc('aggregate')
             ->get();
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Incidentes',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $data->pluck('location')->toArray(),
-        ];
-    }
+        $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653', '#A8DADC', '#457B9D', '#1D3557', '#F1FAEE'];
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $row->location ?? 'Sin ubicación',
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
-            'scales' => [
-                'x' => ['beginAtZero' => true],
-                'y' => ['ticks' => ['autoSkip' => false]],
-            ],
-            'plugins' => [
-                'legend' => ['display' => false],
-                'datalabels' => [
-                    'display' => true,
-                    'color' => '#ffffff',
-                    'anchor' => 'end',
-                    'align' => 'start',
-                    'font' => ['weight' => 'bold', 'size' => 11],
-                ],
-            ],
-            'maintainAspectRatio' => false,
+            'heading' => 'Incidencias por área',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
         ];
     }
 }

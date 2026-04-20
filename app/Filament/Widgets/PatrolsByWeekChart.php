@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\PatrolLog;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class PatrolsByWeekChart extends ChartWidget
+class PatrolsByWeekChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 31;
+    protected static string $view = 'filament.widgets.custom-vertical-bar-chart';
 
-    protected static ?string $heading = 'Recorridos por semana';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -34,37 +32,33 @@ class PatrolsByWeekChart extends ChartWidget
             ->get()
             ->pluck('aggregate', 'week');
 
-        $finalData = [];
-        $labels = [];
-        
+        $items = [];
+
         // If filters are active, we show the weeks found in the data or a fixed range
         // For simplicity, we'll keep showing a range or just the keys
         foreach ($data as $weekNum => $count) {
-            $labels[] = "Semana $weekNum";
-            $finalData[] = $count;
+            $items[] = [
+                'label' => "Sem $weekNum",
+                'value' => $count,
+            ];
         }
 
-        if (empty($labels)) {
+        if (empty($items)) {
             for ($i = 1; $i <= 4; $i++) {
-                $labels[] = "Semana $i";
-                $finalData[] = 0;
+                $items[] = [
+                    'label' => "Sem $i",
+                    'value' => 0,
+                ];
             }
         }
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Recorridos',
-                    'data' => $finalData,
-                    'backgroundColor' => '#0c1869',
-                ],
-            ],
-            'labels' => $labels,
-        ];
-    }
+        $maxValue = max(array_column($items, 'value') ?: [0]);
 
-    protected function getType(): string
-    {
-        return 'bar';
+        return [
+            'heading' => 'Recorridos por semana',
+            'items' => $items,
+            'maxValue' => $maxValue ?: 1,
+            'colors' => ['#0c1869'],
+        ];
     }
 }

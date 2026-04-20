@@ -3,20 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Incident;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
 
-class BehavioralIncidentsChart extends ChartWidget
+class BehavioralIncidentsChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 10;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Tipos de incidencias (Conductual)';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -31,58 +29,17 @@ class BehavioralIncidentsChart extends ChartWidget
             ->get();
 
         $colors = ['#0c1869', '#E63946', '#2A9D8F', '#F4A261', '#E76F51', '#264653', '#A8DADC', '#457B9D', '#1D3557', '#F1FAEE', '#8AB17D', '#B5838D', '#E5989B', '#FFB4A2'];
-        
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Incidencias',
-                    'data' => $data->pluck('aggregate')->toArray(),
-                    'backgroundColor' => array_slice($colors, 0, max(1, $data->count())),
-                    'borderRadius' => 4,
-                ],
-            ],
-            'labels' => $data->pluck('label_type')->toArray(),
-        ];
-    }
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
+        $items = $data->map(fn ($row) => [
+            'label' => $row->label_type,
+            'value' => $row->aggregate,
+        ])->toArray();
 
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
-            'scales' => [
-                'x' => [
-                    'beginAtZero' => true,
-                    'ticks' => [
-                        'stepSize' => 1,
-                    ],
-                ],
-                'y' => [
-                    'ticks' => [
-                        'autoSkip' => false,
-                    ],
-                ],
-            ],
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-                'datalabels' => [
-                    'display' => true,
-                    'color' => '#ffffff',
-                    'anchor' => 'end',
-                    'align' => 'start',
-                    'font' => [
-                        'weight' => 'bold',
-                        'size' => 11,
-                    ],
-                ],
-            ],
-            'maintainAspectRatio' => false,
+            'heading' => 'Tipos de incidencias (Conductual)',
+            'items' => $items,
+            'maxValue' => $data->max('aggregate') ?? 0,
+            'colors' => $colors,
         ];
     }
 }

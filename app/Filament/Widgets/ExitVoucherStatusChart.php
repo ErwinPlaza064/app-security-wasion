@@ -3,20 +3,17 @@
 namespace App\Filament\Widgets;
 
 use App\Models\ExitVoucher;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Facades\DB;
 
-class ExitVoucherStatusChart extends ChartWidget
+class ExitVoucherStatusChart extends Widget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 25;
+    protected static string $view = 'filament.widgets.custom-bar-chart';
 
-    protected static ?string $heading = 'Estatus vales de salida';
-    protected static ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getViewData(): array
     {
         $filters = $this->filters;
 
@@ -34,27 +31,16 @@ class ExitVoucherStatusChart extends ChartWidget
             ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
             ->count();
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Vales',
-                    'data' => [$completedCount, $openCount],
-                    'backgroundColor' => ['#0c1869', '#1e293b'],
-                ],
-            ],
-            'labels' => ['Vales cerrados', 'Vales abiertos'],
+        $items = [
+            ['label' => 'Vales cerrados', 'value' => $completedCount],
+            ['label' => 'Vales abiertos', 'value' => $openCount],
         ];
-    }
 
-    protected function getType(): string
-    {
-        return 'bar';
-    }
-
-    protected function getOptions(): array
-    {
         return [
-            'indexAxis' => 'y',
+            'heading' => 'Estatus vales de salida',
+            'items' => $items,
+            'maxValue' => max($completedCount, $openCount, 1),
+            'colors' => ['#0c1869', '#64748b'],
         ];
     }
 }
