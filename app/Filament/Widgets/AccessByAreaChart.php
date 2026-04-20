@@ -77,6 +77,16 @@ class AccessByAreaChart extends ChartWidget
                 'legend' => [
                     'display' => false,
                 ],
+                'datalabels' => [
+                    'display' => true,
+                    'color' => '#ffffff',
+                    'anchor' => 'end',
+                    'align' => 'start',
+                    'font' => [
+                        'weight' => 'bold',
+                        'size' => 11,
+                    ],
+                ],
             ],
             'maintainAspectRatio' => false,
         ];

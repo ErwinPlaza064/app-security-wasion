@@ -50,6 +50,27 @@ class AccessByTypeChart extends ChartWidget
         ];
     }
 
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+                'datalabels' => [
+                    'display' => true,
+                    'color' => '#ffffff',
+                    'anchor' => 'end',
+                    'align' => 'start',
+                    'font' => [
+                        'weight' => 'bold',
+                        'size' => 12,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     protected function getType(): string
     {
         return 'bar';
