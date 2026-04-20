@@ -1,31 +1,30 @@
 <x-filament-widgets::widget>
     <x-filament::section>
         <div>
-            <h3 class="text-base font-semibold text-gray-950 dark:text-white mb-4">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: inherit;">
                 {{ $heading }}
             </h3>
 
             @if(count($items) === 0)
-                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">Sin datos disponibles</p>
+                <p style="text-align: center; padding: 32px 0; opacity: 0.5; font-size: 13px;">Sin datos disponibles</p>
             @else
-                <div class="flex items-end justify-around gap-2" style="height: 250px;">
+                <div style="display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 220px; padding: 0 4px; overflow-x: auto;">
                     @foreach($items as $index => $item)
                         @php
                             $percentage = $maxValue > 0 ? ($item['value'] / $maxValue) * 100 : 0;
+                            $barHeight = max($percentage, 4);
                             $color = $colors[$index % count($colors)];
                         @endphp
-                        <div class="flex flex-col items-center gap-1 flex-1">
-                            {{-- Value label always visible --}}
-                            <span class="text-xs font-bold text-gray-700 dark:text-gray-200">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 40px; max-width: 56px;">
+                            {{-- Value label --}}
+                            <span style="font-size: 11px; font-weight: 700; opacity: 0.9;">
                                 {{ number_format($item['value']) }}
                             </span>
                             {{-- Bar --}}
-                            <div class="w-full max-w-[48px] rounded-t-md transition-all duration-500 ease-out"
-                                 style="height: {{ max($percentage, 3) }}%; background-color: {{ $color }}; min-height: 4px;">
-                            </div>
+                            <div style="width: 100%; height: {{ $barHeight }}%; background-color: {{ $color }}; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.5s ease-out;"></div>
                             {{-- Label --}}
-                            <span class="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-1 truncate w-full" title="{{ $item['label'] }}">
-                                {{ \Illuminate\Support\Str::limit($item['label'], 10) }}
+                            <span style="font-size: 10px; opacity: 0.6; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100;" title="{{ $item['label'] }}">
+                                {{ \Illuminate\Support\Str::limit($item['label'], 8) }}
                             </span>
                         </div>
                     @endforeach
