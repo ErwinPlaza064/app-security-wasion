@@ -55,7 +55,7 @@ class PatrolsByDayChart extends Widget
             'heading' => 'Recorridos por día',
             'items' => $items,
             'maxValue' => $maxValue ?: 1,
-            'colors' => ['#0c1869'],
+            'colors' => ['#0C1869', '#1E3A8A', '#1D4ED8', '#2563EB', '#3B82F6', '#1E40AF', '#4B6CB7'],
         ];
     }
 }
