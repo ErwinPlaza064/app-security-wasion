@@ -52,7 +52,8 @@ class AnalyticsDashboard extends BaseDashboard
                                 'Planta 3' => 'Planta 3',
                                 'Planta 4' => 'Planta 4',
                                 'Planta 5' => 'Planta 5',
-                            ]),
+                            ])
+                            ->live(),
                         Select::make('period')
                             ->label('Periodo')
                             ->placeholder('Personalizado')
@@ -83,9 +84,11 @@ class AnalyticsDashboard extends BaseDashboard
                                 default => null,
                             }),
                         \Filament\Forms\Components\DatePicker::make('startDate')
-                            ->label('Desde'),
+                            ->label('Desde')
+                            ->live(),
                         \Filament\Forms\Components\DatePicker::make('endDate')
-                            ->label('Hasta'),
+                            ->label('Hasta')
+                            ->live(),
                     ])
                     ->columns(4),
             ]);

@@ -16,11 +16,13 @@ class NoBadgeByAreaChart extends Widget
 
     protected function getViewData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = SecuritySpecialLog::query()
             ->where('type', 'no_badge')
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
             ->select('department', DB::raw('count(*) as aggregate'))
             ->groupBy('department')
             ->orderByDesc('aggregate')

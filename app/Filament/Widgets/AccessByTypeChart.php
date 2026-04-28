@@ -21,10 +21,12 @@ class AccessByTypeChart extends Widget
 
     protected function getViewData(): array
     {
-        $plant = $this->filters['plant'] ?? null;
+        $filters = $this->filters;
 
         $data = AccessLog::query()
-            ->when($plant, fn ($query) => $query->where('plant', $plant))
+            ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
+            ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '>=', $date))
+            ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('entry_at', '<=', $date))
             ->select('type', DB::raw('count(*) as aggregate'))
             ->groupBy('type')
             ->orderByDesc('aggregate')
