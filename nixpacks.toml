@@ -23,6 +23,7 @@ cmds = [
     "npm install && npm run build",
     "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache storage/app/temp-restores",
     "chmod -R 775 storage bootstrap/cache",
+    "php artisan view:clear",
     "php artisan config:cache"
 ]
 

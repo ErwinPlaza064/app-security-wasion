@@ -54,9 +54,10 @@ EOF
 echo "=== Generated .env (DB section) ==="
 grep "^DB_" .env | grep -v "DB_PASSWORD"
 
-# Limpiar configuración
-echo "Clearing configuration cache..."
+# Limpiar configuración y vistas
+echo "Clearing configuration and view cache..."
 php artisan config:clear
+php artisan view:clear
 
 # Cachear configuración
 echo "Caching configuration..."
