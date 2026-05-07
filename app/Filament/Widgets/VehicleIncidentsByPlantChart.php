@@ -14,6 +14,8 @@ class VehicleIncidentsByPlantChart extends Widget
     protected static ?int $sort = 15;
     protected static string $view = 'filament.widgets.custom-horizontal-bar-chart';
 
+    protected int | string | array $columnSpan = 'full';
+
     protected function getViewData(): array
     {
         $filters = $this->filters;

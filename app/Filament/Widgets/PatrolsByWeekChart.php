@@ -14,6 +14,8 @@ class PatrolsByWeekChart extends Widget
     protected static ?int $sort = 31;
     protected static string $view = 'filament.widgets.custom-horizontal-bar-chart';
 
+    protected int | string | array $columnSpan = 'full';
+
     protected function getViewData(): array
     {
         $filters = $this->filters;
