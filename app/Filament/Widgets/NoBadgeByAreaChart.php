@@ -12,7 +12,7 @@ class NoBadgeByAreaChart extends Widget
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 21;
-    protected static string $view = 'filament.widgets.custom-bar-chart';
+    protected static string $view = 'filament.widgets.custom-horizontal-bar-chart';
 
     protected function getViewData(): array
     {

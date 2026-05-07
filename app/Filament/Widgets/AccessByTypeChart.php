@@ -12,7 +12,7 @@ class AccessByTypeChart extends Widget
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 5;
-    protected static string $view = 'filament.widgets.custom-bar-chart';
+    protected static string $view = 'filament.widgets.custom-horizontal-bar-chart';
 
     protected int | string | array $columnSpan = [
         'md' => 1,

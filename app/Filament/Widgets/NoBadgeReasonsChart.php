@@ -12,7 +12,7 @@ class NoBadgeReasonsChart extends Widget
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 20;
-    protected static string $view = 'filament.widgets.custom-bar-chart';
+    protected static string $view = 'filament.widgets.custom-horizontal-bar-chart';
 
     protected function getViewData(): array
     {
