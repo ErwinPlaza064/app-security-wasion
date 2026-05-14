@@ -43,7 +43,15 @@ export default function DestinationStep({
                             />
                             <button
                                 type="button"
-                                onClick={() => setData("isNewCompany", !data.isNewCompany)}
+                                onClick={() => {
+                                    const switching = !data.isNewCompany;
+                                    setData(prev => ({
+                                        ...prev,
+                                        isNewCompany: switching,
+                                        company_id: switching ? "" : prev.company_id,
+                                        new_company: switching ? prev.new_company : "",
+                                    }));
+                                }}
                                 className={`text-[9px] font-black px-3 py-1 rounded-full uppercase transition-all duration-300 ${
                                     data.isNewCompany ? "bg-gray-100 text-gray-400" : "bg-primary/20 text-primary animate-pulse hover:animate-none hover:bg-primary hover:text-white"
                                 }`}
@@ -57,7 +65,11 @@ export default function DestinationStep({
                                 value={data.company_id}
                                 onChange={(e) => {
                                     if (e.target.value === "new") {
-                                        setData("isNewCompany", true);
+                                        setData(prev => ({
+                                            ...prev,
+                                            isNewCompany: true,
+                                            company_id: "",
+                                        }));
                                     } else {
                                         setData("company_id", e.target.value);
                                     }

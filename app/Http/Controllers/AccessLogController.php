@@ -82,15 +82,16 @@ class AccessLogController extends Controller
         ]);
 
         // Process shared company
-        $currentCompanyId = $validated['company_id'] ?? null;
+        $isNewCompany = $request->boolean('isNewCompany');
+        $currentCompanyId = $isNewCompany ? null : ($validated['company_id'] ?? null);
         if (!$currentCompanyId && !empty($validated['new_company'])) {
             $company = Company::create(['name' => $validated['new_company']]);
             $currentCompanyId = $company->id;
         }
 
         foreach ($validated['visitors'] as $visitorData) {
-            // Find or create person with shared company
-            $externalPerson = ExternalPerson::firstOrCreate(
+            // Find or create person with shared company, always update id_number
+            $externalPerson = ExternalPerson::updateOrCreate(
                 [
                     'full_name' => $visitorData['full_name'],
                     'company_id' => $currentCompanyId
