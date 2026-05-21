@@ -73,10 +73,8 @@ class ExitVoucherResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->label('Estado')
                                     ->options([
-                                        'pending' => 'Pendiente',
                                         'approved' => 'Aprobado',
                                         'rejected' => 'Rechazado',
-                                        'completed' => 'Completado',
                                     ])
                                     ->required()
                                     ->native(false),
@@ -169,17 +167,13 @@ class ExitVoucherResource extends Resource
                     ->label('Estado')
                     ->badge()
                     ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'pending' => 'Pendiente',
                         'approved' => 'Aprobado',
                         'rejected' => 'Rechazado',
-                        'completed' => 'Completado',
                         default => $state,
                     })
                     ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
                         'approved' => 'success',
                         'rejected' => 'danger',
-                        'completed' => 'info',
                         default => 'gray',
                     }),
                 TextColumn::make('exit_date')
@@ -206,10 +200,8 @@ class ExitVoucherResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pendiente',
                         'approved' => 'Aprobado',
                         'rejected' => 'Rechazado',
-                        'completed' => 'Completado',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_fixed_asset')
                     ->label('Activo Fijo'),

@@ -1,12 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
 export default function Index({ vouchers }) {
-    const handleClose = (id) => {
-        if (confirm("¿Está seguro de que desea marcar este vale como COMPLETADO/CERRADO? Esta acción registrará la fecha de entrega actual.")) {
-            router.post(route("exit-vouchers.close", id));
-        }
-    };
 
     return (
         <AuthenticatedLayout
@@ -112,33 +107,13 @@ export default function Index({ vouchers }) {
                                                     </td>
                                                     <td className="py-6 px-6">
                                                         <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
-                                                            voucher.status === 'completed' ? 'bg-blue-50 border-blue-100 text-blue-600' :
                                                             voucher.status === 'approved' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' :
-                                                            voucher.status === 'pending' ? 'bg-amber-50 border-amber-100 text-amber-600 shadow-sm' : 
                                                             'bg-red-50 border-red-100 text-red-600'
                                                         }`}>
-                                                            {voucher.status === 'pending' ? 'Pendiente' : 
-                                                             voucher.status === 'approved' ? 'Aprobado' : 
-                                                             voucher.status === 'completed' ? 'Completado' : 'Rechazado'}
+                                                            {voucher.status === 'approved' ? 'Aprobado' : 'Rechazado'}
                                                         </span>
                                                     </td>
                                                     <td className="py-6 px-6 text-right">
-                                                        {voucher.status !== 'completed' && voucher.status !== 'rejected' && (
-                                                            <button 
-                                                                onClick={() => handleClose(voucher.id)}
-                                                                className="px-4 py-2 bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200 active:scale-95"
-                                                            >
-                                                                Cerrar Vale
-                                                            </button>
-                                                        )}
-                                                        {voucher.status === 'completed' && (
-                                                            <div className="flex items-center justify-end space-x-2 text-emerald-500">
-                                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                                </svg>
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">Cerrado</span>
-                                                            </div>
-                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}
