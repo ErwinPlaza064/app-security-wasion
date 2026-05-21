@@ -35,7 +35,11 @@ class VehicleLogController extends Controller
 
         $companyId = $validated['company_id'];
         if (!$companyId && !empty($validated['new_company'])) {
-            $company = Company::create(['name' => $validated['new_company']]);
+            $companyName = trim($validated['new_company']);
+            $company = Company::whereRaw('UPPER(TRIM(name)) = ?', [mb_strtoupper($companyName, 'UTF-8')])->first();
+            if (!$company) {
+                $company = Company::create(['name' => $companyName]);
+            }
             $companyId = $company->id;
         }
 

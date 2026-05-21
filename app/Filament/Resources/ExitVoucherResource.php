@@ -56,7 +56,7 @@ class ExitVoucherResource extends Resource
             ->schema([
                 Section::make('Información General')
                     ->schema([
-                        Grid::make(4)
+                        Grid::make(5)
                             ->schema([
                                 Forms\Components\TextInput::make('folio')
                                     ->label('Folio №')
@@ -75,6 +75,17 @@ class ExitVoucherResource extends Resource
                                     ->options([
                                         'open'   => 'Abierto',
                                         'closed' => 'Cerrado',
+                                    ])
+                                    ->required()
+                                    ->native(false),
+                                Forms\Components\Select::make('plant')
+                                    ->label('Planta')
+                                    ->options([
+                                        'Planta 1' => 'Planta 1',
+                                        'Planta 2' => 'Planta 2',
+                                        'Planta 3' => 'Planta 3',
+                                        'Planta 4' => 'Planta 4',
+                                        'Planta 5' => 'Planta 5',
                                     ])
                                     ->required()
                                     ->native(false),
@@ -209,7 +220,9 @@ class ExitVoucherResource extends Resource
                     ->label('Planta')
                     ->options([
                         'Planta 1' => 'Planta 1',
+                        'Planta 2' => 'Planta 2',
                         'Planta 3' => 'Planta 3',
+                        'Planta 4' => 'Planta 4',
                         'Planta 5' => 'Planta 5',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_fixed_asset')

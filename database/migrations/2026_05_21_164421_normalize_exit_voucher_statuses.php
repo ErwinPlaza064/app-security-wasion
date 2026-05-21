@@ -12,9 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('exit_vouchers')
-            ->whereIn('status', ['pending', 'completed'])
-            ->update(['status' => 'approved']);
+        // No-op: status design changed from approved/rejected to open/closed
     }
 
     public function down(): void

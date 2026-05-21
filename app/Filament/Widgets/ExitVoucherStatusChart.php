@@ -18,14 +18,14 @@ class ExitVoucherStatusChart extends Widget
         $filters = $this->filters;
 
         $completedCount = ExitVoucher::query()
-            ->where('status', 'completed')
+            ->where('status', 'closed')
             ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
             ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
             ->count();
 
         $openCount = ExitVoucher::query()
-            ->where('status', '!=', 'completed')
+            ->where('status', 'open')
             ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
             ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
