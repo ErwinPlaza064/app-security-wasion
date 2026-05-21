@@ -73,8 +73,8 @@ class ExitVoucherResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->label('Estado')
                                     ->options([
-                                        'approved' => 'Aprobado',
-                                        'rejected' => 'Rechazado',
+                                        'open'   => 'Abierto',
+                                        'closed' => 'Cerrado',
                                     ])
                                     ->required()
                                     ->native(false),
@@ -167,14 +167,14 @@ class ExitVoucherResource extends Resource
                     ->label('Estado')
                     ->badge()
                     ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'approved' => 'Aprobado',
-                        'rejected' => 'Rechazado',
-                        default => $state,
+                        'open'   => 'Abierto',
+                        'closed' => 'Cerrado',
+                        default  => $state,
                     })
                     ->color(fn(string $state): string => match ($state) {
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                        default => 'gray',
+                        'open'   => 'success',
+                        'closed' => 'danger',
+                        default  => 'gray',
                     }),
                 TextColumn::make('exit_date')
                     ->label('Salida')
@@ -197,11 +197,20 @@ class ExitVoucherResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label('Estado')
                     ->options([
-                        'approved' => 'Aprobado',
-                        'rejected' => 'Rechazado',
+                        'open'   => 'Abierto',
+                        'closed' => 'Cerrado',
+                    ]),
+                Tables\Filters\SelectFilter::make('plant')
+                    ->label('Planta')
+                    ->options([
+                        'Planta 1' => 'Planta 1',
+                        'Planta 3' => 'Planta 3',
+                        'Planta 5' => 'Planta 5',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_fixed_asset')
                     ->label('Activo Fijo'),

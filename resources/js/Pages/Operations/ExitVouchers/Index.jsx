@@ -1,7 +1,12 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 
 export default function Index({ vouchers }) {
+    const handleClose = (id) => {
+        if (confirm("¿Está seguro de que desea cerrar este vale de salida?")) {
+            router.post(route("exit-vouchers.close", id));
+        }
+    };
 
     return (
         <AuthenticatedLayout
@@ -107,13 +112,22 @@ export default function Index({ vouchers }) {
                                                     </td>
                                                     <td className="py-6 px-6">
                                                         <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
-                                                            voucher.status === 'approved' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' :
-                                                            'bg-red-50 border-red-100 text-red-600'
+                                                            voucher.status === 'open'
+                                                                ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                                                                : 'bg-gray-100 border-gray-200 text-gray-500'
                                                         }`}>
-                                                            {voucher.status === 'approved' ? 'Aprobado' : 'Rechazado'}
+                                                            {voucher.status === 'open' ? 'Abierto' : 'Cerrado'}
                                                         </span>
                                                     </td>
                                                     <td className="py-6 px-6 text-right">
+                                                        {voucher.status === 'open' && (
+                                                            <button
+                                                                onClick={() => handleClose(voucher.id)}
+                                                                className="px-4 py-2 bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-red-600 transition-all active:scale-95"
+                                                            >
+                                                                Cerrar Vale
+                                                            </button>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}

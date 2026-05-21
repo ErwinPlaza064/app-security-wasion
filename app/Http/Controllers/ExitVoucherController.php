@@ -73,7 +73,7 @@ class ExitVoucherController extends Controller
                 'return_date' => $request->return_date,
                 'user_id' => Auth::id(),
                 'plant' => Auth::user()->plant,
-                'status' => 'pending'
+                'status' => 'open'
             ]);
 
             DB::commit();
@@ -87,17 +87,17 @@ class ExitVoucherController extends Controller
 
     public function close(ExitVoucher $voucher)
     {
-        // Solo permitir cerrar si no está ya aprobado o rechazado
-        if (in_array($voucher->status, ['approved', 'rejected'])) {
-            return back()->withErrors(['error' => 'Este vale ya no puede ser modificado.']);
+        // Solo permitir cerrar si no está ya cerrado
+        if ($voucher->status === 'closed') {
+            return back()->withErrors(['error' => 'Este vale ya está cerrado.']);
         }
 
         $voucher->update([
-            'status' => 'approved',
+            'status'           => 'closed',
             'actual_return_date' => now(),
             'closed_by_user_id' => Auth::id()
         ]);
 
-        return redirect()->route('exit-vouchers.index')->with('success', 'Vale de salida aprobado correctamente.');
+        return redirect()->route('exit-vouchers.index')->with('success', 'Vale de salida cerrado correctamente.');
     }
 }
