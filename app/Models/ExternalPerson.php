@@ -12,7 +12,7 @@ class ExternalPerson extends Model
     {
         if ($value) {
             $upper = mb_strtoupper(trim($value), 'UTF-8');
-            if ($upper === 'BOCA' || $upper === 'TENGO' || $upper === 'TENGO DE ENTRADA') {
+            if ($upper === 'BOCA' || $upper === 'TENGO' || $upper === 'TENGO DE ENTRADA' || $upper === 'I') {
                 $value = 'INE';
             }
         }

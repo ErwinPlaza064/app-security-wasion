@@ -46,13 +46,14 @@ export default function VisitorStep({
                     <div className="space-y-3">
                         <InputLabel value="Identificación" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ms-1" />
                         <select
-                            className="block w-full bg-gray-50 border-none rounded-2xl py-6 px-8 text-base font-bold focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer font-bold"
+                            className="block w-full bg-gray-50 border-none rounded-2xl py-6 px-8 text-base font-bold focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer font-bold notranslate"
+                            translate="no"
                             value={visitor.id_number}
                             onChange={(e) => handleVisitorChange(index, "id_number", e.target.value)}
                         >
-                            <option value="">Seleccione tipo de ID...</option>
-                            <option value="INE">INE</option>
-                            <option value="LICENCIA DE CONDUCIR">LICENCIA DE CONDUCIR</option>
+                            <option value="" translate="no">Seleccione tipo de ID...</option>
+                            <option value="INE" translate="no">INE</option>
+                            <option value="LICENCIA DE CONDUCIR" translate="no">LICENCIA DE CONDUCIR</option>
                             <option value="CARTILLA MILITAR">CARTILLA MILITAR</option>
                             <option value="PASAPORTE">PASAPORTE</option>
                             <option value="CÉDULA PROFESIONAL">CÉDULA PROFESIONAL</option>
