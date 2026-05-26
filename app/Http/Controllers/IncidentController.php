@@ -28,7 +28,7 @@ class IncidentController extends Controller
     {
         $validated = $request->validate([
             'category' => 'required|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'type' => 'required|string|max:255',
             'description' => 'required|string',
             'location' => 'required|string|max:255',
             'happened_at' => 'required|date',
@@ -36,6 +36,8 @@ class IncidentController extends Controller
             'payroll_number' => 'nullable|string|max:20',
             'company' => 'nullable|string|max:255',
             'evidence_image' => 'nullable|image|max:5120', // Máximo 5MB
+        ], [
+            'type.required' => 'La clasificación del incidente es obligatoria.',
         ]);
 
         $imagePath = null;

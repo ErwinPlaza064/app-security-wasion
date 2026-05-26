@@ -190,6 +190,10 @@ export default function Create({ category: initialCategory, areas }) {
             } else if (!needsInvolved && !data.involved_person && !data.no_involved_persons) {
             }
         } else if (currentStep === 3) {
+            if (!data.type) {
+                setError('type', 'Debe seleccionar la clasificación del incidente');
+                hasErrors = true;
+            }
             if (!data.description) {
                 setError('description', 'Debe describir los hechos o la falla observada');
                 hasErrors = true;
@@ -227,6 +231,10 @@ export default function Create({ category: initialCategory, areas }) {
         }
 
         // Step 3
+        if (!data.type) {
+            setError('type', 'Debe seleccionar la clasificación del incidente');
+            hasErrors = true;
+        }
         if (!data.description) {
             setError('description', 'Debe describir los hechos o la falla observada');
             hasErrors = true;
@@ -246,7 +254,7 @@ export default function Create({ category: initialCategory, areas }) {
             // Ir al primer paso con error si el usuario intentó forzar envío
             if (errors.location) setCurrentStep(1);
             else if (errors.involved_person) setCurrentStep(2);
-            else if (errors.description || errors.happened_at) setCurrentStep(3);
+            else if (errors.description || errors.happened_at || errors.type) setCurrentStep(3);
             return;
         }
         post(route('incidents.store'));
@@ -456,7 +464,7 @@ export default function Create({ category: initialCategory, areas }) {
                                             value={data.type}
                                             onChange={(e) => setData('type', e.target.value)}
                                         >
-                                            <option value="">Selecciona una opción... (Opcional)</option>
+                                            <option value="">Selecciona una opción...</option>
                                             <option value="Sustracción / Intento de sustracción">Sustracción / Intento de sustracción</option>
                                             <option value="Codigo de vestimenta">Codigo de vestimenta</option>
                                             <option value="Ingreso de alimentos">Ingreso de alimentos</option>
