@@ -22,15 +22,15 @@ class BehavioralIncidentsChart extends Widget
             ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
             ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
-            ->select(DB::raw("COALESCE(type, 'Sin Clasificar') as label_type"), DB::raw('count(*) as aggregate'))
-            ->groupBy('label_type')
+            ->select('type', DB::raw('count(*) as aggregate'))
+            ->groupBy('type')
             ->orderByDesc('aggregate')
             ->get();
 
         $colors = ['#0C1869'];
 
         $items = $data->map(fn ($row) => [
-            'label' => $row->label_type,
+            'label' => $row->type ?? 'Sin Clasificar',
             'value' => $row->aggregate,
         ])->toArray();
 
