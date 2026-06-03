@@ -19,7 +19,6 @@ class BehavioralIncidentsChart extends Widget
         $filters = $this->filters;
 
         $data = Incident::query()
-            ->where('category', 'conduct')
             ->when($filters['plant'] ?? null, fn ($query, $plant) => $query->where('plant', $plant))
             ->when($filters['startDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['endDate'] ?? null, fn ($query, $date) => $query->whereDate('created_at', '<=', $date))
@@ -36,7 +35,7 @@ class BehavioralIncidentsChart extends Widget
         ])->toArray();
 
         return [
-            'heading' => 'Tipos de incidencias (Conductual)',
+            'heading' => 'Tipos de incidencias',
             'items' => $items,
             'maxValue' => $data->max('aggregate') ?? 0,
             'colors' => $colors,
