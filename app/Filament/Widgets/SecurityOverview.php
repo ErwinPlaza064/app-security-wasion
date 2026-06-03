@@ -45,7 +45,7 @@ class SecurityOverview extends BaseWidget
         $visitorsCount = $visitorsQuery->count();
         $vehiclesCount = $vehiclesQuery->count();
         $incidentsCount = $incidentsQuery->count();
-        $incidentsOpen = (clone $incidentsQuery)->where('status', 'open')->count();
+        $incidentsOpen = (clone $incidentsQuery)->whereIn('status', ['open', 'investigating'])->count();
 
         // Datos para comparar si no hay filtros activos (comportamiento original de "Hoy")
         if (empty($filters['startDate']) && empty($filters['endDate'])) {
