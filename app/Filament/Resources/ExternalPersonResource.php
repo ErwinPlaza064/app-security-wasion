@@ -71,7 +71,9 @@ class ExternalPersonResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('id_number')
-                    ->label('Identificación'),
+                    ->label('Identificación')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Teléfono'),
             ])

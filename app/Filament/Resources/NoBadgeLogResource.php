@@ -91,9 +91,11 @@ class NoBadgeLogResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('employee_id')
-                    ->label('ID / Nómina'),
+                    ->label('ID / Nómina')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('department')
-                    ->label('Depto.'),
+                    ->label('Depto.')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('suspension_reason')
                     ->label('Motivo')
                     ->badge()
@@ -112,7 +114,8 @@ class NoBadgeLogResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Guardia'),
+                    ->label('Guardia')
+                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('plant')

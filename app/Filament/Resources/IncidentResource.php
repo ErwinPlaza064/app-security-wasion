@@ -174,6 +174,14 @@ class IncidentResource extends Resource
                     ->searchable()
                     ->icon('heroicon-m-user')
                     ->iconColor('gray'),
+                Tables\Columns\TextColumn::make('involved_person')
+                    ->label('Persona Involucrada')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Descripción')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -203,6 +211,7 @@ class IncidentResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
+            ->defaultSort('happened_at', 'desc')
             ->poll('3s');
     }
 

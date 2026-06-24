@@ -162,6 +162,7 @@ class VehicleLogResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
+            ->defaultSort('entry_at', 'desc')
             ->poll('3s');
     }
 

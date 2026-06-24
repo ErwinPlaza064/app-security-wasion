@@ -133,8 +133,13 @@ class AccessLogResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre Completo')
                     ->getStateUsing(fn($record) => $record->externalPerson?->full_name ?? $record->visiting_person)
-                    ->searchable(['visiting_person'])
+                    ->searchable(['visiting_person', 'externalPerson.full_name'])
                     ->sortable(),
+                Tables\Columns\TextColumn::make('externalPerson.id_number')
+                    ->label('ID / Gafete')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
                     ->badge()
@@ -224,6 +229,7 @@ class AccessLogResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
+            ->defaultSort('entry_at', 'desc')
             ->poll('5s');
     }
 

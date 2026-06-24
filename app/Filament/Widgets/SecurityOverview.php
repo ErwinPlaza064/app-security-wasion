@@ -52,6 +52,9 @@ class SecurityOverview extends BaseWidget
             $visitorsToday = AccessLog::whereDate('entry_at', $today)->count();
             $visitorsYesterday = AccessLog::whereDate('entry_at', Carbon::yesterday())->count();
             
+            $vehiclesToday = VehicleLog::whereDate('entry_at', $today)->count();
+            $vehiclesYesterday = VehicleLog::whereDate('entry_at', Carbon::yesterday())->count();
+
             return [
                 Stat::make('Visitantes Hoy', $visitorsToday)
                     ->description($visitorsToday >= $visitorsYesterday ? 'Aumento del personal externo' : 'Menos que ayer')
@@ -59,10 +62,10 @@ class SecurityOverview extends BaseWidget
                     ->color($visitorsToday >= $visitorsYesterday ? 'success' : 'warning')
                     ->url(\App\Filament\Resources\AccessLogResource::getUrl()),
 
-                Stat::make('Accesos Vehiculares Hoy', $vehiclesCount)
-                    ->description('Logística en curso')
-                    ->descriptionIcon('heroicon-m-truck')
-                    ->color('info')
+                Stat::make('Accesos Vehiculares Hoy', $vehiclesToday)
+                    ->description($vehiclesToday >= $vehiclesYesterday ? 'Mayor flujo vehicular' : 'Menor flujo vehicular')
+                    ->descriptionIcon($vehiclesToday >= $vehiclesYesterday ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+                    ->color($vehiclesToday >= $vehiclesYesterday ? 'success' : 'info')
                     ->url(\App\Filament\Resources\VehicleLogResource::getUrl()),
 
                 Stat::make('Incidentes Abiertos', $incidentsOpen)

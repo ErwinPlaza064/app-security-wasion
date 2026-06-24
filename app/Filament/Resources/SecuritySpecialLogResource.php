@@ -171,6 +171,7 @@ class SecuritySpecialLogResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
+            ->defaultSort('happened_at', 'desc')
             ->poll('3s');
     }
 

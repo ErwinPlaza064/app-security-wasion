@@ -104,6 +104,7 @@ class VehicleIncidentResource extends Resource
                     ->label('Reportado por')
                     ->icon('heroicon-m-user')
                     ->iconColor('gray')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('plant')
                     ->label('Planta')
@@ -142,6 +143,7 @@ class VehicleIncidentResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
+            ->defaultSort('happened_at', 'desc')
             ->poll('3s');
     }
 
