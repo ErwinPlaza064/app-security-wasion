@@ -14,10 +14,13 @@ class EmployeeVehicleController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $vehicles = EmployeeVehicle::where('plant', $user->plant)
-            ->with('user:id,name')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = EmployeeVehicle::with('user:id,name')->orderBy('created_at', 'desc');
+
+        if (!$user->isAdmin()) {
+            $query->where('plant', $user->plant);
+        }
+
+        $vehicles = $query->get();
 
         return Inertia::render('Operations/VehicleRegistry/Index', [
             'vehicles' => $vehicles,
@@ -82,7 +85,7 @@ class EmployeeVehicleController extends Controller
     public function edit(EmployeeVehicle $employeeVehicle)
     {
         $user = Auth::user();
-        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+        if ($employeeVehicle->plant !== $user->plant && !$user->isAdmin()) {
             abort(403);
         }
 
@@ -97,7 +100,7 @@ class EmployeeVehicleController extends Controller
     public function update(Request $request, EmployeeVehicle $employeeVehicle)
     {
         $user = Auth::user();
-        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+        if ($employeeVehicle->plant !== $user->plant && !$user->isAdmin()) {
             abort(403);
         }
 
@@ -128,7 +131,7 @@ class EmployeeVehicleController extends Controller
     public function destroy(EmployeeVehicle $employeeVehicle)
     {
         $user = Auth::user();
-        if ($employeeVehicle->plant !== $user->plant && $user->role !== 'superadmin') {
+        if ($employeeVehicle->plant !== $user->plant && !$user->isAdmin()) {
             abort(403);
         }
 

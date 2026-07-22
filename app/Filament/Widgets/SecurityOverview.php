@@ -47,13 +47,23 @@ class SecurityOverview extends BaseWidget
         $incidentsCount = $incidentsQuery->count();
         $incidentsOpen = (clone $incidentsQuery)->whereIn('status', ['open', 'investigating'])->count();
 
-        // Datos para comparar si no hay filtros activos (comportamiento original de "Hoy")
+        // Datos para comparar si no hay filtros activos de fechas (comportamiento original de "Hoy")
         if (empty($filters['startDate']) && empty($filters['endDate'])) {
-            $visitorsToday = AccessLog::whereDate('entry_at', $today)->count();
-            $visitorsYesterday = AccessLog::whereDate('entry_at', Carbon::yesterday())->count();
+            $plantFilter = $filters['plant'] ?? null;
+
+            $visitorsToday = AccessLog::whereDate('entry_at', $today)
+                ->when($plantFilter, fn ($query, $plant) => $query->where('plant', $plant))
+                ->count();
+            $visitorsYesterday = AccessLog::whereDate('entry_at', Carbon::yesterday())
+                ->when($plantFilter, fn ($query, $plant) => $query->where('plant', $plant))
+                ->count();
             
-            $vehiclesToday = VehicleLog::whereDate('entry_at', $today)->count();
-            $vehiclesYesterday = VehicleLog::whereDate('entry_at', Carbon::yesterday())->count();
+            $vehiclesToday = VehicleLog::whereDate('entry_at', $today)
+                ->when($plantFilter, fn ($query, $plant) => $query->where('plant', $plant))
+                ->count();
+            $vehiclesYesterday = VehicleLog::whereDate('entry_at', Carbon::yesterday())
+                ->when($plantFilter, fn ($query, $plant) => $query->where('plant', $plant))
+                ->count();
 
             return [
                 Stat::make('Visitantes Hoy', $visitorsToday)
