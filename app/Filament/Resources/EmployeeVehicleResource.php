@@ -171,7 +171,7 @@ class EmployeeVehicleResource extends Resource
                 Forms\Components\Section::make('Información Administrativa')
                     ->schema([
                         Forms\Components\Select::make('plant')
-                            ->label('Planta')
+                            ->label('Planta Base')
                             ->options([
                                 'Planta 1' => 'Planta 1',
                                 'Planta 2' => 'Planta 2',
@@ -187,6 +187,37 @@ class EmployeeVehicleResource extends Resource
                             ->dehydrated(false)
                             ->visible(fn($record) => $record !== null),
                     ])->columns(2),
+
+                Forms\Components\Section::make('Acceso Multi-Planta')
+                    ->description('Habilita si este colaborador ingresa a más de una planta. Selecciona las plantas adicionales autorizadas.')
+                    ->icon('heroicon-o-map-pin')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_multi_plant')
+                            ->label('Autorizar acceso a otras plantas')
+                            ->helperText('Al activar esta opción, el vehículo aparecerá en el padrón de las plantas seleccionadas.')
+                            ->default(false)
+                            ->live()
+                            ->columnSpanFull(),
+                        Forms\Components\CheckboxList::make('additional_plants')
+                            ->label('Plantas adicionales autorizadas')
+                            ->options([
+                                'Planta 1' => 'Planta 1',
+                                'Planta 2' => 'Planta 2',
+                                'Planta 3' => 'Planta 3',
+                                'Planta 4' => 'Planta 4',
+                                'Planta 5' => 'Planta 5',
+                            ])
+                            ->descriptions([
+                                'Planta 1' => 'Autorizar visibilidad en Planta 1',
+                                'Planta 2' => 'Autorizar visibilidad en Planta 2',
+                                'Planta 3' => 'Autorizar visibilidad en Planta 3',
+                                'Planta 4' => 'Autorizar visibilidad en Planta 4',
+                                'Planta 5' => 'Autorizar visibilidad en Planta 5',
+                            ])
+                            ->visible(fn (Forms\Get $get): bool => (bool) $get('is_multi_plant'))
+                            ->columns(3)
+                            ->columnSpanFull(),
+                    ])->columns(1),
             ]);
     }
 
@@ -289,12 +320,23 @@ class EmployeeVehicleResource extends Resource
                     })
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('plant')
-                    ->label('Planta')
+                    ->label('Planta Base')
                     ->badge()
                     ->color('primary'),
+                Tables\Columns\IconColumn::make('is_multi_plant')
+                    ->label('Multi-Planta')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-map-pin')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->tooltip(fn ($record) => $record->is_multi_plant
+                        ? 'Plantas adicionales: ' . implode(', ', $record->additional_plants ?? [])
+                        : 'Solo planta base'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Registró')
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

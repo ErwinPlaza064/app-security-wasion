@@ -166,6 +166,9 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                         <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                                             Registró
                                         </th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                            Plantas
+                                        </th>
                                         <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">
                                             Acciones
                                         </th>
@@ -289,6 +292,27 @@ export default function Index({ vehicles = EMPTY_VEHICLES }) {
                                                             )}
                                                         </span>
                                                     </div>
+                                                </td>
+                                                <td className="px-6 py-6">
+                                                    {vehicle.is_multi_plant && vehicle.additional_plants?.length > 0 ? (
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-amber-50 border border-amber-200 text-[9px] font-black text-amber-700 uppercase tracking-widest whitespace-nowrap">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor">
+                                                                    <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.003 3.5-4.697 3.5-8.327a8 8 0 10-16 0c0 3.63 1.556 6.326 3.5 8.327a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                                                                </svg>
+                                                                Multi-Planta
+                                                            </span>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {vehicle.additional_plants.map((plant) => (
+                                                                    <span key={plant} className="px-1.5 py-0.5 rounded bg-primary-50 text-primary text-[8px] font-black uppercase tracking-wider border border-primary-100">
+                                                                        {plant}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-300 font-bold">—</span>
+                                                    )}
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
                                                     <div className="flex items-center justify-end space-x-1.5 min-w-[120px]">

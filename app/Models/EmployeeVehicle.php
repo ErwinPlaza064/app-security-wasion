@@ -24,6 +24,8 @@ class EmployeeVehicle extends Model
         'has_insurance',
         'insurance_expires_at',
         'plant',
+        'is_multi_plant',
+        'additional_plants',
         'user_id'
     ];
 
@@ -33,6 +35,8 @@ class EmployeeVehicle extends Model
         'has_circulation_card' => 'boolean',
         'has_insurance' => 'boolean',
         'insurance_expires_at' => 'date',
+        'is_multi_plant' => 'boolean',
+        'additional_plants' => 'array',
     ];
 
     public function user()

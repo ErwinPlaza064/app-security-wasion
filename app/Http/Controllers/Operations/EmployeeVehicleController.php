@@ -17,7 +17,14 @@ class EmployeeVehicleController extends Controller
         $query = EmployeeVehicle::with('user:id,name')->orderBy('created_at', 'desc');
 
         if (!$user->isAdmin()) {
-            $query->where('plant', $user->plant);
+            $userPlant = $user->plant;
+            $query->where(function ($q) use ($userPlant) {
+                $q->where('plant', $userPlant)
+                  ->orWhere(function ($q2) use ($userPlant) {
+                      $q2->where('is_multi_plant', true)
+                         ->whereJsonContains('additional_plants', $userPlant);
+                  });
+            });
         }
 
         $vehicles = $query->get();
