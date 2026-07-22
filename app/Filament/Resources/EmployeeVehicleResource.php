@@ -36,8 +36,7 @@ class EmployeeVehicleResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('marbete_number')
                             ->label('No. Marbete')
-                            ->required()
-                            ->unique(ignoreRecord: true),
+                            ->required(),
                         Forms\Components\TextInput::make('employee_name')
                             ->label('Nombre del Colaborador')
                             ->required(),

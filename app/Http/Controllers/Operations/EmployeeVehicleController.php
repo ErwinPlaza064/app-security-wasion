@@ -47,7 +47,7 @@ class EmployeeVehicleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'marbete_number' => 'required|string|unique:employee_vehicles,marbete_number',
+            'marbete_number' => 'required|string|max:20',
             'employee_name' => 'required|string|max:255',
             'area' => 'required|string|max:255',
             'vehicle_brand' => 'required|string|max:255',
@@ -118,7 +118,7 @@ class EmployeeVehicleController extends Controller
         }
 
         $validated = $request->validate([
-            'marbete_number' => 'required|string|unique:employee_vehicles,marbete_number,' . $employeeVehicle->id,
+            'marbete_number' => 'required|string|max:20',
             'employee_name' => 'required|string|max:255',
             'area' => 'required|string|max:255',
             'vehicle_brand' => 'required|string|max:255',
