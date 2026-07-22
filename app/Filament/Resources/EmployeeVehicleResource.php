@@ -179,13 +179,7 @@ class EmployeeVehicleResource extends Resource
                                 'Planta 4' => 'Planta 4',
                                 'Planta 5' => 'Planta 5',
                             ])
-                            ->required()
-                            ->disabled(function () {
-                                /** @var \App\Models\User|null $user */
-                                $user = \Illuminate\Support\Facades\Auth::user();
-                                return $user ? !$user->isSuperAdmin() : true;
-                            })
-                            ->dehydrated(),
+                            ->required(),
                         Forms\Components\Select::make('user_id')
                             ->label('Registrado por')
                             ->relationship('user', 'name')
