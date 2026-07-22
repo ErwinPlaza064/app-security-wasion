@@ -45,10 +45,10 @@ class EmployeeVehicleController extends Controller
             'area' => 'required|string|max:255',
             'vehicle_brand' => 'required|string|max:255',
             'vehicle_model' => 'required|string|max:255',
-            'vehicle_plates' => ['required', 'string', 'max:20', 'regex:/^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/'],
+            'vehicle_plates' => ['required', 'string', 'max:20', 'regex:/^[A-Z0-9\s-]{3,20}$/i'],
             'vehicle_brand_2' => 'nullable|string|max:255',
             'vehicle_model_2' => 'nullable|string|max:255',
-            'vehicle_plates_2' => ['nullable', 'string', 'max:20', 'regex:/^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/'],
+            'vehicle_plates_2' => ['nullable', 'string', 'max:20', 'regex:/^[A-Z0-9\s-]{3,20}$/i'],
             'documentation_status' => 'required|string',
             'validity_status' => 'required|string',
             'has_driver_license' => 'boolean',
@@ -58,23 +58,29 @@ class EmployeeVehicleController extends Controller
             'insurance_expires_at' => 'nullable|date',
         ]);
 
+        $hasLicense = $request->boolean('has_driver_license');
+        $licenseExpires = ($hasLicense && !empty($validated['driver_license_expires_at'])) ? $validated['driver_license_expires_at'] : null;
+
+        $hasInsurance = $request->boolean('has_insurance');
+        $insuranceExpires = ($hasInsurance && !empty($validated['insurance_expires_at'])) ? $validated['insurance_expires_at'] : null;
+
         EmployeeVehicle::create([
-            'marbete_number' => $validated['marbete_number'],
+            'marbete_number' => strtoupper(trim($validated['marbete_number'])),
             'employee_name' => $validated['employee_name'],
             'area' => $validated['area'],
             'vehicle_brand' => $validated['vehicle_brand'],
             'vehicle_model' => $validated['vehicle_model'],
-            'vehicle_plates' => $validated['vehicle_plates'],
-            'vehicle_brand_2' => $validated['vehicle_brand_2'],
-            'vehicle_model_2' => $validated['vehicle_model_2'],
-            'vehicle_plates_2' => $validated['vehicle_plates_2'],
+            'vehicle_plates' => strtoupper(trim($validated['vehicle_plates'])),
+            'vehicle_brand_2' => $validated['vehicle_brand_2'] ?? null,
+            'vehicle_model_2' => $validated['vehicle_model_2'] ?? null,
+            'vehicle_plates_2' => !empty($validated['vehicle_plates_2']) ? strtoupper(trim($validated['vehicle_plates_2'])) : null,
             'documentation_status' => $validated['documentation_status'],
             'validity_status' => $validated['validity_status'],
-            'has_driver_license' => $request->boolean('has_driver_license'),
-            'driver_license_expires_at' => $request->input('driver_license_expires_at'),
+            'has_driver_license' => $hasLicense,
+            'driver_license_expires_at' => $licenseExpires,
             'has_circulation_card' => $request->boolean('has_circulation_card'),
-            'has_insurance' => $request->boolean('has_insurance'),
-            'insurance_expires_at' => $request->input('insurance_expires_at'),
+            'has_insurance' => $hasInsurance,
+            'insurance_expires_at' => $insuranceExpires,
             'plant' => Auth::user()->plant,
             'user_id' => Auth::id(),
         ]);
@@ -110,10 +116,10 @@ class EmployeeVehicleController extends Controller
             'area' => 'required|string|max:255',
             'vehicle_brand' => 'required|string|max:255',
             'vehicle_model' => 'required|string|max:255',
-            'vehicle_plates' => ['required', 'string', 'max:20', 'regex:/^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/'],
+            'vehicle_plates' => ['required', 'string', 'max:20', 'regex:/^[A-Z0-9\s-]{3,20}$/i'],
             'vehicle_brand_2' => 'nullable|string|max:255',
             'vehicle_model_2' => 'nullable|string|max:255',
-            'vehicle_plates_2' => ['nullable', 'string', 'max:20', 'regex:/^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/'],
+            'vehicle_plates_2' => ['nullable', 'string', 'max:20', 'regex:/^[A-Z0-9\s-]{3,20}$/i'],
             'documentation_status' => 'required|string',
             'validity_status' => 'required|string',
             'has_driver_license' => 'boolean',
@@ -122,6 +128,20 @@ class EmployeeVehicleController extends Controller
             'has_insurance' => 'boolean',
             'insurance_expires_at' => 'nullable|date',
         ]);
+
+        $hasLicense = $request->boolean('has_driver_license');
+        $validated['has_driver_license'] = $hasLicense;
+        $validated['driver_license_expires_at'] = ($hasLicense && !empty($validated['driver_license_expires_at'])) ? $validated['driver_license_expires_at'] : null;
+
+        $validated['has_circulation_card'] = $request->boolean('has_circulation_card');
+
+        $hasInsurance = $request->boolean('has_insurance');
+        $validated['has_insurance'] = $hasInsurance;
+        $validated['insurance_expires_at'] = ($hasInsurance && !empty($validated['insurance_expires_at'])) ? $validated['insurance_expires_at'] : null;
+
+        $validated['marbete_number'] = strtoupper(trim($validated['marbete_number']));
+        $validated['vehicle_plates'] = strtoupper(trim($validated['vehicle_plates']));
+        $validated['vehicle_plates_2'] = !empty($validated['vehicle_plates_2']) ? strtoupper(trim($validated['vehicle_plates_2'])) : null;
 
         $employeeVehicle->update($validated);
 

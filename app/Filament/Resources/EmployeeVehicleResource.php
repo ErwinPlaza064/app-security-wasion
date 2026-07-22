@@ -184,7 +184,8 @@ class EmployeeVehicleResource extends Resource
                                 /** @var \App\Models\User|null $user */
                                 $user = \Illuminate\Support\Facades\Auth::user();
                                 return $user ? !$user->isSuperAdmin() : true;
-                            }),
+                            })
+                            ->dehydrated(),
                         Forms\Components\Select::make('user_id')
                             ->label('Registrado por')
                             ->relationship('user', 'name')

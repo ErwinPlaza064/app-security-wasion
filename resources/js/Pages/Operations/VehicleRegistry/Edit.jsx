@@ -77,13 +77,13 @@ export default function Edit({ vehicle, areas = EMPTY_AREAS }) {
             setError('vehicle_model', 'La submarca/modelo es obligatoria');
             hasErrors = true;
         }
-        const platesRegex = /^[A-Z]{3}-[0-9]{2,3}-[0-9A-Z]{1,2}$/;
+        const platesRegex = /^[A-Z0-9\s-]{3,20}$/i;
 
         if (!data.vehicle_plates) {
             setError('vehicle_plates', 'Las placas son obligatorias');
             hasErrors = true;
         } else if (!platesRegex.test(data.vehicle_plates)) {
-            setError('vehicle_plates', 'El formato de placas no es válido (Ej. AAA-00-00)');
+            setError('vehicle_plates', 'El formato de placas no es válido');
             hasErrors = true;
         }
 
