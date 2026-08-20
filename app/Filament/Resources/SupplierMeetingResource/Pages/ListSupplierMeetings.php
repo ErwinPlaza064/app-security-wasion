@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Filament\Resources\ExitVoucherResource\Pages;
+namespace App\Filament\Resources\SupplierMeetingResource\Pages;
 
-use App\Exports\ExitVouchersExport;
-use App\Filament\Resources\ExitVoucherResource;
+use App\Exports\SupplierMeetingsExport;
+use App\Filament\Resources\SupplierMeetingResource;
+use App\Models\Company;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Pages\ListRecords;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ListExitVouchers extends ListRecords
+class ListSupplierMeetings extends ListRecords
 {
-    protected static string $resource = ExitVoucherResource::class;
+    protected static string $resource = SupplierMeetingResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -21,8 +22,8 @@ class ListExitVouchers extends ListRecords
                 ->label('Exportar Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
-                ->modalHeading('Exportar Vales de Salida')
-                ->modalDescription('Seleccione los filtros para el reporte. Deje en blanco para exportar todos los vales.')
+                ->modalHeading('Exportar Reuniones con Proveedores')
+                ->modalDescription('Seleccione los filtros para el reporte. Deje en blanco para exportar todas las reuniones.')
                 ->modalSubmitActionLabel('Descargar Excel')
                 ->modalIcon('heroicon-o-arrow-down-tray')
                 ->form([
@@ -68,38 +69,30 @@ class ListExitVouchers extends ListRecords
                             'Planta 5' => 'Planta 5',
                         ])
                         ->placeholder('Todas las plantas'),
-                    Forms\Components\Select::make('status')
-                        ->label('Estado')
-                        ->options([
-                            'open'   => 'Abierto',
-                            'closed' => 'Cerrado',
-                        ])
-                        ->placeholder('Todos los estados'),
-                    Forms\Components\Select::make('concept')
-                        ->label('Concepto / Motivo')
-                        ->options([
-                            'loan'   => 'Préstamo',
-                            'sample' => 'Muestra',
-                            'repair' => 'Reparación',
-                            'others' => 'Otros',
-                        ])
-                        ->placeholder('Todos los conceptos'),
+                    Forms\Components\Select::make('company_id')
+                        ->label('Proveedor')
+                        ->options(fn () => Company::query()->orderBy('name')->pluck('name', 'id'))
+                        ->searchable()
+                        ->placeholder('Todos los proveedores'),
                 ])
                 ->action(function (array $data) {
                     $month = $data['month'] ?? null;
                     $plant = $data['plant'] ?? null;
-                    $status = $data['status'] ?? null;
-                    $concept = $data['concept'] ?? null;
+                    $companyId = $data['company_id'] ?? null;
 
-                    $filename = 'vales_salida';
+                    $filename = 'reuniones_proveedores';
                     if ($month) $filename .= "_{$month}";
                     if ($plant) $filename .= '_' . str_replace(' ', '_', strtolower($plant));
-                    if ($status) $filename .= "_{$status}";
-                    if ($concept) $filename .= "_{$concept}";
+                    if ($companyId) {
+                        $company = Company::find($companyId);
+                        if ($company) {
+                            $filename .= '_' . str_replace(' ', '_', strtolower($company->name));
+                        }
+                    }
                     $filename .= '.xlsx';
 
                     return Excel::download(
-                        new ExitVouchersExport($month, $plant, $status, $concept),
+                        new SupplierMeetingsExport($month, $plant, $companyId),
                         $filename,
                     );
                 }),

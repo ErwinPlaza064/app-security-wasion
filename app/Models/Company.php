@@ -17,4 +17,9 @@ class Company extends Model
     {
         return $this->hasMany(VehicleLog::class);
     }
+
+    public function supplierMeetings()
+    {
+        return $this->hasMany(SupplierMeeting::class);
+    }
 }
