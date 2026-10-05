@@ -5,16 +5,36 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import { useState } from "react";
 
+// Fecha local (YYYY-MM-DD); toISOString usa UTC y de noche daría el día siguiente.
+const todayLocal = () => {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
+// El campo de retorno solo se llena desde el calendario: se bloquea el teclado salvo Tab, Esc y borrar.
+const ALLOWED_DATE_KEYS = ['Tab', 'Escape', 'Backspace', 'Delete'];
+const handleReturnDateKeyDown = (e) => {
+    if (!ALLOWED_DATE_KEYS.includes(e.key)) e.preventDefault();
+};
+const openDatePicker = (e) => {
+    try {
+        e.currentTarget.showPicker?.();
+    } catch {
+        // Navegadores sin soporte o sin gesto de usuario: el picker nativo sigue disponible.
+    }
+};
+
 export default function Create({ suggestedFolio, suggestedReference }) {
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         folio: suggestedFolio,
         recipient_name: "",
         reference_number: suggestedReference,
         is_fixed_asset: false,
-        voucher_date: new Date().toISOString().split('T')[0],
+        voucher_date: todayLocal(),
         concept: "loan",
         other_concept_details: "",
-        exit_date: new Date().toISOString().split('T')[0],
+        exit_date: todayLocal(),
         return_date: "",
     });
 
@@ -195,7 +215,11 @@ export default function Create({ suggestedFolio, suggestedReference }) {
                                         id="return_date"
                                         type="date"
                                         value={data.return_date}
+                                        min={data.voucher_date}
                                         onChange={(e) => setData("return_date", e.target.value)}
+                                        onKeyDown={handleReturnDateKeyDown}
+                                        onPaste={(e) => e.preventDefault()}
+                                        onClick={openDatePicker}
                                         className={`w-full bg-gray-50 border-none rounded-2xl md:rounded-[2rem] py-5 md:py-6 px-8 text-base font-bold text-[#0A192F] focus:ring-4 transition-all ${errors.return_date ? 'ring-4 ring-red-100' : 'focus:ring-gray-100'}`}
                                     />
                                     <InputError message={errors.return_date} />

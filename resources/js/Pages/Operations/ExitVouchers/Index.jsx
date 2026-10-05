@@ -104,7 +104,7 @@ export default function Index({ vouchers }) {
                                                                 day: '2-digit',
                                                                 month: 'short',
                                                                 year: 'numeric'
-                                                            }) : 'No Aplica'}
+                                                            }) : ' '}
                                                         </span>
                                                         <span className="text-[9px] text-gray-300 font-black uppercase tracking-widest">
                                                             Retorno
